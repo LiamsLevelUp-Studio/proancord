@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Procord</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23d6182a'/%3E%3Cpath d='M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z' fill='%23fff'/%3E%3C/svg%3E">
+
+  <!-- Supabase client library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
+  <style>
+    /* Colour palette (dark by default; themes override it below) */
+    :root {
+      --rail: #050505;
+      --side: #0e0e0f;
+      --main: #151516;
+      --input: #1e1e20;
+      --hover: #1b1b1d;
+      --text: #efe9e9;
+      --mute: #9a9091;
+      --accent: #e11d2e;
+      --green: #23a559;
+      --red: #f23f43;
+    }
+
+    [data-theme=midnight] {
+      --accent: #ff2d55;
+      --rail: #000;
+      --side: #08080d;
+      --main: #0e0e16;
+      --input: #191925;
+      --hover: #151520;
+    }
+
+    [data-theme=sunset] {
+      --accent: #e8590c;
+      --main: #2f2a2e;
+      --side: #272226;
+      --rail: #1c181b;
+      --input: #3a3339;
+      --hover: #352f34;
+    }
+
+    /* Base page styles */
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #root {
+      height: 100%;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2a1114;
+      border-radius: 4px;
+    }
+
+    .brand {
+      width: 48px;
+      height: 48px;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card .logo {
+      display: block;
+      margin: 0 auto 12px;
+    }
+
+    body {
+      background: var(--main);
+      color: var(--text);
+      font: 16px/1.375 "gg sans", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    button, input, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* Main layout: server rail | channels | chat | members */
+    #app {
+      display: grid;
+      grid-template-columns: 72px 240px 1fr 240px;
+      height: 100%;
+    }
+
+    /* Server rail (far left) */
+    #rail {
+      background: var(--rail);
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .sv {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--main);
+      border: 0;
+      font-weight: 600;
+      transition: .15s;
+      flex: none;
+      position: relative;
+    }
+
+    .sv:hover, .sv.on {
+      border-radius: 16px;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .sv.on:before {
+      content: "";
+      position: absolute;
+      left: -12px;
+      top: 12px;
+      width: 4px;
+      height: 24px;
+      background: #fff;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .sv.add {
+      color: var(--accent);
+      font-size: 24px;
+    }
+
+    .sv.add:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .sep {
+      width: 32px;
+      height: 2px;
+      background: var(--main);
+      border-radius: 1px;
+    }
+
+    /* Channel sidebar */
+    #side {
+      background: var(--side);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    #sh {
+      height: 48px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      border-bottom: 1px solid #0003;
+      box-shadow: 0 1px 0 #0002;
+    }
+
+    #chl {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .lbl {
+      display: flex;
+      justify-content: space-between;
+      color: var(--mute);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 12px 8px 4px;
+    }
+
+    .lbl button {
+      background: none;
+      border: 0;
+      color: var(--mute);
+      font-size: 18px;
+      padding: 0;
+    }
+
+    .ch {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: 0;
+      border-radius: 4px;
+      padding: 6px 8px;
+      color: var(--mute);
+      font-weight: 500;
+    }
+
+    .ch:hover {
+      background: var(--hover);
+      color: var(--text);
+    }
+
+    .ch.on {
+      background: #4e505899;
+      color: #fff;
+    }
+
+    /* Your user bar at the bottom of the sidebar */
+    #me {
+      background: #232428;
+      height: 52px;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #me .nm {
+      flex: 1;
+      min-width: 0;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Icon buttons */
+    .ib {
+      background: none;
+      border: 0;
+      color: var(--mute);
+      font-size: 18px;
+      border-radius: 4px;
+      padding: 4px 6px;
+    }
+
+    .ib:hover {
+      background: var(--hover);
+      color: var(--text);
+    }
+
+    /* Avatars */
+    .av {
+      border-radius: 50%;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #fff;
+      flex: none;
+    }
+
+    /* Chat area */
+    #main {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    #ch {
+      height: 48px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      border-bottom: 1px solid #0003;
+      flex: none;
+    }
+
+    #msgs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 0;
+    }
+
+    /* Messages */
+    .msg {
+      display: flex;
+      gap: 16px;
+      padding: 2px 16px 2px 16px;
+      position: relative;
+      margin-top: 16px;
+    }
+
+    .msg.grp {
+      margin-top: 0;
+    }
+
+    .msg:hover {
+      background: #0000000a;
+    }
+
+    .msg > div:first-child, .gt {
+      width: 40px;
+      flex: none;
+    }
+
+    .gt {
+      font-size: 11px;
+      color: var(--mute);
+      visibility: hidden;
+      text-align: right;
+      line-height: 22px;
+    }
+
+    .msg:hover .gt {
+      visibility: visible;
+    }
+
+    .mb {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .mh {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .mh b {
+      cursor: pointer;
+    }
+
+    .mh b:hover {
+      text-decoration: underline;
+    }
+
+    .ts {
+      font-size: 12px;
+      color: var(--mute);
+    }
+
+    .mc {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .del {
+      position: absolute;
+      right: 16px;
+      top: -8px;
+      background: var(--side);
+      border: 1px solid #0004;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .msg:hover .del {
+      display: block;
+    }
+
+
+    /* Message box */
+    #comp {
+      padding: 0 16px 24px;
+      position: relative;
+      flex: none;
+    }
+
+    #cbox {
+      background: var(--input);
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 8px;
+    }
+
+    #inp {
+      flex: 1;
+      background: none;
+      border: 0;
+      outline: 0;
+      resize: none;
+      padding: 11px 8px;
+      max-height: 200px;
+      line-height: 22px;
+    }
+
+    #cnt {
+      font-size: 11px;
+      color: var(--red);
+      padding: 0 16px;
+      height: 14px;
+    }
+
+    /* Emoji picker */
+    #emo {
+      display: none;
+      position: absolute;
+      right: 16px;
+      bottom: 64px;
+      width: 300px;
+      max-height: 260px;
+      overflow-y: auto;
+      background: var(--side);
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 8px 24px #0006;
+      z-index: 5;
+    }
+
+    #emo.on {
+      display: block;
+    }
+
+    #emo button {
+      background: none;
+      border: 0;
+      font-size: 22px;
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+    }
+
+    #emo button:hover {
+      background: var(--hover);
+    }
+
+    #emo p {
+      margin: 6px 4px;
+      font-size: 12px;
+      color: var(--mute);
+      font-weight: 600;
+    }
+
+    /* Member list (far right) */
+    #mem {
+      background: var(--side);
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .mm {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .mm:hover {
+      background: var(--hover);
+    }
+
+    .mm.off {
+      opacity: .45;
+    }
+
+    .dot {
+      position: relative;
+    }
+
+    .dot i {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 3px solid var(--side);
+    }
+
+    .empty {
+      margin: auto;
+      text-align: center;
+      color: var(--mute);
+      padding: 24px;
+      max-width: 380px;
+    }
+
+    /* Pop-up windows */
+    #modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000a;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      padding: 16px;
+    }
+
+    #modal.on {
+      display: flex;
+    }
+
+    .mbox {
+      background: var(--main);
+      border-radius: 8px;
+      width: 440px;
+      max-width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .mbox h2 {
+      margin: 0 0 4px;
+    }
+
+    .mbox p {
+      color: var(--mute);
+      margin: 0 0 16px;
+    }
+
+    /* Form fields and buttons */
+    .f {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--mute);
+      text-transform: uppercase;
+      margin: 14px 0 6px;
+    }
+
+    .t {
+      width: 100%;
+      background: #1e1f22;
+      border: 0;
+      border-radius: 4px;
+      padding: 10px;
+      outline: 0;
+    }
+
+    .t:focus {
+      outline: 2px solid var(--accent);
+    }
+
+    .b {
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      padding: 9px 16px;
+      font-weight: 500;
+    }
+
+    .b:hover {
+      filter: brightness(.9);
+    }
+
+    .b.g {
+      background: none;
+      color: var(--text);
+    }
+
+    .b.r {
+      background: var(--red);
+    }
+
+    .b.pr {
+      background: linear-gradient(135deg, #ff4d5a, #b3091a);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .err {
+      color: var(--red);
+      font-size: 14px;
+      margin-top: 8px;
+      min-height: 20px;
+    }
+
+    /* Login / signup screen */
+    #auth {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 20% 15%, #7a0a14 0, #050505 60%);
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--main);
+      padding: 32px;
+      border-radius: 8px;
+      width: 480px;
+      max-width: 100%;
+      box-shadow: 0 2px 10px #0004;
+    }
+
+    .card h1 {
+      text-align: center;
+      margin: 0 0 4px;
+      font-size: 24px;
+    }
+
+    .card .sub {
+      text-align: center;
+      color: var(--mute);
+      margin-bottom: 8px;
+    }
+
+    /* Profile card */
+    .ban {
+      height: 60px;
+      border-radius: 8px 8px 0 0;
+      margin: -24px -24px 0;
+    }
+
+    .pop {
+      margin: -30px 0 0 16px;
+      border: 6px solid var(--main);
+      border-radius: 50%;
+      width: 92px;
+      height: 92px;
+      overflow: hidden;
+    }
+
+    /* Colour swatches in settings */
+    .sw {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      margin: 0 6px 0 0;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    /* Animations and Discord-style extras */
+    @keyframes pop { from { transform: scale(.92); opacity: 0; } }
+    @keyframes fade { from { opacity: 0; } }
+    @keyframes slide { from { opacity: 0; transform: translateY(10px); } }
+    @keyframes blink { 50% { opacity: .2; } }
+    #modal.on { animation: fade .15s; }
+    .mbox, .card { animation: pop .22s cubic-bezier(.2, .9, .3, 1.2); }
+    #emo.on { animation: pop .15s; }
+    .msg.new { animation: slide .25s ease-out; }
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; border: 1px solid var(--accent); border-radius: 8px; padding: 10px 18px; z-index: 20; animation: slide .25s; }
+    .sv:before { content: ""; position: absolute; left: -12px; top: 50%; width: 4px; height: 0; background: #fff; border-radius: 0 4px 4px 0; transform: translateY(-50%); transition: height .15s; }
+    .sv:hover:before { height: 20px; }
+    .sv.on:before { top: 50%; height: 36px; }
+    .ch, .mm, .ib, .b { transition: background .12s, color .12s, filter .12s; }
+    .b:active { transform: scale(.97); }
+    .dd { display: flex; align-items: center; gap: 8px; margin: 18px 16px 0; color: var(--mute); font-size: 12px; font-weight: 600; }
+    .dd:before, .dd:after { content: ""; flex: 1; height: 1px; background: #ffffff18; }
+    .acts { position: absolute; right: 16px; top: -14px; display: none; background: var(--side); border: 1px solid #0006; border-radius: 6px; }
+    .msg:hover .acts { display: flex; }
+    .mc { font-size: var(--fs, 16px); }
+    .mc code { background: #000a; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace; font-size: .9em; }
+    .mc a { color: #ff6b78; }
+    .mention { background: #e11d2e33; color: #ffb3b9; border-radius: 3px; padding: 0 3px; }
+    .ed { font-size: 11px; color: var(--mute); }
+    #typ { height: 20px; padding: 0 16px; font-size: 12px; color: var(--mute); }
+    .dots i { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--mute); margin-right: 2px; animation: blink 1.2s infinite; }
+    .dots i:nth-child(2) { animation-delay: .2s; }
+    .dots i:nth-child(3) { animation-delay: .4s; }
+    .dot i.idle { background: #f0b132; }
+    .dot i.dnd { background: var(--red); }
+    .dot i.off { background: #80848e; }
+    #me .nm small { display: block; font-weight: 400; color: var(--mute); font-size: 11px; }
+    .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 12px 0 4px; }
+    .tab { background: none; border: 0; border-radius: 4px; padding: 6px 12px; color: var(--mute); font-weight: 500; }
+    .tab:hover { background: var(--hover); color: var(--text); }
+    .tab.on { background: var(--accent); color: #fff; }
+    .opt { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #ffffff12; }
+    .opt input { width: 18px; height: 18px; accent-color: var(--accent); }
+    body.compact .msg { margin-top: 6px; }
+    body.compact .msg.grp { margin-top: 0; }
+    body.noanim *, body.noanim *:before { animation: none !important; transition: none !important; }
+
+    /* Full-page settings, channels, uploads */
+    .badge { background: linear-gradient(135deg, #ff4d5a, #b3091a); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; }
+    #set { position: fixed; inset: 0; z-index: 12; background: var(--main); display: grid; grid-template-columns: minmax(220px, 36%) 1fr; animation: fade .15s; }
+    #setnav { background: var(--side); padding: 60px 8px 20px; display: flex; justify-content: flex-end; overflow-y: auto; }
+    #setnav > div { width: 192px; margin-right: 12px; }
+    .sg { font-size: 12px; font-weight: 700; color: var(--mute); text-transform: uppercase; padding: 6px 10px; margin-top: 12px; }
+    .sn { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 4px; padding: 6px 10px; color: var(--mute); font-weight: 500; margin: 1px 0; transition: background .12s; }
+    .sn:hover { background: var(--hover); color: var(--text); }
+    .sn.on { background: #ffffff1c; color: #fff; }
+    #setmain { overflow-y: auto; padding: 60px 40px 80px; }
+    #setmain > div { max-width: 660px; }
+    #setx { position: fixed; top: 40px; right: 40px; width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--mute); background: none; color: var(--mute); font-size: 16px; }
+    #setx:hover { color: #fff; border-color: #fff; }
+    .srow { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; }
+    .srow b { display: block; }
+    .card2 { background: var(--side); border-radius: 8px; padding: 16px; margin: 12px 0; overflow: hidden; }
+    .pc .ban { margin: -16px -16px 0; }
+    .mob { display: none; }
+    .perk { padding: 8px 0; border-bottom: 1px solid #ffffff12; display: flex; justify-content: space-between; gap: 12px; }
+    .perk i { font-style: normal; color: var(--mute); font-size: 13px; text-align: right; }
+    .chw { position: relative; }
+    .cog { position: absolute; right: 4px; top: 3px; display: none; font-size: 14px; }
+    .chw:hover .cog { display: block; }
+    .topic { color: var(--mute); font-weight: 400; font-size: 14px; margin-left: 12px; padding-left: 12px; border-left: 1px solid #ffffff22; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .att { max-width: min(420px, 100%); max-height: 320px; border-radius: 8px; margin-top: 6px; display: block; }
+    .file { display: inline-block; background: var(--side); border: 1px solid #ffffff18; border-radius: 8px; padding: 10px 14px; margin-top: 6px; }
+    #inp:disabled { cursor: not-allowed; }
+    @media (max-width: 700px) { #set { grid-template-columns: 1fr; } #setnav { display: none; } .mob { display: flex; } #setmain { padding: 60px 16px 80px; } #setx { top: 12px; right: 12px; } }
+
+    /* Smaller screens: hide panels */
+    @media (max-width: 900px) {
+      #app {
+        grid-template-columns: 72px 200px 1fr;
+      }
+      #mem {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      #app {
+        grid-template-columns: 60px 1fr;
+      }
+      #side {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Everything is drawn into #root by the script below -->
+  <!-- Procord logo, drawn once and reused with <use href="#logo"> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="pc-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ff4252"/>
+        <stop offset="1" stop-color="#8f0b19"/>
+      </linearGradient>
+    </defs>
+    <symbol id="logo" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="18" fill="url(#pc-grad)"/>
+      <path d="M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z" fill="#fff"/>
+      <circle cx="33" cy="27" r="4.5" fill="#a30f1e"/>
+    </symbol>
+  </svg>
+
+  <div id="root"></div>
+  <div id="modal"></div>
+
+  <script>
+    // ====== 1. PASTE YOUR SUPABASE KEYS (Project Settings > API) ======
+    const SB_URL = "https://tfxnizwovbqamlzqeigm.supabase.co", SB_KEY = "sb_publishable_bUpHpK1CFRKxOXWYnPcirg_kqq0YZCr";
+    // ==================================================================
+
+    // ---------- Small helpers ----------
+    const $ = s => document.querySelector(s);
+    const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const colorFromName = s => {
+      let h = 0;
+      for (const c of s || '?')
+        h = (h * 31 + c.charCodeAt(0)) % 360;
+      return `hsl(${h} 50% 45%)`;
+    };
+    const avatarHtml = (p, n = 40) => p?.avatar_url ? `<img class="av" style="width:${n}px;height:${n}px" src="${escapeHtml(p.avatar_url)}" alt="">` : `<div class="av" style="width:${n}px;height:${n}px;background:${colorFromName(p?.username)};font-size:${n * .42}px">${escapeHtml((p?.username || '?')[0].toUpperCase())}</div>`;
+    const nameHtml = p => `<b onclick="showProfile('${p?.id}')">${escapeHtml(p?.username)}</b>`;
+    const formatDateTime = d => new Date(d).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: !S.h24 });
+    const formatTime = d => new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !S.h24 });
+
+    // ---------- App state ----------
+    let supabaseClient;      // connection to Supabase
+    let me;                  // the logged-in user's profile
+    let servers = [];        // servers I belong to
+    let cur = null;          // the selected server
+    let channels = [];       // channels in that server
+    let curCh = null;        // the selected channel
+    let members = [];        // profiles of that server's members
+    let msgs = [];           // messages in the open channel
+    let online = new Map();  // member id -> status (online / idle / dnd)
+    let pendingName = null;  // username typed on the sign-up form
+    let animateLast = false; // animate the newest message when it arrives
+    let typers = {};         // who is typing right now
+    let lastTyp = 0;         // when I last announced typing
+    let mySP = {};           // my server-specific profile in the open server
+    let catList = [];        // channel category names (for the sidebar)
+    let collapsed = {};      // which categories are folded up
+    const ICON = { text: '#', announcement: '📢', rules: '📜' };
+    const KINDS = [['text', '# Text: anyone can post'], ['announcement', '📢 Announcement: only the owner posts'], ['rules', '📜 Rules: only the owner posts']];
+    const MAX_UPLOAD = 1024 * 1024 * 1024; // 1 GB here; your Supabase project has its own limit too
+    let rt = null;           // realtime subscription (new messages)
+    let pr = null;           // presence subscription (who is online)
+
+    // ---------- Settings (saved in this browser) ----------
+    const DEFAULTS = { theme: 'dark', compact: false, fs: 16, sound: true, h24: false, anim: true, status: 'online', accent: '#e11d2e', icon: 'red' };
+    let S = { ...DEFAULTS };
+    try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem('procord-settings') || '{}') }; } catch (e) {}
+
+    const ICONS = { red: ['#ff4252', '#8f0b19'], black: ['#4a4a55', '#0a0a0a'], gold: ['#ffd166', '#b8860b'], blue: ['#4da3ff', '#1b3a8a'] };
+    const ACCENTS = ['#e11d2e', '#ff6a00', '#f0b132', '#23a559', '#9b5de5', '#00a8fc', '#ff4fa3'];
+
+    function applyS() {
+      const root = document.documentElement;
+      root.dataset.theme = S.theme;
+      root.style.setProperty('--fs', S.fs + 'px');
+      root.style.setProperty('--accent', S.accent);
+      document.body.classList.toggle('compact', S.compact);
+      document.body.classList.toggle('noanim', !S.anim);
+      const [a, b] = ICONS[S.icon] || ICONS.red;
+      document.querySelectorAll('#pc-grad stop').forEach((s, i) => s.setAttribute('stop-color', i ? b : a));
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='${a}'/><path d='M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z' fill='#fff'/></svg>`;
+      const link = document.querySelector('link[rel=icon]');
+      if (link) link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+    }
+
+    function saveS() {
+      try { localStorage.setItem('procord-settings', JSON.stringify(S)); } catch (e) {}
+      applyS();
+    }
+
+    function toast(text) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = text;
+      document.body.append(t);
+      setTimeout(() => t.remove(), 2600);
+    }
+
+    function beep() {
+      if (!S.sound) return;
+      try {
+        const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator(), g = c.createGain();
+        o.connect(g); g.connect(c.destination); o.frequency.value = 660;
+        g.gain.setValueAtTime(.05, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + .25);
+        o.start(); o.stop(c.currentTime + .25);
+      } catch (e) {}
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeM(); closeSet(); }
+      if (e.key === 'Enter' && e.target.closest && e.target.closest('#auth')) $('#auth .b').click();
+    });
+
+    // Turns **bold**, *italic*, ~~strike~~, `code`, links and @mentions into HTML
+    function fmtText(text) {
+      return text.split(/(https?:\/\/[^\s<]+)/).map((part, i) => {
+        if (i % 2) return `<a href="${escapeHtml(part)}" target="_blank" rel="noopener noreferrer">${escapeHtml(part)}</a>`;
+        return escapeHtml(part)
+          .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+          .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+          .replace(/(^|\s)\*(.+?)\*(?=\s|$)/g, '$1<i>$2</i>')
+          .replace(/~~(.+?)~~/g, '<s>$1</s>')
+          .replace(/@(\w+)/g, (x, n) => members.some(m => (m.username || '').toLowerCase() === n.toLowerCase()) ? `<span class="mention">${x}</span>` : x);
+      }).join('');
+    }
+
+    function renderTyping() {
+      const el = $('#typ');
+      if (!el) return;
+      const names = Object.entries(typers).filter(([, t]) => Date.now() - t < 3000).map(([u]) => escapeHtml(u));
+      el.innerHTML = names.length ? `<span class="dots"><i></i><i></i><i></i></span> <b>${names.join(', ')}</b> ${names.length > 1 ? 'are' : 'is'} typing…` : '';
+    }
+
+    function sendTyping() {
+      if (!rt || Date.now() - lastTyp < 2500) return;
+      lastTyp = Date.now();
+      rt.send({ type: 'broadcast', event: 'typing', payload: { u: me.username, id: me.id } });
+    }
+    // ---------- Pop-ups and themes ----------
+    function modal(h) {
+      const m = $('#modal');
+      m.innerHTML = `<div class="mbox">${h}</div>`;
+      m.classList.add('on');
+      m.onmousedown = e => {
+        if (e.target === m)
+          closeM();
+      };
+    }
+
+    function closeM() {
+      $('#modal').classList.remove('on');
+    }
+
+    function theme(t) {
+      document.documentElement.dataset.theme = t || 'dark';
+    }
+
+    // ---------- Startup: show setup help, or connect to Supabase ----------
+    if (!SB_URL) {
+      $('#root').innerHTML = `<div id="auth"><div class="card"><svg class="logo" width="64" height="64"><use href="#logo"/></svg><h1>Almost there</h1><p class="sub">Connect Supabase to start chatting.</p><ol style="line-height:1.8"><li>Create a project at supabase.com</li><li>Run <b>schema.sql</b> in the SQL Editor</li><li>Paste your Project URL and anon key at the top of this file's script</li><li>Auth &gt; Providers &gt; Email: turn off "Confirm email" for quick testing</li></ol></div></div>`;
+    }
+    else {
+      supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+      supabaseClient.auth.onAuthStateChange((_e, s) => setTimeout(() => start(s), 0));
+    }
+
+    // ---------- After login: build the app shell ----------
+    async function start(session) {
+      if (!session) {
+        me = null;
+        return authView();
+      }
+      if (me && me.id === session.user.id)
+        return;
+      const { data } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
+      me = data || { id: session.user.id, username: 'user' };
+      if (pendingName && pendingName !== me.username) {
+        me.username = pendingName;
+        await supabaseClient.from('profiles').update({ username: pendingName }).eq('id', me.id);
+      }
+      pendingName = null;
+      applyS();
+      $('#root').innerHTML = `
+       <div id="app">
+        <div id="rail"></div>
+        <div id="side">
+         <div id="sh"></div>
+         <div id="chl"></div>
+         <div id="me"></div>
+        </div>
+        <div id="main">
+         <div id="ch"></div>
+         <div id="msgs"></div>
+         <div id="comp">
+          <div id="emo"></div>
+          <div id="cbox">
+           <button class="ib" onclick="$('#file').click()" title="Upload a file">📎</button>
+              <input type="file" id="file" hidden onchange="attach(this)">
+              <textarea id="inp" rows="1" placeholder="Message"></textarea>
+           <button class="ib" onclick="$('#emo').classList.toggle('on')" title="Emoji">😀</button>
+          </div>
+          <div id="typ"></div>
+          <div id="cnt"></div>
+         </div>
+        </div>
+        <div id="mem"></div>
+       </div>`;
+      const inp = $('#inp');
+      inp.onkeydown = e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          send();
+        }
+      };
+      inp.oninput = () => {
+        inp.style.height = 'auto';
+        inp.style.height = inp.scrollHeight + 'px';
+        const n = inp.value.length;
+        $('#cnt').textContent = n > 3800 ? `${n}/4000` : '';
+        sendTyping();
+      };
+      buildEmoji();
+      await loadServers();
+    }
+
+    // ---------- Login and sign-up ----------
+    function authView(mode = 'in') {
+      $('#root').innerHTML = `<div id="auth"><div class="card"><svg class="logo" width="64" height="64"><use href="#logo"/></svg><h1>${mode === 'in' ? 'Welcome back!' : 'Create an account'}</h1><div class="sub">${mode === 'in' ? "We're so excited to see you again!" : 'Join a community in seconds.'}</div>
+     ${mode === 'up' ? `<label class="f">Username</label><input class="t" id="au">` : ''}<label class="f">Email</label><input class="t" id="ae" type="email"><label class="f">Password</label><input class="t" id="ap" type="password">
+     <div class="err" id="aerr"></div><button class="b" style="width:100%;padding:12px" onclick="doAuth('${mode}')">${mode === 'in' ? 'Log in' : 'Continue'}</button>
+     <p style="margin:16px 0 0;color:var(--mute)">${mode === 'in' ? 'Need an account?' : 'Already registered?'} <a href="#" style="color:#ff6b78" onclick="authView('${mode === 'in' ? 'up' : 'in'}');return false">${mode === 'in' ? 'Register' : 'Log in'}</a></p></div></div>`;
+    }
+
+    async function doAuth(mode) {
+      const email = $('#ae').value.trim(), password = $('#ap').value, err = $('#aerr');
+      err.style.color = '';
+      let r;
+      if (mode === 'in') r = await supabaseClient.auth.signInWithPassword({ email, password });
+      else {
+        const u = $('#au').value.trim();
+        if (u.length < 2 || u.length > 32) return err.textContent = 'Username must be 2 to 32 characters.';
+        pendingName = u;
+        r = await supabaseClient.auth.signUp({ email, password, options: { data: { username: u } } });
+        if (!r.error && !r.data.session) {
+          err.style.color = 'var(--green)';
+          return err.textContent = 'Check your email to confirm, then log in.';
+        }
+      }
+      if (r.error) { pendingName = null; err.textContent = r.error.message; }
+    }
+
+    // ---------- Loading data: servers, channels, messages, online status ----------
+    async function loadServers(keep) {
+      const { data } = await supabaseClient.from('members').select('servers(*)').eq('user_id', me.id);
+      servers = (data || []).map(x => x.servers).filter(Boolean);
+      if (!keep && servers.length)
+        return selectServer(servers[0].id);
+      if (!servers.length) {
+        cur = null;
+        channels = [];
+        members = [];
+        msgs = [];
+      }
+      renderAll();
+    }
+
+    async function loadMembers() {
+      const { data } = await supabaseClient.from('members').select('user_id,nick,avatar_url,bio,banner_url,profiles(*)').eq('server_id', cur.id);
+      const rows = data || [];
+      mySP = rows.find(x => x.user_id === me.id) || {};
+      members = rows.filter(x => x.profiles).map(x => ({ ...x.profiles, username: x.nick || x.profiles.username, avatar_url: x.avatar_url || x.profiles.avatar_url, bio: x.bio || x.profiles.bio, banner_url: x.banner_url || x.profiles.banner_url }));
+    }
+
+    async function selectServer(id) {
+      cur = servers.find(s => s.id === id);
+      const c = await supabaseClient.from('channels').select('*').eq('server_id', id).order('created_at');
+      channels = c.data || [];
+      await loadMembers();
+      online = new Map();
+      if (pr) supabaseClient.removeChannel(pr);
+      pr = supabaseClient.channel('pres-' + id, { config: { presence: { key: me.id } } });
+      pr.on('presence', { event: 'sync' }, () => {
+        online = new Map(Object.entries(pr.presenceState()).map(([k, v]) => [k, v[0]?.status || 'online']));
+        renderMembers();
+      }).subscribe(s => { if (s === 'SUBSCRIBED') pr.track({ status: S.status }); });
+      renderAll();
+      if (channels.length) selectChannel(channels[0].id);
+      else { curCh = null; msgs = []; renderChat(); }
+    }
+
+    async function selectChannel(id) {
+      curCh = channels.find(c => c.id === id);
+      typers = {};
+      renderSide();
+      const { data } = await supabaseClient.from('messages').select('*,profiles(*)').eq('channel_id', id).order('id', { ascending: false }).limit(60);
+      msgs = (data || []).reverse();
+      renderChat();
+      if (rt) supabaseClient.removeChannel(rt);
+      const tbl = { schema: 'public', table: 'messages' };
+      rt = supabaseClient.channel('msg-' + id)
+        .on('postgres_changes', { event: 'INSERT', ...tbl, filter: 'channel_id=eq.' + id }, async p => {
+          if (msgs.some(m => m.id === p.new.id)) return;
+          const { data } = await supabaseClient.from('profiles').select('*').eq('id', p.new.user_id).single();
+          addMsg({ ...p.new, profiles: data });
+          if (p.new.user_id !== me.id) beep();
+        })
+        .on('postgres_changes', { event: 'UPDATE', ...tbl, filter: 'channel_id=eq.' + id }, p => {
+          const m = msgs.find(x => x.id === p.new.id);
+          if (m) { Object.assign(m, p.new); renderChat(true); }
+        })
+        .on('postgres_changes', { event: 'DELETE', ...tbl }, p => { msgs = msgs.filter(m => m.id !== p.old.id); renderChat(true); })
+        .on('broadcast', { event: 'typing' }, ({ payload }) => {
+          if (payload.id === me.id) return;
+          typers[payload.u] = Date.now();
+          renderTyping();
+          setTimeout(renderTyping, 3200);
+        })
+        .subscribe();
+    }
+
+    function addMsg(m) {
+      if (msgs.some(x => x.id === m.id)) return;
+      msgs.push(m);
+      animateLast = true;
+      renderChat();
+    }
+
+    // ---------- Drawing the screen ----------
+    function renderAll() {
+      renderRail();
+      renderSide();
+      renderChat();
+      renderMembers();
+      renderMe();
+    }
+
+    function renderRail() {
+      $('#rail').innerHTML = `<div class="brand" title="Procord"><svg width="36" height="36"><use href="#logo"/></svg></div><div class="sep"></div>` + servers.map(s => `<button class="sv ${cur?.id === s.id ? 'on' : ''}" title="${escapeHtml(s.name)}" onclick="selectServer('${s.id}')">${escapeHtml(s.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase())}</button>`).join('') + `<div class="sep"></div><button class="sv add" title="Add a server" onclick="serverModal()">+</button>`;
+    }
+
+    function toggleCat(i) {
+      collapsed[catList[i]] = !collapsed[catList[i]];
+      renderSide();
+    }
+
+    function renderSide() {
+      if (!cur) { $('#sh').textContent = 'Procord'; $('#chl').innerHTML = ''; return; }
+      const own = cur.owner_id === me.id;
+      $('#sh').innerHTML = `<span>${escapeHtml(cur.name)}</span><button class="ib" title="Server menu" onclick="serverMenu()">⋯</button>`;
+      catList = [...new Set(channels.map(c => c.category || 'Text channels'))];
+      $('#chl').innerHTML = catList.map((cat, i) => `<div class="lbl"><span style="cursor:pointer" onclick="toggleCat(${i})">${collapsed[cat] ? '▸' : '▾'} ${escapeHtml(cat)}</span>${own ? `<button title="Create channel" onclick="channelModal(catList[${i}])">+</button>` : ''}</div>`
+        + (collapsed[cat] ? '' : channels.filter(c => (c.category || 'Text channels') === cat).map(c => `<div class="chw"><button class="ch ${curCh?.id === c.id ? 'on' : ''}" onclick="selectChannel('${c.id}')">${ICON[c.kind] || '#'} ${escapeHtml(c.name)}</button>${own ? `<button class="ib cog" title="Channel settings" onclick="channelSettings('${c.id}')">⚙</button>` : ''}</div>`).join(''))).join('')
+        + (own ? `<button class="ch" style="margin-top:12px" onclick="channelModal('')">＋ New channel or category</button>` : '');
+    }
+
+    function renderMe() {
+      const labels = { online: 'Online', idle: 'Idle', dnd: 'Do not disturb', invisible: 'Invisible' };
+      $('#me').innerHTML = `<div class="dot">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm">${escapeHtml(me.username)}<small>${labels[S.status]}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
+    }
+
+    function renderChat(keep) {
+      const el = $('#msgs'), ch = $('#ch'), comp = $('#comp');
+      if (!el) return;
+      if (!cur) {
+        ch.innerHTML = 'Home';
+        comp.style.display = 'none';
+        el.innerHTML = `<div class="empty"><h2>No servers yet</h2><p>Create your own space or join one with an invite code.</p><button class="b" onclick="serverModal()">Create or join a server</button></div>`;
+        return;
+      }
+      comp.style.display = '';
+  const locked = curCh && curCh.kind !== 'text' && cur.owner_id !== me.id;
+  ch.innerHTML = `<span style="color:var(--mute);font-size:22px">${ICON[curCh?.kind] || '#'}</span> ${escapeHtml(curCh?.name || '')}${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}`;
+  $('#inp').disabled = !!locked;
+  $('#inp').placeholder = locked ? 'Only the server owner can post in this channel' : curCh ? `Message ${ICON[curCh.kind] || '#'}${curCh.name}` : 'Message';
+      const bottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120 || !keep;
+      let html = '', day = '';
+      msgs.forEach((m, i) => {
+        const p = members.find(u => u.id === m.user_id) || m.profiles || {}, pv = msgs[i - 1], d = new Date(m.created_at).toDateString();
+        let divider = '';
+        if (d !== day) { day = d; divider = `<div class="dd">${new Date(m.created_at).toLocaleDateString([], { dateStyle: 'long' })}</div>`; }
+        const grouped = !divider && pv && pv.user_id === m.user_id && new Date(m.created_at) - new Date(pv.created_at) < 3e5;
+        const isNew = animateLast && i === msgs.length - 1;
+        const left = grouped ? `<span class="gt">${formatTime(m.created_at)}</span>` : `<div>${avatarHtml(p, 40)}</div>`;
+        const head = grouped ? '' : `<div class="mh">${nameHtml(p)} <span class="ts">${formatDateTime(m.created_at)}</span></div>`;
+        const acts = m.user_id === me.id ? `<div class="acts"><button class="ib" onclick="editMsg(${m.id})" title="Edit">✏️</button><button class="ib" onclick="delMsg(${m.id})" title="Delete">🗑</button></div>` : '';
+        html += divider + `<div class="msg ${grouped ? 'grp' : ''} ${isNew ? 'new' : ''}">${left}<div class="mb">${head}<div class="mc">${fmtText(m.content || '')}${attHtml(m)}${m.edited ? ' <span class="ed">(edited)</span>' : ''}</div></div>${acts}</div>`;
+      });
+      animateLast = false;
+      el.innerHTML = html || `<div class="empty"><h2>Welcome to #${escapeHtml(curCh?.name || '')}</h2><p>This is the start of the channel.</p></div>`;
+      if (bottom) el.scrollTop = el.scrollHeight;
+    }
+
+    function renderMembers() {
+      const box = $('#mem');
+      if (!box) return;
+      const st = p => { const s = p.id === me.id ? S.status : online.get(p.id); return s && s !== 'invisible' ? s : null; };
+      const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div>${escapeHtml(p.username)}</div>`;
+      const on = members.filter(st), off = members.filter(p => !st(p));
+      box.innerHTML = cur ? `<div class="lbl">Online — ${on.length}</div>${on.map(row).join('')}<div class="lbl">Offline — ${off.length}</div>${off.map(row).join('')}` : '';
+    }
+
+    // ---------- Sending and deleting messages ----------
+    async function send() {
+      const inp = $('#inp'), t = inp.value.trim();
+      if (!t || !curCh) return;
+      if (t.length > 4000) return toast('Messages are limited to 4000 characters.');
+      inp.value = ''; inp.style.height = 'auto'; $('#cnt').textContent = '';
+      const { data, error } = await supabaseClient.from('messages').insert({ channel_id: curCh.id, content: t }).select('*,profiles(*)').single();
+      if (error) { inp.value = t; return toast(error.message); }
+      addMsg(data);
+    }
+
+    function editMsg(id) {
+      const m = msgs.find(x => x.id === id);
+      if (!m) return;
+      modal(`<h2>Edit message</h2><textarea class="t" id="em" rows="4" maxlength="4000">${escapeHtml(m.content)}</textarea><div class="row"><button class="b g" onclick="closeM()">Cancel</button><button class="b" onclick="saveEdit(${id})">Save</button></div>`);
+    }
+
+    async function saveEdit(id) {
+      const t = $('#em').value.trim();
+      if (!t) return;
+      const { error } = await supabaseClient.from('messages').update({ content: t, edited: true }).eq('id', id);
+      if (error) return toast('Could not edit: ' + error.message);
+      Object.assign(msgs.find(x => x.id === id), { content: t, edited: true });
+      closeM(); renderChat(true);
+    }
+
+    async function delMsg(id) {
+      await supabaseClient.from('messages').delete().eq('id', id);
+      msgs = msgs.filter(m => m.id !== id);
+      renderChat(true);
+    }
+
+    // ---------- Emoji picker ----------
+    const EMO = ['😀', '😂', '🥹', '😍', '😎', '🤔', '😭', '😡', '👍', '👎', '🙏', '🔥', '🎉', '💀', '❤️', '✨', '👀', '🚀'];
+    const EMO_P = ['🪩', '🦄', '🐉', '🛸', '🧿', '🌈', '🍕', '🎮', '🎧', '🏆', '💎', '👑', '🧠', '🫡', '🥳', '🤩', '😈', '🦊'];
+
+    function buildEmoji() {
+      $('#emo').innerHTML = [...EMO, ...EMO_P].map(e => `<button onclick="ins('${e}')">${e}</button>`).join('');
+    }
+
+    function ins(e) {
+      const i = $('#inp');
+      i.value += e;
+      i.focus();
+      $('#emo').classList.remove('on');
+    }
+
+    // ---------- Servers and channels ----------
+    function serverModal() {
+      modal(`<h2>Create or join a server</h2><p>Your server is where you and your friends hang out.</p>
+    <label class="f">Server name</label><input class="t" id="sn" placeholder="${escapeHtml(me.username)}'s server"><div class="row"><button class="b" onclick="createServer()">Create</button></div>
+    <label class="f">Have an invite code?</label><input class="t" id="ic" placeholder="e.g. a1b2c3d4"><div class="err" id="merr"></div><div class="row"><button class="b g" onclick="closeM()">Cancel</button><button class="b" onclick="joinServer()">Join server</button></div>`);
+    }
+
+    async function createServer() {
+      const name = $('#sn').value.trim() || `${me.username}'s server`;
+      const { data, error } = await supabaseClient.from('servers').insert({ name }).select().single();
+      if (error)
+        return $('#merr').textContent = error.message;
+      closeM();
+      await loadServers(true);
+      selectServer(data.id);
+    }
+
+    async function joinServer() {
+      const { data, error } = await supabaseClient.rpc('join_server', { code: $('#ic').value.trim() });
+      if (error)
+        return $('#merr').textContent = error.message;
+      closeM();
+      await loadServers(true);
+      selectServer(data);
+    }
+
+    const kindOptions = sel => KINDS.map(([v, l]) => `<option value="${v}" ${v === sel ? 'selected' : ''}>${l}</option>`).join('');
+    const catOptions = () => `<datalist id="cats">${catList.map(c => `<option value="${escapeHtml(c)}">`).join('')}</datalist>`;
+
+    function channelModal(cat = '') {
+      if (!cur) return;
+      modal(`<h2>Create channel</h2><p>Group channels into categories. Type a new category name to create one.</p>
+        <label class="f">Channel type</label><select class="t" id="ck">${kindOptions('text')}</select>
+        <label class="f">Channel name</label><input class="t" id="cn" placeholder="new-channel">
+        <label class="f">Category</label><input class="t" id="cc" list="cats" value="${escapeHtml(cat)}" placeholder="Text channels">${catOptions()}
+        <label class="f">Topic (optional)</label><input class="t" id="ct" maxlength="120">
+        <div class="err" id="merr"></div><div class="row"><button class="b g" onclick="closeM()">Cancel</button><button class="b" onclick="createChannel()">Create channel</button></div>`);
+    }
+
+    async function createChannel() {
+      const name = $('#cn').value.trim().toLowerCase().replace(/\s+/g, '-');
+      if (!name) return $('#merr').textContent = 'Give the channel a name.';
+      const row = { server_id: cur.id, name, kind: $('#ck').value, category: $('#cc').value.trim() || 'Text channels', topic: $('#ct').value.trim() };
+      const { data, error } = await supabaseClient.from('channels').insert(row).select().single();
+      if (error) return $('#merr').textContent = error.message + ' (Run update2.sql in Supabase first.)';
+      channels.push(data);
+      closeM();
+      selectChannel(data.id);
+    }
+
+    function channelSettings(id) {
+      const c = channels.find(x => x.id === id);
+      modal(`<h2>Channel settings</h2><p>${ICON[c.kind] || '#'} ${escapeHtml(c.name)}</p>
+        <label class="f">Channel type</label><select class="t" id="ck">${kindOptions(c.kind)}</select>
+        <label class="f">Channel name</label><input class="t" id="cn" value="${escapeHtml(c.name)}">
+        <label class="f">Category</label><input class="t" id="cc" list="cats" value="${escapeHtml(c.category || 'Text channels')}">${catOptions()}
+        <label class="f">Topic</label><input class="t" id="ct" maxlength="120" value="${escapeHtml(c.topic || '')}">
+        <div class="err" id="merr"></div><div class="row"><button class="b r" onclick="delChannel('${id}')">Delete channel</button><button class="b g" onclick="closeM()">Cancel</button><button class="b" onclick="saveChannel('${id}')">Save</button></div>`);
+    }
+
+    async function saveChannel(id) {
+      const u = { name: $('#cn').value.trim().toLowerCase().replace(/\s+/g, '-') || 'channel', kind: $('#ck').value, category: $('#cc').value.trim() || 'Text channels', topic: $('#ct').value.trim() };
+      const { error } = await supabaseClient.from('channels').update(u).eq('id', id);
+      if (error) return $('#merr').textContent = error.message;
+      Object.assign(channels.find(x => x.id === id), u);
+      if (curCh?.id === id) curCh = channels.find(x => x.id === id);
+      closeM(); renderSide(); renderChat(true);
+    }
+
+    async function delChannel(id) {
+      if (!confirm('Delete this channel and all its messages?')) return;
+      await supabaseClient.from('channels').delete().eq('id', id);
+      channels = channels.filter(x => x.id !== id);
+      closeM();
+      if (curCh?.id !== id) return renderSide();
+      if (channels.length) return selectChannel(channels[0].id);
+      curCh = null; msgs = []; renderSide(); renderChat();
+    }
+
+    // ---------- Uploads ----------
+    async function uploadFile(file) {
+      if (file.size > MAX_UPLOAD) { toast('That file is over 1 GB.'); return null; }
+      const path = `${me.id}/${Date.now()}-${file.name.replace(/[^\w.-]/g, '_')}`;
+      const { error } = await supabaseClient.storage.from('uploads').upload(path, file);
+      if (error) { toast(error.message); return null; }
+      return supabaseClient.storage.from('uploads').getPublicUrl(path).data.publicUrl;
+    }
+
+    async function attach(input) {
+      const f = input.files[0];
+      input.value = '';
+      if (!f || !curCh) return;
+      toast('Uploading ' + f.name + '…');
+      const url = await uploadFile(f);
+      if (!url) return;
+      const { data, error } = await supabaseClient.from('messages').insert({ channel_id: curCh.id, content: $('#inp').value.trim(), attachment_url: url, attachment_name: f.name }).select('*,profiles(*)').single();
+      if (error) return toast(error.message);
+      $('#inp').value = '';
+      addMsg(data);
+    }
+
+    function pickImage(targetId) {
+      const i = document.createElement('input');
+      i.type = 'file'; i.accept = 'image/*';
+      i.onchange = async () => {
+        if (!i.files[0]) return;
+        toast('Uploading…');
+        const url = await uploadFile(i.files[0]);
+        if (url) { $('#' + targetId).value = url; $('#' + targetId).dispatchEvent(new Event('input')); toast('Uploaded'); }
+      };
+      i.click();
+    }
+
+    function attHtml(m) {
+      if (!m.attachment_url) return '';
+      const u = escapeHtml(m.attachment_url), n = escapeHtml(m.attachment_name || 'file');
+      if (/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(n)) return `<div><img class="att" src="${u}" alt="${n}" loading="lazy"></div>`;
+      if (/\.(mp4|webm|mov|m4v)$/i.test(n)) return `<div><video class="att" src="${u}" controls preload="metadata"></video></div>`;
+      if (/\.(mp3|wav|ogg|m4a)$/i.test(n)) return `<div><audio src="${u}" controls></audio></div>`;
+      return `<a class="file" href="${u}" target="_blank" rel="noopener noreferrer">📄 ${n}</a>`;
+    }
+
+    function serverMenu() {
+      const own = cur.owner_id === me.id;
+      modal(`<h2>${escapeHtml(cur.name)}</h2><p>Share this invite code with friends.</p><input class="t" readonly value="${cur.invite_code}" onfocus="this.select()">
+        <div class="row"><button class="b g" onclick="navigator.clipboard.writeText('${cur.invite_code}');toast('Invite code copied')">Copy code</button><button class="b g" onclick="closeM()">Close</button>${own ? `<button class="b r" onclick="delServer()">Delete server</button>` : `<button class="b r" onclick="leave()">Leave server</button>`}</div>`);
+    }
+
+    async function delServer() {
+      if (!confirm('Delete this server and all its messages?'))
+        return;
+      await supabaseClient.from('servers').delete().eq('id', cur.id);
+      closeM();
+      loadServers();
+    }
+
+    async function leave() {
+      await supabaseClient.from('members').delete().eq('server_id', cur.id).eq('user_id', me.id);
+      closeM();
+      loadServers();
+    }
+
+    // ---------- Profiles and settings ----------
+    const profileCardHtml = p => `<div class="ban" style="background:${p.banner_url ? `url('${escapeHtml(p.banner_url)}') center/cover` : `linear-gradient(135deg,${escapeHtml(p.banner_color || '#e11d2e')},#000)`}"></div><div class="pop">${avatarHtml(p, 80)}</div><h2 style="margin:8px 0 0">${escapeHtml(p.username)} <span class="badge">PLUS</span></h2><p style="margin:4px 0 0">${escapeHtml(p.bio || '')}</p>`;
+
+    function showProfile(id) {
+      const p = members.find(x => x.id === id) || msgs.find(m => m.user_id === id)?.profiles || (id === me.id ? me : null);
+      if (!p) return;
+      modal(profileCardHtml(p) + `<div class="row"><button class="b g" onclick="closeM()">Close</button></div>`);
+    }
+
+    function closeSet() { const e = $('#set'); if (e) e.remove(); }
+
+    function logout() { closeSet(); supabaseClient.auth.signOut(); }
+
+    function pv() {
+      const g = id => $('#' + id)?.value;
+      $('#pv').innerHTML = profileCardHtml({ username: g('su') || me.username, avatar_url: g('sa'), banner_url: g('sbn'), banner_color: g('sbc'), bio: g('sbio') });
+    }
+
+    async function revealEmail() {
+      const { data } = await supabaseClient.auth.getUser();
+      $('#em2').textContent = data.user.email;
+      $('#rev').remove();
+    }
+
+    function settings(tab = 'account') {
+      const NAV = [['User settings'], ['account', 'My account'], ['profile', 'Profiles'], ['server', 'Server profile'], ['App settings'], ['appearance', 'Appearance'], ['access', 'Accessibility'], ['notifications', 'Notifications'], ['perks', 'Perks']];
+      const chk = (k, label) => `<label class="opt"><span>${label}</span><input type="checkbox" ${S[k] ? 'checked' : ''} onchange="S.${k}=this.checked;saveS();renderChat(true)"></label>`;
+      const field = (id, label, val, ev = '') => `<label class="f">${label}</label><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}>`;
+      const upl = (id, label, val, ev = '') => `<label class="f">${label}</label><div style="display:flex;gap:8px"><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}><button class="b g" onclick="pickImage('${id}')">Upload</button></div>`;
+      const perk = (a, b) => `<div class="perk"><span>${a}</span><i>${b}</i></div>`;
+      const pages = {
+        account: ['My account', `<div class="card2"><div class="srow"><div><b>Username</b>${escapeHtml(me.username)}</div><button class="b g" onclick="settings('profile')">Edit</button></div>
+          <div class="srow"><div><b>Email</b><span id="em2">••••••••••</span> <a href="#" id="rev" style="color:#ff6b78" onclick="revealEmail();return false">Reveal</a></div></div></div>
+          <h3>Password and security</h3><div class="card2"><label class="f" style="margin-top:0">New password</label><input class="t" id="np" type="password" placeholder="At least 6 characters"><div class="err" id="serr"></div><div class="row" style="margin-top:8px"><button class="b" onclick="changePw()">Change password</button></div></div>
+          <h3>Account removal</h3><p>Deleting your account permanently removes your profile, your messages and every server you own.</p><button class="b r" onclick="deleteModal()">Delete account</button>`],
+        profile: ['Profiles', `<div class="card2 pc" id="pv"></div>${field('su', 'Username', me.username, 'maxlength="32" oninput="pv()"')}
+          ${upl('sa', 'Avatar (URL or upload; GIFs animate)', me.avatar_url, 'oninput="pv()"')}${upl('sbn', 'Profile banner image', me.banner_url, 'oninput="pv()"')}
+          <label class="f">Profile theme colour</label><input type="color" id="sbc" value="${me.banner_color || '#e11d2e'}" oninput="pv()">
+          <label class="f">About me</label><textarea class="t" id="sbio" rows="3" maxlength="190" oninput="pv()">${escapeHtml(me.bio || '')}</textarea>
+          <label class="f">Status</label><select class="t" id="sst">${[['online', 'Online'], ['idle', 'Idle'], ['dnd', 'Do not disturb'], ['invisible', 'Invisible']].map(([v, l]) => `<option value="${v}" ${S.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+          <div class="err" id="serr"></div><div class="row"><button class="b" onclick="saveProfile()">Save changes</button></div>`],
+        server: ['Server profile', cur ? `<p>A different name, avatar, banner and bio, shown only in <b>${escapeHtml(cur.name)}</b>. Leave a field empty to use your main profile.</p>
+          ${field('sn', 'Server nickname', mySP.nick, 'maxlength="32"')}${upl('sav', 'Server avatar', mySP.avatar_url)}${upl('sbn2', 'Server banner', mySP.banner_url)}${field('sbi', 'Server bio', mySP.bio, 'maxlength="190"')}
+          <div class="err" id="serr"></div><div class="row"><button class="b" onclick="saveServerProfile()">Save server profile</button></div>` : '<p>Open a server first, then come back here.</p>'],
+        appearance: ['Appearance', `<label class="f">Theme</label><div>${[['dark', 'Crimson'], ['midnight', 'Midnight'], ['sunset', 'Amber']].map(([v, l]) => `<button class="b ${S.theme === v ? '' : 'g'}" onclick="S.theme='${v}';saveS();settings('appearance')">${l}</button>`).join(' ')}</div>
+          <label class="f">Accent colour</label><div style="display:flex;align-items:center">${ACCENTS.map(c => `<span class="sw" style="background:${c};${S.accent === c ? 'border-color:#fff' : ''}" onclick="S.accent='${c}';saveS();settings('appearance')"></span>`).join('')}<input type="color" value="${S.accent}" oninput="S.accent=this.value;saveS()"></div>
+          <label class="f">App icon</label><div>${Object.keys(ICONS).map(k => `<button class="b ${S.icon === k ? '' : 'g'}" onclick="S.icon='${k}';saveS();settings('appearance')">${k}</button>`).join(' ')}</div>
+          <label class="f">Chat font size: <span id="fsv">${S.fs}</span>px</label><input type="range" min="12" max="20" value="${S.fs}" style="width:100%;accent-color:var(--accent)" oninput="S.fs=+this.value;$('#fsv').textContent=this.value;saveS()">
+          ${chk('compact', 'Compact message spacing')}`],
+        access: ['Accessibility', `${chk('anim', 'Animations')}${chk('h24', '24-hour clock')}`],
+        notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages')}<div class="row"><button class="b g" onclick="beep()">Test sound</button></div>`],
+        perks: ['Perks', `<p>Every Nitro-style perk that can run on a website is unlocked for everyone, free.</p>
+          ${perk('4,000-character messages', 'Unlocked')}${perk('File uploads up to 1 GB', 'Unlocked (limited by your Supabase plan)')}${perk('Animated avatars', 'Unlocked')}${perk('Profile banners', 'Unlocked')}${perk('Custom profile themes', 'Unlocked')}${perk('Server-specific profiles', 'Unlocked')}${perk('Custom app icons', 'Unlocked')}${perk('Custom app colour themes', 'Unlocked')}${perk('Join any number of servers', 'Unlocked')}${perk('Profile badge', 'Unlocked')}
+          <h3>Not available</h3>${perk('Custom emojis, stickers, super reactions', 'Not built yet')}${perk('Custom video backgrounds', 'Not built yet')}${perk('HD video streaming, soundboard', 'Needs a calling service')}${perk('Server boosts', 'Not applicable')}`]
+      };
+      const [title, body] = pages[tab];
+      const nav = NAV.map(n => n.length === 1 ? `<div class="sg">${n[0]}</div>` : `<button class="sn ${n[0] === tab ? 'on' : ''}" onclick="settings('${n[0]}')">${n[1]}</button>`).join('');
+      const mob = `<div class="tabs mob">${NAV.filter(n => n.length > 1).map(n => `<button class="tab ${n[0] === tab ? 'on' : ''}" onclick="settings('${n[0]}')">${n[1]}</button>`).join('')}</div>`;
+      let el = $('#set');
+      if (!el) { el = document.createElement('div'); el.id = 'set'; document.body.append(el); }
+      el.innerHTML = `<div id="setnav"><div>${nav}<div class="sg"></div><button class="sn" style="color:#ff6b78" onclick="logout()">Log out</button></div></div><div id="setmain"><div>${mob}<h2>${title}</h2>${body}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button>`;
+      if (tab === 'profile') pv();
+    }
+
+    async function changePw() {
+      const p = $('#np').value;
+      if (p.length < 6) return $('#serr').textContent = 'Password must be at least 6 characters.';
+      const { error } = await supabaseClient.auth.updateUser({ password: p });
+      if (error) return $('#serr').textContent = error.message;
+      $('#np').value = ''; toast('Password updated');
+    }
+
+    function deleteModal() {
+      modal(`<h2>Delete account</h2><p>This cannot be undone. Type your username <b>${escapeHtml(me.username)}</b> to confirm.</p><input class="t" id="dc"><div class="err" id="serr"></div><div class="row"><button class="b g" onclick="settings('security')">Cancel</button><button class="b r" onclick="deleteAccount()">Delete my account</button></div>`);
+    }
+
+    async function deleteAccount() {
+      if ($('#dc').value.trim() !== me.username) return $('#serr').textContent = 'That does not match your username.';
+      const { error } = await supabaseClient.rpc('delete_account');
+      if (error) return $('#serr').textContent = error.message + ' (Run update.sql in Supabase first.)';
+      closeM();
+      await supabaseClient.auth.signOut({ scope: 'local' });
+      toast('Your account was deleted');
+    }
+
+
+    async function saveProfile() {
+      const v = id => $('#' + id).value.trim() || null;
+      const u = { username: $('#su').value.trim() || me.username, avatar_url: v('sa'), banner_url: v('sbn'), banner_color: $('#sbc').value, bio: $('#sbio').value };
+      S.status = $('#sst').value; saveS();
+      if (pr) pr.track({ status: S.status });
+      const { error } = await supabaseClient.from('profiles').update(u).eq('id', me.id);
+      if (error) return $('#serr').textContent = error.message + ' (Run update2.sql in Supabase first.)';
+      Object.assign(me, u);
+      if (cur) await loadMembers();
+      msgs.forEach(m => { if (m.user_id === me.id) m.profiles = { ...me }; });
+      toast('Changes saved');
+      renderMe(); renderMembers(); renderChat(true);
+    }
+
+    async function saveServerProfile() {
+      const v = id => $('#' + id).value.trim() || null;
+      const u = { nick: v('sn'), avatar_url: v('sav'), banner_url: v('sbn2'), bio: v('sbi') };
+      const { error } = await supabaseClient.from('members').update(u).eq('server_id', cur.id).eq('user_id', me.id);
+      if (error) return $('#serr').textContent = error.message + ' (Run update2.sql in Supabase first.)';
+      await loadMembers();
+      renderMembers(); renderChat(true); toast('Server profile saved');
+    }
+  </script>
+</body>
+</html>
