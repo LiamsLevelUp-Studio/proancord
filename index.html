@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Proanchat</title>
+  <title>proanchat</title>
   <meta name="theme-color" content="#08080a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1507,7 +1507,7 @@
       const label = { online: 'Online', idle: 'Idle', dnd: 'Do Not Disturb' };
       const row = (p, actions) => `<div class="frow" data-n="${escapeHtml(p.username.toLowerCase())}"><div class="dot">${avatarHtml(p, 36)}<i class="${friendStatus(p) || 'off'}"></i></div><div><b>${escapeHtml(p.username)}</b>${badgePills(p)}<span class="stx">${label[friendStatus(p)] || 'Offline'}</span></div><span style="flex:1"></span>${actions}</div>`;
       let body;
-      if (friendTab === 'add') body = `<h3>Add Friend</h3><p>You can add friends with their Procord username.</p><div class="nm2"><input id="fu" placeholder="You can add friends with their username" onkeydown="if(event.key==='Enter')addFriend()"><button class="b" style="margin:6px 0" onclick="addFriend()">Send Friend Request</button></div><div class="err" id="ferr"></div>`;
+      if (friendTab === 'add') body = `<h3>Add Friend</h3><p>You can add friends with their Proanchat username.</p><div class="nm2"><input id="fu" placeholder="You can add friends with their username" onkeydown="if(event.key==='Enter')addFriend()"><button class="b" style="margin:6px 0" onclick="addFriend()">Send Friend Request</button></div><div class="err" id="ferr"></div>`;
       else if (friendTab === 'pending') {
         const list = friendRows.filter(f => f.status === 'pending');
         body = `<div class="lbl" style="padding-left:0">Pending — ${list.length}</div>` + (list.map(f => row(friendOf(f), f.addressee === me.id
@@ -2165,7 +2165,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     function renderSide() {
       if (!cur) {
-        $('#sh').innerHTML = '<span>Procord</span>';
+        $('#sh').innerHTML = '<span>Proanchat</span>';
         $('#sh').onclick = null;
         $('#chl').oncontextmenu = null;
         $('#chl').innerHTML = `<input class="find" placeholder="Find or start a conversation" oninput="filterDMs(this.value)"><button class="ch ${dmWith ? '' : 'on'}" onclick="showFriends()">👥 Friends</button><div class="lbl"><span>Direct messages</span></div>`
