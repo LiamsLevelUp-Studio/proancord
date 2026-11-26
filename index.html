@@ -914,6 +914,46 @@
     .trow { display: flex; gap: 20px; flex-wrap: wrap; }
     .trow input[type=color] { width: 64px; height: 40px; border: 0; background: none; padding: 0; cursor: pointer; }
 
+    /* Call and voice UI */
+    #call:empty { display: none; }
+    #vbar { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 12px; }
+    .vtop { display: flex; align-items: center; gap: 8px; }
+    .vbtns { display: flex; gap: 6px; }
+    .vb { flex: 1; height: 34px; border-radius: 8px; border: 0; background: #ffffff10; color: var(--text); display: flex; align-items: center; justify-content: center; transition: background .12s; }
+    .vb:hover { background: #ffffff1c; }
+    .vb.on { background: #23a55933; color: #4ade80; }
+    .vb.off { background: #f23f4333; color: #ff6b70; }
+    .vu { display: flex; align-items: center; gap: 8px; padding: 3px 8px 3px 30px; color: var(--mute); font-size: 14px; border-radius: 8px; }
+    .vu .av { transition: box-shadow .15s; }
+    .vu.speaking .av { box-shadow: 0 0 0 2px var(--green); }
+    #msgs.stage { background: #000; padding: 0; display: flex; flex-direction: column; }
+    .vstage { flex: 1; display: flex; flex-direction: column; min-height: 100%; }
+    .vgrid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; padding: 20px 24px; align-content: center; }
+    .vtile { position: relative; background: #17171a; border-radius: 16px; aspect-ratio: 16 / 9; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: box-shadow .15s; }
+    .vtile.wide { background: #000; }
+    .vtile.speaking, .callav.speaking { box-shadow: 0 0 0 3px var(--green); }
+    .vtile .vslot, .vtile video { width: 100%; height: 100%; display: block; }
+    .vtile video { object-fit: cover; }
+    .vtile.wide video { object-fit: contain; }
+    .vname { position: absolute; left: 10px; bottom: 10px; background: #000b; border-radius: 8px; padding: 3px 10px; font-size: 13px; font-weight: 600; }
+    .vfoot { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 14px 20px 22px; flex-wrap: wrap; }
+    .vjoin { text-align: center; padding: 8px 24px 48px; }
+    .vjoin p { color: var(--mute); }
+    .vctl { display: flex; gap: 10px; align-items: center; background: #101012; border: 1px solid var(--border); border-radius: 20px; padding: 8px; }
+    .cgroup { display: flex; gap: 6px; background: #ffffff08; border-radius: 14px; padding: 4px; }
+    .cbtn { width: 50px; height: 42px; border-radius: 11px; border: 0; background: #ffffff10; color: #fff; display: flex; align-items: center; justify-content: center; transition: background .12s, transform .12s; }
+    .cbtn:hover { background: #ffffff1f; transform: translateY(-1px); }
+    .cbtn.off { background: #f23f4333; color: #ff6b70; }
+    .cbtn.on { background: #23a55933; color: #4ade80; }
+    .cbtn.end { background: var(--red); width: 64px; border-radius: 14px; }
+    .cbtn.end:hover { background: #ff565a; }
+    .callpanel { background: #000; padding: 22px 16px 16px; display: flex; flex-direction: column; align-items: center; gap: 18px; border-bottom: 1px solid var(--border); animation: fade .2s; }
+    .callrow { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+    .callav { border-radius: 50%; display: flex; transition: box-shadow .15s; }
+    .callpanel .vgrid { width: 100%; padding: 0; max-height: 46vh; }
+    .callpanel.tall .vtile { max-height: 40vh; }
+    .incall { color: var(--green); font-size: 13px; font-weight: 600; margin-left: 12px; }
+
     /* Smaller screens: hide panels */
     @media (max-width: 900px) {
       #app {
@@ -1158,7 +1198,8 @@
         </div>
         <div id="main">
          <div id="ch"></div>
-         <div id="msgs"></div>
+         <div id="call"></div>
+          <div id="msgs"></div>
          <div id="comp">
           <div id="emo"></div>
           <div id="cbox">
@@ -1363,90 +1404,13 @@
     const dmRoom = other => 'dm-' + [me.id, other].sort().join('-');
     const vsend = (to, data) => vc.sig.send({ type: 'broadcast', event: 'rtc', payload: { from: me.id, to, ...data } });
 
-    async function joinVoice(room, label) {
-      if (vc) await leaveVoice();
-      label = label || (channels.find(c => c.id === room)?.name ? '#' + channels.find(c => c.id === room).name : dmWith ? 'Call with ' + dmWith.username : 'Call');
-      let stream;
-      try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); }
-      catch (e) { toast('Allow microphone access to join voice.'); return false; }
-      const sig = supabaseClient.channel('voice-' + room, { config: { presence: { key: me.id } } });
-      vc = { room, label, stream, sig, peers: {}, muted: false, deaf: false };
-      sig.on('presence', { event: 'sync' }, voiceSync)
-        .on('broadcast', { event: 'rtc' }, ({ payload }) => onSignal(payload))
-        .subscribe(s => { if (s === 'SUBSCRIBED') sig.track({ name: me.username, muted: false, deaf: false }); });
-      renderMe(); renderChat(true);
-      return true;
-    }
 
-    function voiceSync() {
-      if (!vc) return;
-      const ids = Object.keys(vc.sig.presenceState()).filter(k => k !== me.id);
-      ids.forEach(id => { if (!vc.peers[id] && me.id < id) makePeer(id, true); }); // the lower id starts the call
-      Object.keys(vc.peers).forEach(id => { if (!ids.includes(id)) dropPeer(id); });
-      renderChat(true);
-    }
 
-    function makePeer(id, initiator) {
-      const pc = new RTCPeerConnection(ICE), audio = new Audio();
-      audio.autoplay = true; audio.muted = vc.deaf;
-      vc.stream.getTracks().forEach(t => pc.addTrack(t, vc.stream));
-      pc.ontrack = e => { audio.srcObject = e.streams[0]; };
-      pc.onicecandidate = e => { if (e.candidate && vc) vsend(id, { ice: e.candidate }); };
-      vc.peers[id] = { pc, audio, q: [] };
-      if (initiator) pc.createOffer().then(o => pc.setLocalDescription(o)).then(() => vsend(id, { sdp: pc.localDescription }));
-    }
 
-    function dropPeer(id) {
-      const p = vc?.peers[id];
-      if (!p) return;
-      p.pc.close(); p.audio.srcObject = null;
-      delete vc.peers[id];
-    }
 
-    async function onSignal(p) {
-      if (!vc || p.to !== me.id) return;
-      if (!vc.peers[p.from]) makePeer(p.from, false);
-      const peer = vc.peers[p.from], pc = peer.pc;
-      try {
-        if (p.sdp) {
-          await pc.setRemoteDescription(p.sdp);
-          peer.q.forEach(c => pc.addIceCandidate(c).catch(() => {}));
-          peer.q = [];
-          if (p.sdp.type === 'offer') { await pc.setLocalDescription(await pc.createAnswer()); vsend(p.from, { sdp: pc.localDescription }); }
-        } else if (p.ice) {
-          if (pc.remoteDescription) await pc.addIceCandidate(p.ice); else peer.q.push(p.ice);
-        }
-      } catch (e) { console.warn('voice signal', e); }
-    }
 
-    async function leaveVoice() {
-      if (!vc) return;
-      const v = vc;
-      vc = null;
-      Object.values(v.peers).forEach(p => { p.pc.close(); p.audio.srcObject = null; });
-      v.stream.getTracks().forEach(t => t.stop());
-      await supabaseClient.removeChannel(v.sig);
-      renderMe(); renderChat(true);
-    }
 
-    function voiceToggle(kind) {
-      if (!vc) return;
-      vc[kind] = !vc[kind];
-      if (kind === 'deaf') vc.muted = vc.deaf; // deafening also mutes your mic
-      vc.stream.getAudioTracks().forEach(t => { t.enabled = !vc.muted; });
-      Object.values(vc.peers).forEach(p => { p.audio.muted = vc.deaf; });
-      vc.sig.track({ name: me.username, muted: vc.muted, deaf: vc.deaf });
-      renderMe(); renderChat(true);
-    }
 
-    function voiceRoomHtml() {
-      const joined = vc && vc.room === curCh.id;
-      const tiles = joined ? Object.entries(vc.sig.presenceState()).map(([id, a]) => {
-        const p = members.find(u => u.id === id) || (id === me.id ? me : { username: a[0]?.name || '?' });
-        return `<div class="tile">${avatarHtml(p, 72)}<b>${escapeHtml(p.username)}</b>${a[0]?.deaf ? '<small>🙉 deafened</small>' : a[0]?.muted ? '<small>🔇 muted</small>' : ''}</div>`;
-      }).join('') : '';
-      return `<div class="vroom"><h2>🔊 ${escapeHtml(curCh.name)}</h2>${joined ? `<div class="tiles">${tiles}</div><button class="b r" onclick="leaveVoice()">Leave voice</button>` : `<p style="color:var(--mute)">Join to talk with everyone in this channel.</p><button class="b" onclick="joinVoice('${curCh.id}')">Join Voice</button>`}</div>`;
-    }
 
     // ---------- Forum posts ----------
     async function loadThreads() {
@@ -1518,6 +1482,7 @@
     }
 
     function goHome() {
+      Object.keys(vlobby).forEach(id => { supabaseClient.removeChannel(vlobby[id].ch); delete vlobby[id]; });
       if (sl) { supabaseClient.removeChannel(sl); sl = null; }
       if (pr) { supabaseClient.removeChannel(pr); pr = null; }
       if (rt) { supabaseClient.removeChannel(rt); rt = null; }
@@ -1656,7 +1621,8 @@
     // ---------- Live updates: other people's changes appear without a refresh ----------
     function liveServer(id) {
       if (sl) supabaseClient.removeChannel(sl);
-      sl = supabaseClient.channel('srv-' + id);
+      watchVoice();
+  sl = supabaseClient.channel('srv-' + id);
       ['channels', 'categories', 'roles', 'member_roles', 'members', 'threads', 'servers', 'profiles'].forEach(t =>
         sl.on('postgres_changes', { event: '*', schema: 'public', table: t }, () => liveReload(t)));
       sl.subscribe();
@@ -1672,6 +1638,7 @@
           channels = c.data || [];
           if (curCh && !channels.some(x => x.id === curCh.id)) { curCh = null; if (channels.length) selectChannel(channels[0].id); }
           else if (curCh) curCh = channels.find(x => x.id === curCh.id);
+      watchVoice();
           renderSide(); renderChat(true);
         } else if (t === 'categories') {
           const k = await supabaseClient.from('categories').select('*').eq('server_id', id).order('created_at');
@@ -1929,6 +1896,268 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         <div class="tsws"><button class="tsw create" title="Create your own theme" onclick="editTheme()">🎨</button>${GRADS.map(sw).join('')}</div>
         ${mine ? `<h3>My Themes</h3><div class="tsws">${mine}</div>` : ''}`;
     }
+    // ---------- Voice engine v2: audio, camera and screen share (WebRTC "perfect negotiation") ----------
+    const vlobby = {}; // who is in each voice channel of this server (for the sidebar)
+    const meta = () => ({ name: me.username, muted: vc.muted, deaf: vc.deaf, cam: !!vc.cam, screen: !!vc.screen });
+    const lobbyTrack = () => { const l = vc && vlobby[vc.room]; if (l) l.ch.track(meta()); };
+    const IC = {
+      mic: 'M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z',
+      cam: 'M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z',
+      screen: 'M20 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6v2H8v2h8v-2h-2v-2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 12H4V5h16v10z',
+      head: 'M12 3a9 9 0 0 0-9 9v7a2 2 0 0 0 2 2h3v-8H5v-1a7 7 0 0 1 14 0v1h-3v8h3a2 2 0 0 0 2-2v-7a9 9 0 0 0-9-9z',
+      end: 'M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1-.29-.7c0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.996.996 0 0 1-.56-.9v-3.1A15.9 15.9 0 0 0 12 9z'
+    };
+    const icon = (n, off, s = 22) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="${IC[n]}"/>${off ? '<path d="M3.5 3.5l17 17" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/>' : ''}</svg>`;
+
+    async function joinVoice(room, label) {
+      if (vc) await leaveVoice();
+      label = label || (channels.find(c => c.id === room)?.name ? '#' + channels.find(c => c.id === room).name : dmWith ? 'Call with ' + dmWith.username : 'Call');
+      let stream;
+      try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); }
+      catch (e) { toast('Allow microphone access to join voice.'); return false; }
+      const sig = supabaseClient.channel('voice-' + room, { config: { presence: { key: me.id } } });
+      vc = { room, label, stream, sig, peers: {}, muted: false, deaf: false, cam: null, screen: null, vels: {}, meters: {}, speaking: new Set() };
+      sig.on('presence', { event: 'sync' }, voiceSync)
+        .on('broadcast', { event: 'rtc' }, ({ payload }) => onSignal(payload))
+        .subscribe(s => { if (s === 'SUBSCRIBED') { sig.track(meta()); lobbyTrack(); } });
+      startMeters();
+      renderMe(); renderSide(); renderChat(true);
+      return true;
+    }
+
+    function voiceSync() {
+      if (!vc) return;
+      const ids = Object.keys(vc.sig.presenceState()).filter(k => k !== me.id);
+      ids.forEach(id => { if (!vc.peers[id]) makePeer(id); });
+      Object.keys(vc.peers).forEach(id => { if (!ids.includes(id)) dropPeer(id); });
+      renderChat(true);
+    }
+
+    function makePeer(id) {
+      const pc = new RTCPeerConnection(ICE), audio = new Audio();
+      audio.autoplay = true; audio.muted = vc.deaf;
+      const peer = { pc, audio, q: [], videos: {}, labels: {}, senders: {}, making: false, ignore: false, polite: me.id > id };
+      vc.peers[id] = peer;
+      vc.stream.getTracks().forEach(t => pc.addTrack(t, vc.stream));
+      pc.ontrack = e => {
+        const s = e.streams[0];
+        if (e.track.kind === 'audio') { audio.srcObject = s; meter(id, s); return; }
+        const kind = peer.labels[s.id] || 'cam';
+        const on = () => { peer.videos[kind] = s; renderChat(true); };
+        const off = () => { delete peer.videos[kind]; renderChat(true); };
+        e.track.onunmute = on; e.track.onmute = off; e.track.onended = off; s.onremovetrack = off;
+        on();
+      };
+      pc.onicecandidate = e => { if (e.candidate && vc) vsend(id, { ice: e.candidate }); };
+      pc.onnegotiationneeded = async () => {
+        try { peer.making = true; await pc.setLocalDescription(); if (vc) vsend(id, { sdp: pc.localDescription }); }
+        catch (e) { console.warn('negotiation', e); } finally { peer.making = false; }
+      };
+      ['cam', 'screen'].forEach(k => { if (vc[k]) attachVideo(id, peer, k, vc[k]); });
+    }
+
+    function dropPeer(id) {
+      const p = vc?.peers[id];
+      if (!p) return;
+      p.pc.close(); p.audio.srcObject = null;
+      delete vc.peers[id]; delete vc.meters[id];
+      Object.keys(vc.vels).filter(k => k.startsWith(id + ':')).forEach(k => delete vc.vels[k]);
+    }
+
+    async function onSignal(p) {
+      if (!vc || p.to !== me.id) return;
+      if (!vc.peers[p.from]) makePeer(p.from);
+      const peer = vc.peers[p.from], pc = peer.pc;
+      if (p.label) { peer.labels[p.label.id] = p.label.kind; return; }
+      try {
+        if (p.sdp) {
+          const collision = p.sdp.type === 'offer' && (peer.making || pc.signalingState !== 'stable');
+          peer.ignore = !peer.polite && collision;
+          if (peer.ignore) return;
+          await pc.setRemoteDescription(p.sdp);
+          peer.q.forEach(c => pc.addIceCandidate(c).catch(() => {}));
+          peer.q = [];
+          if (p.sdp.type === 'offer') { await pc.setLocalDescription(); if (vc) vsend(p.from, { sdp: pc.localDescription }); }
+        } else if (p.ice) {
+          if (!pc.remoteDescription) peer.q.push(p.ice);
+          else { try { await pc.addIceCandidate(p.ice); } catch (e) { if (!peer.ignore) throw e; } }
+        }
+      } catch (e) { console.warn('voice signal', e); }
+    }
+
+    async function leaveVoice() {
+      if (!vc) return;
+      const v = vc;
+      clearInterval(v.timer);
+      const l = vlobby[v.room];
+      if (l) l.ch.untrack();
+      vc = null;
+      Object.values(v.peers).forEach(p => { p.pc.close(); p.audio.srcObject = null; });
+      [v.stream, v.cam, v.screen].forEach(s => { if (s) s.getTracks().forEach(t => t.stop()); });
+      try { v.actx.close(); } catch (e) {}
+      await supabaseClient.removeChannel(v.sig);
+      renderMe(); renderSide(); renderChat(true);
+    }
+
+    function voiceToggle(kind) {
+      if (!vc) return;
+      vc[kind] = !vc[kind];
+      if (kind === 'deaf') vc.muted = vc.deaf; // deafening also mutes your mic
+      vc.stream.getAudioTracks().forEach(t => { t.enabled = !vc.muted; });
+      Object.values(vc.peers).forEach(p => { p.audio.muted = vc.deaf; });
+      vc.sig.track(meta()); lobbyTrack();
+      renderMe(); renderChat(true);
+    }
+
+    // Camera and screen share are extra tracks added to every connection
+    function attachVideo(id, peer, kind, stream) {
+      vsend(id, { label: { id: stream.id, kind } });
+      peer.senders[kind] = stream.getTracks().map(t => peer.pc.addTrack(t, stream));
+    }
+
+    function addVideo(kind, stream) {
+      Object.entries(vc.peers).forEach(([id, p]) => attachVideo(id, p, kind, stream));
+      vc.sig.track(meta()); lobbyTrack();
+      renderMe(); renderChat(true);
+    }
+
+    function stopVideo(kind) {
+      const s = vc && vc[kind];
+      if (!s) return;
+      s.getTracks().forEach(t => t.stop());
+      Object.values(vc.peers).forEach(p => { (p.senders[kind] || []).forEach(x => { try { p.pc.removeTrack(x); } catch (e) {} }); p.senders[kind] = []; });
+      vc[kind] = null;
+      vc.sig.track(meta()); lobbyTrack();
+      renderMe(); renderChat(true);
+    }
+
+    async function toggleCam() {
+      if (!vc) return;
+      if (vc.cam) return stopVideo('cam');
+      try { vc.cam = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } }); }
+      catch (e) { return toast('Allow camera access to turn on video.'); }
+      addVideo('cam', vc.cam);
+    }
+
+    async function toggleScreen() {
+      if (!vc) return;
+      if (vc.screen) return stopVideo('screen');
+      try { vc.screen = await navigator.mediaDevices.getDisplayMedia({ video: true }); }
+      catch (e) { return; }
+      vc.screen.getVideoTracks()[0].onended = () => stopVideo('screen');
+      addVideo('screen', vc.screen);
+    }
+
+    // Green ring around whoever is talking
+    function meter(id, stream) {
+      try {
+        const an = vc.actx.createAnalyser();
+        an.fftSize = 512;
+        vc.actx.createMediaStreamSource(stream).connect(an);
+        vc.meters[id] = an;
+      } catch (e) {}
+    }
+
+    function startMeters() {
+      vc.actx = new (window.AudioContext || window.webkitAudioContext)();
+      meter(me.id, vc.stream);
+      vc.timer = setInterval(() => {
+        if (!vc) return;
+        const buf = new Uint8Array(512), now = new Set();
+        Object.entries(vc.meters).forEach(([id, an]) => {
+          an.getByteTimeDomainData(buf);
+          let max = 0; buf.forEach(v => { max = Math.max(max, Math.abs(v - 128)); });
+          if (max > 12 && !(id === me.id && vc.muted)) now.add(id);
+        });
+        vc.speaking = now;
+        document.querySelectorAll('[data-vt]').forEach(el => el.classList.toggle('speaking', now.has(el.dataset.vt)));
+      }, 120);
+    }
+
+    // Keep playing <video> elements alive when the screen is redrawn
+    function mountVideos() {
+      if (!vc) return;
+      document.querySelectorAll('.vslot').forEach(slot => {
+        const [uid, kind] = slot.dataset.k.split(':');
+        const st = uid === me.id ? vc[kind] : vc.peers[uid]?.videos[kind];
+        if (!st) return;
+        let v = vc.vels[slot.dataset.k];
+        if (!v) { v = document.createElement('video'); v.autoplay = true; v.playsInline = true; v.muted = true; vc.vels[slot.dataset.k] = v; }
+        if (v.srcObject !== st) v.srcObject = st;
+        slot.append(v);
+        v.play().catch(() => {});
+      });
+    }
+
+    // Who is in each voice channel, shown under the channel name in the sidebar
+    function watchVoice() {
+      const ids = channels.filter(c => c.kind === 'voice').map(c => c.id);
+      Object.keys(vlobby).forEach(id => { if (!ids.includes(id)) { supabaseClient.removeChannel(vlobby[id].ch); delete vlobby[id]; } });
+      ids.forEach(id => {
+        if (vlobby[id]) return;
+        const ch = supabaseClient.channel('vl-' + id, { config: { presence: { key: me.id } } });
+        vlobby[id] = { ch, users: [] };
+        ch.on('presence', { event: 'sync' }, () => {
+          if (!vlobby[id]) return;
+          vlobby[id].users = Object.entries(ch.presenceState()).map(([uid, a]) => ({ uid, ...(a[0] || {}) }));
+          renderSide();
+          if (curCh?.id === id) renderChat(true);
+        }).subscribe();
+      });
+    }
+
+    function vusersHtml(c) {
+      if (c.kind !== 'voice') return '';
+      return (vlobby[c.id]?.users || []).map(u => {
+        const p = members.find(m => m.id === u.uid) || (u.uid === me.id ? me : { username: u.name || '?' });
+        return `<div class="vu" data-vt="${u.uid}">${avatarHtml(p, 22)}<span>${escapeHtml(p.username)}</span>${u.deaf ? '🙉' : u.muted ? '🔇' : ''}${u.cam ? '📷' : ''}${u.screen ? '🖥️' : ''}</div>`;
+      }).join('');
+    }
+
+    // ---------- Voice and call screens ----------
+    function ctlHtml() {
+      const b = (cls, title, code, svg) => `<button class="cbtn ${cls}" title="${title}" onclick="${code}">${svg}</button>`;
+      return `<div class="vctl"><div class="cgroup">${b(vc.muted ? 'off' : '', vc.muted ? 'Unmute' : 'Mute', "voiceToggle('muted')", icon('mic', vc.muted))}${b(vc.cam ? 'on' : '', vc.cam ? 'Turn off camera' : 'Turn on camera', 'toggleCam()', icon('cam', !vc.cam))}</div>`
+        + `<div class="cgroup">${b(vc.screen ? 'on' : '', vc.screen ? 'Stop sharing' : 'Share your screen', 'toggleScreen()', icon('screen'))}${b(vc.deaf ? 'off' : '', vc.deaf ? 'Undeafen' : 'Deafen', "voiceToggle('deaf')", icon('head', vc.deaf))}</div>`
+        + `${b('end', 'Disconnect', 'leaveVoice()', icon('end'))}</div>`;
+    }
+
+    function personOf(uid, m) { return members.find(u => u.id === uid) || (uid === me.id ? me : dmWith && uid === dmWith.id ? dmWith : { username: m.name || '?' }); }
+
+    function tilesHtml(compact) {
+      const out = [], st = vc.sig.presenceState();
+      Object.entries(st).forEach(([uid, a]) => {
+        const m = a[0] || {}, p = personOf(uid, m);
+        const hasCam = m.cam && (uid === me.id ? vc.cam : vc.peers[uid]?.videos.cam);
+        const hasScr = m.screen && (uid === me.id ? vc.screen : vc.peers[uid]?.videos.screen);
+        if (compact && !hasCam && !hasScr) { out.push(`<div class="callav" data-vt="${uid}" title="${escapeHtml(p.username)}">${avatarHtml(p, 84)}</div>`); return; }
+        out.push(`<div class="vtile" data-vt="${uid}">${hasCam ? `<div class="vslot" data-k="${uid}:cam"></div>` : `<div class="vav">${avatarHtml(p, 92)}</div>`}<div class="vname">${escapeHtml(p.username)}${m.deaf ? ' 🙉' : m.muted ? ' 🔇' : ''}</div></div>`);
+        if (hasScr) out.push(`<div class="vtile wide"><div class="vslot" data-k="${uid}:screen"></div><div class="vname">🖥️ ${escapeHtml(p.username)}'s screen</div></div>`);
+      });
+      return out.join('');
+    }
+
+    function voiceRoomHtml() {
+      const joined = vc && vc.room === curCh.id;
+      if (!joined) {
+        const users = vlobby[curCh.id]?.users || [];
+        return `<div class="vstage"><div class="vgrid">${users.map(u => `<div class="vtile"><div class="vav">${avatarHtml(personOf(u.uid, u), 80)}</div><div class="vname">${escapeHtml(personOf(u.uid, u).username)}</div></div>`).join('')}</div>
+          <div class="vjoin"><h2>🔊 ${escapeHtml(curCh.name)}</h2><p>${users.length ? users.length + ' in voice right now' : 'No one is here yet.'}</p><button class="b" onclick="joinVoice('${curCh.id}')">Join Voice</button></div></div>`;
+      }
+      return `<div class="vstage"><div class="vgrid">${tilesHtml(false)}</div><div class="vfoot"><button class="b g" onclick="serverMenu()">Invite to Voice</button>${ctlHtml()}</div></div>`;
+    }
+
+    function callPanelHtml() {
+      const hasVideo = Object.values(vc.sig.presenceState()).some(a => a[0]?.cam || a[0]?.screen);
+      return `<div class="callpanel ${hasVideo ? 'tall' : ''}">${hasVideo ? `<div class="vgrid">${tilesHtml(false)}</div>` : `<div class="callrow">${tilesHtml(true)}</div>`}${ctlHtml()}</div>`;
+    }
+
+    function renderMe() {
+      const labels = { online: 'Online', idle: 'Idle', dnd: 'Do not disturb', invisible: 'Invisible' };
+      if ($('#vbar')) $('#vbar').innerHTML = vc ? `<div class="vtop"><div style="flex:1;min-width:0"><b style="color:var(--green);font-size:13px">Voice Connected</b><small>${escapeHtml(vc.label)}</small></div><button class="ib" title="Disconnect" onclick="leaveVoice()">${icon('end', false, 20)}</button></div>
+        <div class="vbtns"><button class="vb ${vc.cam ? 'on' : ''}" title="Camera" onclick="toggleCam()">${icon('cam', !vc.cam, 18)}</button><button class="vb ${vc.screen ? 'on' : ''}" title="Share your screen" onclick="toggleScreen()">${icon('screen', false, 18)}</button><button class="vb ${vc.muted ? 'off' : ''}" title="Mute" onclick="voiceToggle('muted')">${icon('mic', vc.muted, 18)}</button><button class="vb ${vc.deaf ? 'off' : ''}" title="Deafen" onclick="voiceToggle('deaf')">${icon('head', vc.deaf, 18)}</button></div>` : '';
+      $('#me').innerHTML = `<div class="dot">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm">${escapeHtml(me.username)}<small>${labels[S.status]}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
+    }
     function toggleCat(i) {
       collapsed[catList[i]] = !collapsed[catList[i]];
       renderSide();
@@ -1951,28 +2180,26 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         const row = cats.find(c => c.name === cat);
         const list = channels.filter(c => (c.category || 'Text channels') === cat);
         return `<div class="lbl" oncontextmenu="catCtx(event,${i})"><span style="cursor:pointer" onclick="toggleCat(${i})">${collapsed[cat] ? '▸' : '▾'} ${escapeHtml(cat)}${row?.private ? ' 🔒' : ''}</span></div>`
-          + (collapsed[cat] ? '' : list.map(c => `<div class="chw" oncontextmenu="chanCtx(event,'${c.id}')"><button class="ch ${curCh?.id === c.id ? 'on' : ''}" onclick="selectChannel('${c.id}')">${c.private ? '🔒' : ICON[c.kind] || '#'} ${escapeHtml(c.name)}</button></div>`).join(''));
+          + (collapsed[cat] ? '' : list.map(c => `<div class="chw" oncontextmenu="chanCtx(event,'${c.id}')"><button class="ch ${curCh?.id === c.id ? 'on' : ''}" onclick="selectChannel('${c.id}')">${c.private ? '🔒' : ICON[c.kind] || '#'} ${escapeHtml(c.name)}</button>${vusersHtml(c)}</div>`).join(''));
       }).join('');
     }
 
-    function renderMe() {
-      const labels = { online: 'Online', idle: 'Idle', dnd: 'Do not disturb', invisible: 'Invisible' };
-      if ($('#vbar')) $('#vbar').innerHTML = vc ? `<div style="flex:1;min-width:0"><b style="color:var(--green);font-size:13px">Voice connected</b><small>${escapeHtml(vc.label)}</small></div><button class="ib" title="${vc.muted ? 'Unmute' : 'Mute'}" onclick="voiceToggle('muted')">${vc.muted ? '🔇' : '🎤'}</button><button class="ib" title="${vc.deaf ? 'Undeafen' : 'Deafen'}" onclick="voiceToggle('deaf')">${vc.deaf ? '🙉' : '🎧'}</button><button class="ib" title="Disconnect" onclick="leaveVoice()">✕</button>` : '';
-      $('#me').innerHTML = `<div class="dot">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm">${escapeHtml(me.username)}<small>${labels[S.status]}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
-    }
 
     function renderChat(keep) {
       const el = $('#msgs'), ch = $('#ch'), comp = $('#comp');
       if (!el) return;
-      if (!cur && !dmWith) { ch.innerHTML = friendHeaderHtml(); comp.style.display = 'none'; el.innerHTML = friendsHtml(); return; }
+      if (!cur && !dmWith) { ch.innerHTML = friendHeaderHtml(); comp.style.display = 'none'; $('#call').innerHTML = ''; el.classList.remove('stage'); el.innerHTML = friendsHtml(); return; }
       const isDM = !cur, kind = isDM ? 'dm' : curCh?.kind;
       const composer = isDM || ['text', 'announcement', 'rules'].includes(kind) || (kind === 'forum' && curThread);
       const locked = !isDM && ['announcement', 'rules'].includes(kind) && !can('administrator');
-      if (isDM) ch.innerHTML = `<span style="color:var(--mute);font-size:22px">@</span> ${escapeHtml(dmWith.username)}<button class="ib" style="margin-left:auto" title="Start a voice call" onclick="startCall()">📞</button>`;
+      if (isDM) ch.innerHTML = `<span style="color:var(--mute);font-size:22px">@</span> ${escapeHtml(dmWith.username)}${vc && vc.room === dmRoom(dmWith.id) ? '<span class="incall">In a call</span>' : ''}<button class="ib" style="margin-left:auto" title="Start a voice call" onclick="startCall()">📞</button>`;
       else if (curThread) ch.innerHTML = `<button class="ib" onclick="closeThread()">‹ Back</button> ${escapeHtml(curThread.title)}`;
       else ch.innerHTML = `<span style="color:var(--mute);font-size:22px">${ICON[kind] || '#'}</span> ${escapeHtml(curCh?.name || '')}${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}`;
       comp.style.display = composer ? '' : 'none';
-      if (kind === 'voice') { el.innerHTML = voiceRoomHtml(); return; }
+  el.classList.toggle('stage', kind === 'voice');
+  $('#call').innerHTML = isDM && vc && vc.room === dmRoom(dmWith.id) ? callPanelHtml() : '';
+  mountVideos();
+      if (kind === 'voice') { el.innerHTML = voiceRoomHtml(); mountVideos(); return; }
       if (kind === 'forum' && !curThread) { el.innerHTML = forumHtml(); return; }
       $('#inp').disabled = !!locked;
       $('#inp').placeholder = locked ? 'Only the server owner can post in this channel' : isDM ? `Message @${dmWith.username}` : curThread ? 'Reply to this post' : `Message ${ICON[kind] || '#'}${curCh?.name || ''}`;
