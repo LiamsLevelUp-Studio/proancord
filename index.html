@@ -899,7 +899,9 @@
     .stylecard.on { border-color: var(--accent); }
 
     /* Colour themes */
-    #set, .mbox { background: var(--solid, var(--main)); }
+    .mbox { background: var(--solid, var(--main)); }
+    #set { background: linear-gradient(var(--setdim, #0000), var(--setdim, #0000)), var(--gbg, var(--solid, var(--main))); background-attachment: fixed; }
+    .tdbar { height: 56px; border-radius: 12px; margin: 12px 0 4px; border: 1px solid var(--border); }
     body.grad #app { background: transparent; }
     .tsws { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0 26px; }
     .tsw { width: 52px; height: 52px; border-radius: 14px; border: 2px solid #ffffff22; color: #fff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: transform .12s, border-color .12s, box-shadow .12s; }
@@ -1859,7 +1861,7 @@
 
     function applyTheme(t) {
       const root = document.documentElement;
-      ['--rail', '--side', '--main', '--input', '--hover', '--solid'].forEach(k => root.style.removeProperty(k));
+      ['--rail', '--side', '--main', '--input', '--hover', '--solid', '--gbg', '--setdim'].forEach(k => root.style.removeProperty(k));
       let bg = '';
       if (t.vars) Object.entries(t.vars).forEach(([k, v]) => root.style.setProperty(k, v));
       if (t.c1) {
@@ -1870,7 +1872,10 @@
         root.style.setProperty('--input', `rgba(0,0,0,${d})`);
         root.style.setProperty('--hover', 'rgba(255,255,255,.07)');
         root.style.setProperty('--solid', `color-mix(in srgb, ${c1} 55%, #0c0c0f)`);
-        bg = `linear-gradient(${+t.angle || 0}deg, ${c1}, ${c2}) fixed`;
+        const g = `linear-gradient(${+t.angle || 0}deg, ${c1}, ${c2})`;
+    root.style.setProperty('--gbg', g);
+    root.style.setProperty('--setdim', 'rgba(0,0,0,.32)');
+    bg = g + ' fixed';
       }
       document.body.style.background = bg;
       document.body.classList.toggle('grad', !!bg);
@@ -1885,7 +1890,8 @@
       applyS(); settings('appearance');
     }
 
-    function tdPrev(k, v) { tdraft[k] = v; applyS(); }
+    const gradOf = t => `linear-gradient(${+t.angle || 0}deg,${safeColor(t.c1)},${safeColor(t.c2 || t.c1)})`;
+function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b.style.background = gradOf(tdraft); }
     function cancelTheme() { tdraft = null; applyS(); settings('appearance'); }
 
     function saveTheme() {
@@ -1905,7 +1911,7 @@
 
     function tdHtml() {
       const d = tdraft;
-      return `<div class="card2"><h3 style="margin-top:0">${d.isNew ? 'Create your own theme' : 'Edit theme'}</h3><p class="ts">Changes preview live. Save to keep the theme.</p>
+      return `<div class="card2"><h3 style="margin-top:0">${d.isNew ? 'Create your own theme' : 'Edit theme'}</h3><p class="ts">Changes preview live. Save to keep the theme.</p><div class="tdbar" id="tdbar" style="background:${gradOf(d)}"></div>
         <span class="f2">Theme name</span><div class="nm2"><input value="${escapeHtml(d.name)}" maxlength="24" oninput="tdraft.name=this.value"></div>
         <div class="trow"><div><span class="f2">Colour 1</span><input type="color" value="${safeColor(d.c1)}" oninput="tdPrev('c1',this.value)"></div><div><span class="f2">Colour 2</span><input type="color" value="${safeColor(d.c2)}" oninput="tdPrev('c2',this.value)"></div><div><span class="f2">Accent</span><input type="color" value="${safeColor(d.accent)}" oninput="tdPrev('accent',this.value)"></div></div>
         <span class="f2">Gradient angle: <span id="tdang">${d.angle}</span>°</span><input type="range" min="0" max="360" value="${d.angle}" style="width:100%;accent-color:var(--accent)" oninput="$('#tdang').textContent=this.value;tdPrev('angle',+this.value)">
