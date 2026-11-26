@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Procord</title>
+  <title>Proanchat</title>
   <meta name="theme-color" content="#08080a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -977,7 +977,7 @@
 
 <body>
   <!-- Everything is drawn into #root by the script below -->
-  <!-- Procord logo, drawn once and reused with <use href="#logo"> -->
+  <!-- Proanchat logo, drawn once and reused with <use href="#logo"> -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <linearGradient id="pc-grad" x1="0" y1="0" x2="1" y2="1">
@@ -1010,7 +1010,7 @@
       return `hsl(${h} 50% 45%)`;
     };
     const avatarHtml = (p, n = 40) => p?.avatar_url ? `<img class="av" style="width:${n}px;height:${n}px" src="${escapeHtml(p.avatar_url)}" alt="">` : `<div class="av" style="width:${n}px;height:${n}px;background:${colorFromName(p?.username)};font-size:${n * .42}px">${escapeHtml((p?.username || '?')[0].toUpperCase())}</div>`;
-    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🛡️', 'Tester'], og: ['OG', 'OG: an early Procord member'], fullowner: ['🔑', 'owner'] };
+    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🛡️', 'Tester'], og: ['OG', 'OG: an early proanchat member'], fullowner: ['🔑', 'owner'] };
     const badgePills = (p, full) => [...(cur && cur.owner_id === p?.id ? ['owner'] : []), ...(p?.badges || [])].filter(k => BADGES[k]).map(k => `<span class="bdg ${k}" title="${BADGES[k][1]}">${BADGES[k][0]}${full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`).join('');
     const safeColor = c => /^#[0-9a-f]{3,8}$/i.test(c || '') ? c : '#99aab5';
     const roleColor = uid => { if (!cur) return null; const r = roles.find(x => memberRoles.some(m => m.user_id === uid && m.role_id === x.id)); return r ? safeColor(r.color) : null; };
@@ -1890,9 +1890,9 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const bg = t => t.c1 ? `linear-gradient(${+t.angle || 0}deg,${safeColor(t.c1)},${safeColor(t.c2 || t.c1)})` : (t.vars?.['--main'] || '#161618');
       const sw = t => `<button class="tsw ${S.theme === t.id && !tdraft ? 'on' : ''}" title="${escapeHtml(t.name)}" style="background:${bg(t)}" onclick="pickTheme('${t.id}')">${S.theme === t.id && !tdraft ? '✓' : ''}</button>`;
       const mine = (S.custom || []).map(t => `<div class="tw">${sw(t)}<button class="tedit" title="Edit theme" onclick="editTheme('${t.id}')">✎</button></div>`).join('');
-      return `<p>Choose how Procord looks. Themes are saved in this browser.</p>${tdraft ? tdHtml() : ''}
+      return `<p>Choose how Proanchat looks. Themes are saved in this browser.</p>${tdraft ? tdHtml() : ''}
         <h3>Default Themes</h3><div class="tsws">${['dark', 'ash', 'onyx'].map(k => sw(THEMES[k])).join('')}</div>
-        <h3>Colour Themes</h3><p class="ts">Make Procord yours. Free for everyone.</p>
+        <h3>Colour Themes</h3><p class="ts">Make Proanchat yours. Free for everyone.</p>
         <div class="tsws"><button class="tsw create" title="Create your own theme" onclick="editTheme()">🎨</button>${GRADS.map(sw).join('')}</div>
         ${mine ? `<h3>My Themes</h3><div class="tsws">${mine}</div>` : ''}`;
     }
