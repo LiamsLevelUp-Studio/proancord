@@ -1010,7 +1010,7 @@
       return `hsl(${h} 50% 45%)`;
     };
     const avatarHtml = (p, n = 40) => p?.avatar_url ? `<img class="av" style="width:${n}px;height:${n}px" src="${escapeHtml(p.avatar_url)}" alt="">` : `<div class="av" style="width:${n}px;height:${n}px;background:${colorFromName(p?.username)};font-size:${n * .42}px">${escapeHtml((p?.username || '?')[0].toUpperCase())}</div>`;
-    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🧪', 'Tester'], og: ['OG', 'OG: an early Procord member'] };
+    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🛡️', 'Tester'], og: ['OG', 'OG: an early Procord member'] };
     const badgePills = (p, full) => [...(cur && cur.owner_id === p?.id ? ['owner'] : []), ...(p?.badges || [])].filter(k => BADGES[k]).map(k => `<span class="bdg ${k}" title="${BADGES[k][1]}">${BADGES[k][0]}${full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`).join('');
     const safeColor = c => /^#[0-9a-f]{3,8}$/i.test(c || '') ? c : '#99aab5';
     const roleColor = uid => { if (!cur) return null; const r = roles.find(x => memberRoles.some(m => m.user_id === uid && m.role_id === x.id)); return r ? safeColor(r.color) : null; };
