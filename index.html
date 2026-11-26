@@ -2018,13 +2018,17 @@
       renderSide();
     }
 
+    const uuid = () => crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+
     async function createChannel() {
       const name = $('#cn').value.trim().toLowerCase().replace(/\s+/g, '-');
       if (!name) return;
       const category = $('#cc').value.trim() || 'Text channels';
-      const row = { server_id: cur.id, name, kind: document.querySelector('input[name=ck]:checked').value, category, private: $('#cpv').checked || !!cats.find(c => c.name === category)?.private };
-      const { data, error } = await supabaseClient.from('channels').insert(row).select().single();
-      if (error) return $('#merr').textContent = error.message + ' (Run update4.sql and update5.sql in Supabase first.)';
+      const row = { id: uuid(), server_id: cur.id, name, kind: document.querySelector('input[name=ck]:checked').value, category, private: $('#cpv').checked || !!cats.find(c => c.name === category)?.private };
+      // no .select() here: asking the database to send the new row back needs an extra permission check
+      const { error } = await supabaseClient.from('channels').insert(row);
+      if (error) return $('#merr').textContent = error.message + ' (If this mentions row-level security, run fix-channels.sql in Supabase.)';
+      const data = { ...row, topic: '', created_at: new Date().toISOString() };
       const rids = [...document.querySelectorAll('.rolechk:checked')].map(i => i.value);
       if (row.private && rids.length) await supabaseClient.from('channel_roles').insert(rids.map(role_id => ({ channel_id: data.id, role_id })));
       channels.push(data);
