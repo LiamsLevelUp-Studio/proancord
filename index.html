@@ -898,6 +898,20 @@
     .stylecard:hover { border-color: #ffffff22; }
     .stylecard.on { border-color: var(--accent); }
 
+    /* Colour themes */
+    #set, .mbox { background: var(--solid, var(--main)); }
+    body.grad #app { background: transparent; }
+    .tsws { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0 26px; }
+    .tsw { width: 52px; height: 52px; border-radius: 14px; border: 2px solid #ffffff22; color: #fff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: transform .12s, border-color .12s, box-shadow .12s; }
+    .tsw:hover { transform: scale(1.08); }
+    .tsw.on { border-color: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 60%, transparent); }
+    .tsw.create { background: linear-gradient(135deg, #7a0c0c, #000); }
+    .tw { position: relative; }
+    .tedit { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: #000c; color: #fff; font-size: 11px; display: none; }
+    .tw:hover .tedit { display: block; }
+    .trow { display: flex; gap: 20px; flex-wrap: wrap; }
+    .trow input[type=color] { width: 64px; height: 40px; border: 0; background: none; padding: 0; cursor: pointer; }
+
     /* Smaller screens: hide panels */
     @media (max-width: 900px) {
       #app {
@@ -999,6 +1013,7 @@
     let gp = null;           // everyone-online presence
     let onlineAll = new Map();
     const rtimers = {};
+    let tdraft = null;       // custom theme being edited
     let roles = [];          // roles in the open server
     let memberRoles = [];    // which member has which role
     let cats = [];           // category rows for the open server
@@ -1011,7 +1026,7 @@
     let pr = null;           // presence subscription (who is online)
 
     // ---------- Settings (saved in this browser) ----------
-    const DEFAULTS = { theme: 'dark', compact: false, fs: 16, sound: true, h24: false, anim: true, status: 'online', accent: '#e11d2e', icon: 'red' };
+    const DEFAULTS = { theme: 'dark', custom: [], compact: false, fs: 16, sound: true, h24: false, anim: true, status: 'online', accent: null, icon: 'red' };
     let S = { ...DEFAULTS };
     try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem('procord-settings') || '{}') }; } catch (e) {}
 
@@ -1020,9 +1035,9 @@
 
     function applyS() {
       const root = document.documentElement;
-      root.dataset.theme = S.theme;
+      root.dataset.theme = '';
+      applyTheme(tdraft || currentTheme());
       root.style.setProperty('--fs', S.fs + 'px');
-      root.style.setProperty('--accent', S.accent);
       document.body.classList.toggle('compact', S.compact);
       document.body.classList.toggle('noanim', !S.anim);
       const [a, b] = ICONS[S.icon] || ICONS.red;
@@ -1818,6 +1833,96 @@
     function filterRows(v) { document.querySelectorAll('#msgs .frow[data-n]').forEach(r => { r.style.display = r.dataset.n.includes(v.toLowerCase()) ? '' : 'none'; }); }
     function filterDMs(v) { document.querySelectorAll('#chl .dmrow').forEach(r => { r.style.display = r.dataset.n.includes(v.toLowerCase()) ? '' : 'none'; }); }
     const friendHeaderHtml = () => `👥 <b>Friends</b><span class="vsep"></span>` + [['online', 'Online'], ['all', 'All'], ['pending', 'Pending']].map(([k, l]) => `<button class="ftab ${friendTab === k ? 'on' : ''}" onclick="friendTab='${k}';renderChat()">${l}</button>`).join('') + `<button class="ftab add ${friendTab === 'add' ? 'on' : ''}" onclick="friendTab='add';renderChat()">Add Friend</button>`;
+    // ---------- Colour themes ----------
+    // Default themes just recolour the panels. Colour themes paint a gradient behind see-through panels.
+    const THEMES = {
+      dark: { id: 'dark', name: 'Dark', accent: '#e11d2e' },
+      ash: { id: 'ash', name: 'Ash', accent: '#e11d2e', vars: { '--rail': '#17171a', '--side': '#232327', '--main': '#2a2a2f', '--input': '#323238', '--hover': '#2e2e34' } },
+      onyx: { id: 'onyx', name: 'Onyx', accent: '#e11d2e', vars: { '--rail': '#000000', '--side': '#050506', '--main': '#0a0a0b', '--input': '#141416', '--hover': '#101012' } }
+    };
+    const GRADS = [
+      ['Nebula', '#1a0933', '#c2561f', 135, '#ff7a3d'], ['Aurora', '#04141f', '#0b8f7a', 160, '#19d3a2'], ['Crimson Night', '#1a0000', '#7a0c0c', 135, '#ff3b3b'],
+      ['Ultraviolet', '#0f0a2e', '#5b2bd6', 135, '#8b5cf6'], ['Ocean', '#03122b', '#0b5fa5', 150, '#38bdf8'], ['Sunset', '#2a0a2e', '#e8590c', 160, '#ff8a3d'],
+      ['Forest', '#04150c', '#1f6b3a', 145, '#34d399'], ['Rose Gold', '#2b0f1b', '#b4536a', 135, '#fb7185'], ['Midnight Blue', '#050b24', '#1e3a8a', 135, '#60a5fa'],
+      ['Candy', '#2a0a3a', '#d6338a', 135, '#f472b6'], ['Ember', '#1a0600', '#b34a00', 150, '#fb923c'], ['Cyberpunk', '#1a0536', '#0aa3c2', 120, '#22d3ee'],
+      ['Slate', '#0f1115', '#3b4252', 135, '#94a3b8'], ['Mocha', '#1a1210', '#6b4a3a', 135, '#d6a77a'], ['Toxic', '#0a1a05', '#6aa312', 135, '#a3e635'],
+      ['Royal', '#1a0b3d', '#c9971c', 135, '#fbbf24'], ['Lavender Haze', '#1c1033', '#7c6ad6', 150, '#c4b5fd'], ['Deep Sea', '#021a1a', '#0e6b6b', 150, '#2dd4bf']
+    ].map(([name, c1, c2, angle, accent]) => ({ id: 'g_' + name.toLowerCase().replace(/\W+/g, '_'), name, c1, c2, angle, accent, dark: .38 }));
+    const findTheme = id => THEMES[id] || GRADS.find(t => t.id === id) || (S.custom || []).find(t => t.id === id);
+
+    function currentTheme() {
+      let t = findTheme(S.theme);
+      if (!t) { S.theme = S.theme === 'sunset' ? 'g_sunset' : S.theme === 'midnight' ? 'onyx' : 'dark'; t = findTheme(S.theme); }
+      if (S.accent === '#e11d2e') S.accent = null;
+      return { ...t, accent: S.accent || t.accent };
+    }
+
+    function applyTheme(t) {
+      const root = document.documentElement;
+      ['--rail', '--side', '--main', '--input', '--hover', '--solid'].forEach(k => root.style.removeProperty(k));
+      let bg = '';
+      if (t.vars) Object.entries(t.vars).forEach(([k, v]) => root.style.setProperty(k, v));
+      if (t.c1) {
+        const d = t.dark ?? .38, c1 = safeColor(t.c1), c2 = safeColor(t.c2 || t.c1);
+        root.style.setProperty('--rail', `rgba(0,0,0,${Math.min(.92, d + .2)})`);
+        root.style.setProperty('--side', `rgba(0,0,0,${Math.min(.9, d + .06)})`);
+        root.style.setProperty('--main', `rgba(0,0,0,${Math.max(.05, d - .08)})`);
+        root.style.setProperty('--input', `rgba(0,0,0,${d})`);
+        root.style.setProperty('--hover', 'rgba(255,255,255,.07)');
+        root.style.setProperty('--solid', `color-mix(in srgb, ${c1} 55%, #0c0c0f)`);
+        bg = `linear-gradient(${+t.angle || 0}deg, ${c1}, ${c2}) fixed`;
+      }
+      document.body.style.background = bg;
+      document.body.classList.toggle('grad', !!bg);
+      root.style.setProperty('--accent', safeColor(t.accent));
+    }
+
+    function pickTheme(id) { S.theme = id; S.accent = null; tdraft = null; saveS(); settings('appearance'); }
+
+    function editTheme(id) {
+      const t = id && (S.custom || []).find(x => x.id === id);
+      tdraft = t ? { ...t } : { id: 'c_' + Date.now(), name: 'My theme', c1: '#1a0933', c2: '#c2561f', angle: 135, accent: '#ff7a3d', dark: .38, isNew: true };
+      applyS(); settings('appearance');
+    }
+
+    function tdPrev(k, v) { tdraft[k] = v; applyS(); }
+    function cancelTheme() { tdraft = null; applyS(); settings('appearance'); }
+
+    function saveTheme() {
+      const t = { ...tdraft }; delete t.isNew;
+      t.name = (t.name || '').trim() || 'My theme';
+      S.custom = [...(S.custom || []).filter(x => x.id !== t.id), t];
+      S.theme = t.id; S.accent = null; tdraft = null;
+      saveS(); settings('appearance'); toast('Theme saved');
+    }
+
+    function deleteTheme() {
+      const id = tdraft.id;
+      S.custom = (S.custom || []).filter(x => x.id !== id);
+      if (S.theme === id) S.theme = 'dark';
+      tdraft = null; saveS(); settings('appearance');
+    }
+
+    function tdHtml() {
+      const d = tdraft;
+      return `<div class="card2"><h3 style="margin-top:0">${d.isNew ? 'Create your own theme' : 'Edit theme'}</h3><p class="ts">Changes preview live. Save to keep the theme.</p>
+        <span class="f2">Theme name</span><div class="nm2"><input value="${escapeHtml(d.name)}" maxlength="24" oninput="tdraft.name=this.value"></div>
+        <div class="trow"><div><span class="f2">Colour 1</span><input type="color" value="${safeColor(d.c1)}" oninput="tdPrev('c1',this.value)"></div><div><span class="f2">Colour 2</span><input type="color" value="${safeColor(d.c2)}" oninput="tdPrev('c2',this.value)"></div><div><span class="f2">Accent</span><input type="color" value="${safeColor(d.accent)}" oninput="tdPrev('accent',this.value)"></div></div>
+        <span class="f2">Gradient angle: <span id="tdang">${d.angle}</span>°</span><input type="range" min="0" max="360" value="${d.angle}" style="width:100%;accent-color:var(--accent)" oninput="$('#tdang').textContent=this.value;tdPrev('angle',+this.value)">
+        <span class="f2">Panel darkness</span><input type="range" min="10" max="85" value="${Math.round(d.dark * 100)}" style="width:100%;accent-color:var(--accent)" oninput="tdPrev('dark',this.value/100)">
+        <div class="row"><button class="b g" onclick="cancelTheme()">Cancel</button>${d.isNew ? '' : '<button class="b r" onclick="deleteTheme()">Delete</button>'}<button class="b" onclick="saveTheme()">Save theme</button></div></div>`;
+    }
+
+    function themePageHtml() {
+      const bg = t => t.c1 ? `linear-gradient(${+t.angle || 0}deg,${safeColor(t.c1)},${safeColor(t.c2 || t.c1)})` : (t.vars?.['--main'] || '#161618');
+      const sw = t => `<button class="tsw ${S.theme === t.id && !tdraft ? 'on' : ''}" title="${escapeHtml(t.name)}" style="background:${bg(t)}" onclick="pickTheme('${t.id}')">${S.theme === t.id && !tdraft ? '✓' : ''}</button>`;
+      const mine = (S.custom || []).map(t => `<div class="tw">${sw(t)}<button class="tedit" title="Edit theme" onclick="editTheme('${t.id}')">✎</button></div>`).join('');
+      return `<p>Choose how Procord looks. Themes are saved in this browser.</p>${tdraft ? tdHtml() : ''}
+        <h3>Default Themes</h3><div class="tsws">${['dark', 'ash', 'onyx'].map(k => sw(THEMES[k])).join('')}</div>
+        <h3>Colour Themes</h3><p class="ts">Make Procord yours. Free for everyone.</p>
+        <div class="tsws"><button class="tsw create" title="Create your own theme" onclick="editTheme()">🎨</button>${GRADS.map(sw).join('')}</div>
+        ${mine ? `<h3>My Themes</h3><div class="tsws">${mine}</div>` : ''}`;
+    }
     function toggleCat(i) {
       collapsed[catList[i]] = !collapsed[catList[i]];
       renderSide();
@@ -2140,13 +2245,10 @@
       modal(profileCardHtml(p) + `<div class="row"><button class="b g" onclick="closeM()">Close</button>${acts}</div>`);
     }
 
-    function closeSet() { const e = $('#set'); if (e) e.remove(); }
-
-    function logout() { closeSet(); supabaseClient.auth.signOut(); }
-
-    function pv() {
-      const g = id => $('#' + id)?.value;
-      $('#pv').innerHTML = profileCardHtml({ username: g('su') || me.username, avatar_url: g('sa'), banner_url: g('sbn'), banner_color: g('sbc'), bio: g('sbio') });
+    function closeSet() {
+      if (tdraft) { tdraft = null; applyS(); }
+      const e = $('#set');
+      if (e) e.remove();
     }
 
     async function revealEmail() {
@@ -2156,7 +2258,7 @@
     }
 
     function settings(tab = 'account') {
-      const NAV = [['User settings'], ['account', 'My account'], ['profile', 'Profiles'], ['server', 'Server profile'], ['App settings'], ['appearance', 'Appearance'], ['access', 'Accessibility'], ['notifications', 'Notifications'], ['perks', 'Perks']];
+      const NAV = [['User settings'], ['account', 'My account'], ['profile', 'Profiles'], ['server', 'Server profile'], ['App settings'], ['appearance', 'Theme'], ['look', 'App Icon & Text'], ['access', 'Accessibility'], ['notifications', 'Notifications'], ['perks', 'Perks']];
       const chk = (k, label) => `<label class="opt"><span>${label}</span><input type="checkbox" ${S[k] ? 'checked' : ''} onchange="S.${k}=this.checked;saveS();renderChat(true)"></label>`;
       const field = (id, label, val, ev = '') => `<label class="f">${label}</label><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}>`;
       const upl = (id, label, val, ev = '') => `<label class="f">${label}</label><div style="display:flex;gap:8px"><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}><button class="b g" onclick="pickImage('${id}')">Upload</button></div>`;
@@ -2175,12 +2277,12 @@
         server: ['Server profile', cur ? `<p>A different name, avatar, banner and bio, shown only in <b>${escapeHtml(cur.name)}</b>. Leave a field empty to use your main profile.</p>
           ${field('sn', 'Server nickname', mySP.nick, 'maxlength="32"')}${upl('sav', 'Server avatar', mySP.avatar_url)}${upl('sbn2', 'Server banner', mySP.banner_url)}${field('sbi', 'Server bio', mySP.bio, 'maxlength="190"')}
           <div class="err" id="serr"></div><div class="row"><button class="b" onclick="saveServerProfile()">Save server profile</button></div>` : '<p>Open a server first, then come back here.</p>'],
-        appearance: ['Appearance', `<label class="f">Theme</label><div>${[['dark', 'Crimson'], ['midnight', 'Midnight'], ['sunset', 'Amber']].map(([v, l]) => `<button class="b ${S.theme === v ? '' : 'g'}" onclick="S.theme='${v}';saveS();settings('appearance')">${l}</button>`).join(' ')}</div>
-          <label class="f">Accent colour</label><div style="display:flex;align-items:center">${ACCENTS.map(c => `<span class="sw" style="background:${c};${S.accent === c ? 'border-color:#fff' : ''}" onclick="S.accent='${c}';saveS();settings('appearance')"></span>`).join('')}<input type="color" value="${S.accent}" oninput="S.accent=this.value;saveS()"></div>
-          <label class="f">App icon</label><div>${Object.keys(ICONS).map(k => `<button class="b ${S.icon === k ? '' : 'g'}" onclick="S.icon='${k}';saveS();settings('appearance')">${k}</button>`).join(' ')}</div>
-          <label class="f">Chat font size: <span id="fsv">${S.fs}</span>px</label><input type="range" min="12" max="20" value="${S.fs}" style="width:100%;accent-color:var(--accent)" oninput="S.fs=+this.value;$('#fsv').textContent=this.value;saveS()">
-          ${chk('compact', 'Compact message spacing')}`],
-        access: ['Accessibility', `${chk('anim', 'Animations')}${chk('h24', '24-hour clock')}`],
+        appearance: ['Theme', themePageHtml()],
+    look: ['App Icon & Text', `<label class="f">Accent colour (overrides the theme's accent)</label><div style="display:flex;align-items:center">${ACCENTS.map(c => `<span class="sw" style="background:${c};${S.accent === c ? 'border-color:#fff' : ''}" onclick="S.accent='${c}';saveS();settings('look')"></span>`).join('')}<input type="color" value="${safeColor(S.accent || currentTheme().accent)}" oninput="S.accent=this.value;saveS()"><button class="b g" style="margin-left:8px" onclick="S.accent=null;saveS();settings('look')">Reset</button></div>
+      <label class="f">App icon</label><div>${Object.keys(ICONS).map(k => `<button class="b ${S.icon === k ? '' : 'g'}" onclick="S.icon='${k}';saveS();settings('look')">${k}</button>`).join(' ')}</div>
+      <label class="f">Chat font size: <span id="fsv">${S.fs}</span>px</label><input type="range" min="12" max="20" value="${S.fs}" style="width:100%;accent-color:var(--accent)" oninput="S.fs=+this.value;$('#fsv').textContent=this.value;saveS()">
+      ${chk('compact', 'Compact message spacing')}`],
+    access: ['Accessibility', `${chk('anim', 'Animations')}${chk('h24', '24-hour clock')}`],
         notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages')}<div class="row"><button class="b g" onclick="beep()">Test sound</button></div>`],
         perks: ['Perks', `<p>Every Nitro-style perk that can run on a website is unlocked for everyone, free.</p>
           ${perk('4,000-character messages', 'Unlocked')}${perk('File uploads up to 1 GB', 'Unlocked (limited by your Supabase plan)')}${perk('Animated avatars', 'Unlocked')}${perk('Profile banners', 'Unlocked')}${perk('Custom profile themes', 'Unlocked')}${perk('Server-specific profiles', 'Unlocked')}${perk('Custom app icons', 'Unlocked')}${perk('Custom app colour themes', 'Unlocked')}${perk('Join any number of servers', 'Unlocked')}${perk('Profile badge', 'Unlocked')}
