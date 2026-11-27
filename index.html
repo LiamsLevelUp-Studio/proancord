@@ -4096,8 +4096,33 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       $('#app').classList.toggle('nomem', !cur);
       const st = p => { const s = p.id === me.id ? S.status : online.get(p.id); return s && s !== 'invisible' ? s : null; };
       const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')" oncontextmenu="memCtx(event,'${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><div class="mn"><span ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${srvTagPill(p.id)}${badgePills(p)}</div></div>`;
-      const on = members.filter(st), off = members.filter(p => !st(p));
-      box.innerHTML = cur ? `<div class="lbl">Online — ${on.length}</div>${on.map(row).join('')}<div class="lbl">Offline — ${off.length}</div>${off.map(row).join('')}` : '';
+      if (!cur) { box.innerHTML = ''; return; }
+
+      const hoistedRoles = [...roles].filter(r => (r.perms || []).includes('hoist') || r.hoist).sort((a, b) => (b.position ?? 0) - (a.position ?? 0));
+      const assigned = new Set();
+      let html = '';
+
+      hoistedRoles.forEach(r => {
+        const roleMembers = members.filter(p => {
+          if (assigned.has(p.id)) return false;
+          const hasR = memberRoles.some(m => m.user_id === p.id && m.role_id === r.id);
+          return hasR && st(p);
+        });
+        if (roleMembers.length > 0) {
+          roleMembers.forEach(p => assigned.add(p.id));
+          const col = safeColor(r.color);
+          html += `<div class="lbl" style="color:${col}">${escapeHtml(r.name)} — ${roleMembers.length}</div>` + roleMembers.map(row).join('');
+        }
+      });
+
+      const unassignedOnline = members.filter(p => !assigned.has(p.id) && st(p));
+      if (unassignedOnline.length > 0 || !html) {
+        html += `<div class="lbl">Online — ${unassignedOnline.length}</div>` + unassignedOnline.map(row).join('');
+      }
+
+      const off = members.filter(p => !st(p));
+      html += `<div class="lbl">Offline — ${off.length}</div>` + off.map(row).join('');
+      box.innerHTML = html;
     }
 
     // ---------- Sending and deleting messages ----------
