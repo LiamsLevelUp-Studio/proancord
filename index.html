@@ -5166,7 +5166,11 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       delete el.dataset.kind;
       const isWide = tab === 'profile' || tab === 'server';
       el.innerHTML = `<div id="setnav"><div>${profHead}${navHtml}</div></div><div id="setmain"><div class="${isWide ? 'wide' : ''}">${mob}<h2>${title}</h2>${body}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button><span class="esc">ESC</span>`;
-      if (usetQ) filterUSetNav(usetQ);
+      if (usetQ) {
+        const qEl = $('#uset-q');
+        if (qEl) qEl.value = usetQ;
+        filterUSetNav(usetQ);
+      }
       if (tab === 'profile' || tab === 'server') pv();
       if (tab === 'voice') populateVoiceDevices();
     }
