@@ -3372,14 +3372,14 @@
         <span class="f2">Role icon</span><div style="display:flex;gap:8px"><div class="nm2" style="flex:1"><input id="ricon" placeholder="An emoji like 🛡️ or an image URL" value="${escapeHtml(r.icon || '')}" maxlength="400" oninput="sset.draft.icon=this.value.trim();dirty()"></div><button class="b g" onclick="pickImage('ricon')">Upload</button></div>
         <p class="ts">Shown next to the name of members whose top icon role is this one. Small square images work best.</p>
 
-        <label class="opt" style="margin-top:16px"><span><b>Display role members separately from online members</b></span><input type="checkbox" class="tg" ${r.hoist ? 'checked' : ''} onchange="sset.draft.hoist=this.checked;dirty()"></label>
-        <label class="opt"><span><b>Allow anyone to @mention this role</b><small class="ts">Note: members with the 'Mention @everyone, @here and All Roles' permission will always be able to ping this role.</small></span><input type="checkbox" class="tg" ${r.mentionable ? 'checked' : ''} onchange="sset.draft.mentionable=this.checked;dirty()"></label>
+        <label class="opt" style="margin-top:16px"><span><b>Display role members separately from online members</b></span><input type="checkbox" class="tg" ${(r.perms || []).includes('hoist') ? 'checked' : ''} onchange="togglePerm('hoist',this.checked)"></label>
+        <label class="opt"><span><b>Allow anyone to @mention this role</b><small class="ts">Note: members with the 'Mention @everyone, @here and All Roles' permission will always be able to ping this role.</small></span><input type="checkbox" class="tg" ${(r.perms || []).includes('mentionable') ? 'checked' : ''} onchange="togglePerm('mentionable',this.checked)"></label>
 
         <div class="card2" style="margin-top:16px"><b>View Server as Role</b><p class="ts" style="margin:4px 0 8px">This will let you test what actions this role can take and what channels it can see. Only available to Server Owners and Admins.</p><button class="b g" onclick="toast('Viewing server as role: ${escapeHtml(r.name)}')">View Server as Role →</button></div>
 
         <div class="card2" style="margin-top:20px"><div class="msg" style="margin:0;padding:0"><div>${avatarHtml(me, 40)}</div><div class="mb"><div class="mh"><b ${roleStyleAttr(r)}>${escapeHtml(me.username)}</b>${iconHtml(r)} <span class="ts">Today</span></div><div class="mc">This is how the role looks in chat.</div></div></div></div>
         <div class="row" style="justify-content:flex-start"><button class="b r" onclick="delRole('${r.id}')">Delete role</button></div>`;
-      else if (sset.rtab === 'perms') body = PERMS.map(([k, l, d]) => `<label class="opt"><span><b>${l}</b><small class="ts">${d}</small></span><input type="checkbox" class="tg" ${(r.perms || []).includes(k) ? 'checked' : ''} onchange="togglePerm('${k}',this.checked)"></label>`).join('')
+      else if (sset.rtab === 'perms') body = PERMS.map(([k, l, d]) => `<label class="opt"><span><b>${l}</b><small class="ts">${d}</small></span><input type="checkbox" class="tg" ${(r.perms || []).includes(k) && k !== 'hoist' && k !== 'mentionable' ? 'checked' : ''} onchange="togglePerm('${k}',this.checked)"></label>`).join('')
         + '<p class="ts">Give Manage Roles only to people you trust: they can create an Administrator role.</p>';
       else body = members.map(p => `<label class="opt"><span style="display:flex;align-items:center;gap:10px">${avatarHtml(p, 28)}${escapeHtml(p.username)}</span><input type="checkbox" ${memberRoles.some(m => m.user_id === p.id && m.role_id === r.id) ? 'checked' : ''} onchange="toggleMemberRole('${p.id}','${r.id}')"></label>`).join('');
       return `<div class="srow"><div><button class="ib" onclick="closeRole()">‹ Back</button> <b style="display:inline">Edit Role: ${escapeHtml(roles.find(x => x.id === r.id)?.name || r.name)}</b></div></div>
@@ -3390,7 +3390,7 @@
     function editRole(id) {
       const r = roles.find(x => x.id === id);
       sset.rid = id; sset.rtab = 'display'; sset.dirty = false;
-      sset.draft = { ...r, perms: [...(r.perms || [])], hoist: !!r.hoist, mentionable: !!r.mentionable };
+      sset.draft = { ...r, perms: [...(r.perms || [])] };
       serverSettings('roles');
     }
     function closeRole() { sset.rid = null; sset.draft = null; sset.dirty = false; serverSettings('roles'); }
@@ -3413,9 +3413,9 @@
     async function saveRole() {
       const d = sset.draft;
       if (!d.name.trim()) return toast('A role needs a name.');
-      const u = { name: d.name.trim(), color: d.color, perms: d.perms, style: d.style || 'solid', color2: d.color2 || d.color, icon: d.icon || null, hoist: !!d.hoist, mentionable: !!d.mentionable };
+      const u = { name: d.name.trim(), color: d.color, perms: d.perms, style: d.style || 'solid', color2: d.color2 || d.color, icon: d.icon || null };
       const { error } = await supabaseClient.from('roles').update(u).eq('id', d.id);
-      if (error) return toast(error.message + ' (Run update7.sql in Supabase first.)');
+      if (error) return toast(error.message);
       Object.assign(roles.find(r => r.id === d.id), u);
       sset.dirty = false; toast('Role saved');
       logAudit('Role Updated', u.name);
