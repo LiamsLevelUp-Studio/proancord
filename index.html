@@ -773,9 +773,14 @@
     .ch .av { display: inline-flex; vertical-align: middle; margin-right: 8px; }
     .mm { overflow: hidden; white-space: nowrap; }
     .mm .bdg { margin-left: 4px; padding: 0 3px; }
+    .mn { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; row-gap: 3px; white-space: normal; }
+    .mn .bdg { margin-left: 4px; margin-right: 0; }
+
     .bdg { display: inline-block; font-size: 11px; line-height: 16px; padding: 0 5px; border-radius: 4px; background: #ffffff1c; margin-left: 6px; vertical-align: middle; font-weight: 600; cursor: default; }
     .bdg.site_owner { background: linear-gradient(110deg, #1a0a0c 30%, #3d1510 50%, #1a0a0c 70%); background-size: 220% 100%; color: #ffb347; border: 1px solid #ff5a3c88; box-shadow: 0 0 10px #ff5a3c55; letter-spacing: .4px; animation: sheen 3s linear infinite; }
     @keyframes sheen { to { background-position: -220% 0; } }
+    [data-f] { display: inline-block; filter: drop-shadow(0 0 6px rgba(255, 150, 60, .7)); animation: fglow 3s ease-in-out infinite; }
+    @keyframes fglow { 50% { filter: drop-shadow(0 0 11px rgba(255, 90, 60, .95)); } }
     .bdg.og { background: linear-gradient(135deg, #ffd166, #b8860b); color: #2a1a00; }
     .bdg.owner { background: #f0b13233; color: #f0b132; }
     .bdg.tester { background: #23a55933; color: #4ade80; }
@@ -983,6 +988,30 @@
         display: none;
       }
     }
+
+    /* ---- Nitro extras: emojis, stickers, reactions, soundboard ---- */
+    .ce { height: 1.4em; width: auto; vertical-align: -0.3em; margin: 0 1px; }
+    .stk { width: 160px; height: 160px; object-fit: contain; display: block; margin-top: 4px; }
+    .rxs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .rx { display: inline-flex; align-items: center; gap: 5px; background: #ffffff10; border: 1px solid transparent; border-radius: 8px; padding: 2px 8px; color: var(--text, #ddd); cursor: pointer; font-size: 14px; }
+    .rx:hover { border-color: #ffffff33; }
+    .rx.mine { background: #e11d2e33; border-color: var(--accent, #e11d2e); }
+    .rx.super { background: linear-gradient(135deg, #ff4252aa, #ffd166aa); animation: superglow 1.8s ease-in-out infinite; font-weight: 700; }
+    @keyframes superglow { 0%, 100% { box-shadow: 0 0 0 #ffd16600; } 50% { box-shadow: 0 0 12px #ffd166cc; } }
+    .racts { position: absolute; right: 16px; top: -14px; display: none; background: var(--side); border: 1px solid #0006; border-radius: 6px; }
+    .msg:hover .racts { display: flex; }
+    .acts ~ .racts { right: 92px; }
+    #rxp { position: fixed; z-index: 99; background: var(--side, #1b1b1f); border: 1px solid #ffffff22; border-radius: 10px; padding: 8px; max-width: 280px; box-shadow: 0 8px 30px #000a; animation: pop .15s; }
+    #rxp button { background: none; border: 0; font-size: 22px; cursor: pointer; padding: 3px; border-radius: 6px; }
+    #rxp button:hover { background: #ffffff18; }
+    #rxp label { display: block; font-size: 12px; color: var(--mute, #999); margin-top: 6px; }
+    .emo-h { grid-column: 1 / -1; font-size: 11px; text-transform: uppercase; color: var(--mute, #999); margin: 6px 0 2px; }
+    .stkgrid { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+    .stkgrid img { width: 64px; height: 64px; object-fit: contain; cursor: pointer; border-radius: 8px; }
+    .stkgrid img:hover { background: #ffffff18; }
+    .sfx { display: inline-block; margin: 4px; }
+    .libitem { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #ffffff12; }
+    .libitem img { height: 36px; max-width: 80px; object-fit: contain; }
   </style>
 </head>
 
@@ -1021,10 +1050,10 @@
       return `hsl(${h} 50% 45%)`;
     };
     const avatarHtml = (p, n = 40) => p?.avatar_url ? `<img class="av" style="width:${n}px;height:${n}px" src="${escapeHtml(p.avatar_url)}" alt="">` : `<div class="av" style="width:${n}px;height:${n}px;background:${colorFromName(p?.username)};font-size:${n * .42}px">${escapeHtml((p?.username || '?')[0].toUpperCase())}</div>`;
-    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🧪', 'Tester'], og: ['OG', 'OG: an early Proanchat member'], site_owner: ['💎', 'Owner of Proanchat'] };
+    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🧪', 'Tester'], og: ['OG', 'OG: an early Proanchat member'], site_owner: ['💎', 'Founder of Proanchat'] };
     const badgePills = (p, full) => [...(cur && cur.owner_id === p?.id ? ['owner'] : []), ...(p?.badges || [])]
       .filter(k => BADGES[k]).sort((a, b) => (b === 'site_owner') - (a === 'site_owner'))
-      .map(k => `<span class="bdg ${k}" title="${BADGES[k][1]}">${BADGES[k][0]}${k === 'site_owner' ? (full ? ' Proanchat Owner' : ' OWNER') : full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`).join('');
+      .map(k => `<span class="bdg ${k}" title="${BADGES[k][1]}">${BADGES[k][0]}${k === 'site_owner' ? (full ? ' Proanchat Founder' : ' FOUNDER') : full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`).join('');
     const safeColor = c => /^#[0-9a-f]{3,8}$/i.test(c || '') ? c : '#99aab5';
     const roleColor = uid => { if (!cur) return null; const r = roles.find(x => memberRoles.some(m => m.user_id === uid && m.role_id === x.id)); return r ? safeColor(r.color) : null; };
     const STYLES = [['solid', 'Solid'], ['gradient', 'Gradient'], ['holo', 'Holographic']];
@@ -1038,7 +1067,8 @@
     // the highest role that actually has a colour or style (plain grey roles are ignored, like Discord)
     const roleAttr = uid => { const r = userRoles(uid).find(x => x.style === 'gradient' || x.style === 'holo' || safeColor(x.color).toLowerCase() !== '#99aab5'); return r ? roleStyleAttr(r) : ''; };
     const roleIcon = uid => { const r = userRoles(uid).find(x => x.icon); return r ? iconHtml(r) : ''; };
-    const nameHtml = p => `<b ${roleAttr(p?.id)} onclick="showProfile('${p?.id}')">${escapeHtml(p?.username)}</b>${roleIcon(p?.id)}${badgePills(p)}`;
+    const isFounder = p => (p?.badges || []).includes('site_owner');
+    const nameHtml = p => `<b ${roleAttr(p?.id)} ${isFounder(p) ? 'data-f' : ''} onclick="showProfile('${p?.id}')">${escapeHtml(p?.username)}</b>${roleIcon(p?.id)}${badgePills(p)}`;
     const formatDateTime = d => new Date(d).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: !S.h24 });
     const formatTime = d => new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !S.h24 });
 
@@ -1140,6 +1170,7 @@
           .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
           .replace(/(^|\s)\*(.+?)\*(?=\s|$)/g, '$1<i>$2</i>')
           .replace(/~~(.+?)~~/g, '<s>$1</s>')
+          .replace(/:(\w{2,32}):/g, (x, n) => EM[n.toLowerCase()] ? emojiHtml(x) : x)
           .replace(/@(\w+)/g, (x, n) => members.some(m => (m.username || '').toLowerCase() === n.toLowerCase()) ? `<span class="mention">${x}</span>` : x);
       }).join('');
     }
@@ -1241,7 +1272,7 @@
         $('#cnt').textContent = n > 3800 ? `${n}/4000` : '';
         sendTyping();
       };
-      buildEmoji();
+      buildEmoji(); loadLibrary();
       await loadServers();
       loadFriends();
       watchDMs();
@@ -1438,6 +1469,7 @@
       const { data } = await q.order('id', { ascending: false }).limit(60);
       msgs = (data || []).reverse();
       renderChat();
+      loadReactions();
     }
 
     function forumHtml() {
@@ -1518,7 +1550,7 @@
 
     function friendsHtml() {
       const label = { online: 'Online', idle: 'Idle', dnd: 'Do Not Disturb' };
-      const row = (p, actions) => `<div class="frow" data-n="${escapeHtml(p.username.toLowerCase())}"><div class="dot">${avatarHtml(p, 36)}<i class="${friendStatus(p) || 'off'}"></i></div><div><b>${escapeHtml(p.username)}</b>${badgePills(p)}<span class="stx">${label[friendStatus(p)] || 'Offline'}</span></div><span style="flex:1"></span>${actions}</div>`;
+      const row = (p, actions) => `<div class="frow" data-n="${escapeHtml(p.username.toLowerCase())}"><div class="dot">${avatarHtml(p, 36)}<i class="${friendStatus(p) || 'off'}"></i></div><div><b ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</b>${badgePills(p)}<span class="stx">${label[friendStatus(p)] || 'Offline'}</span></div><span style="flex:1"></span>${actions}</div>`;
       let body;
       if (friendTab === 'add') body = `<h3>Add Friend</h3><p>You can add friends with their Proanchat username.</p><div class="nm2"><input id="fu" placeholder="You can add friends with their username" onkeydown="if(event.key==='Enter')addFriend()"><button class="b" style="margin:6px 0" onclick="addFriend()">Send Friend Request</button></div><div class="err" id="ferr"></div>`;
       else if (friendTab === 'pending') {
@@ -1724,7 +1756,7 @@
       return `<h2>Members</h2><p>${members.length} member${members.length === 1 ? '' : 's'}</p>` + members.map(p => {
         const mine = roles.filter(r => memberRoles.some(m => m.user_id === p.id && m.role_id === r.id)).map(r => `<span class="chip on" style="--c:${safeColor(r.color)}">${escapeHtml(r.name)}</span>`).join(' ');
         const kick = can('kick_members') && p.id !== cur.owner_id && p.id !== me.id ? `<button class="b g" onclick="kick('${p.id}')">Kick</button>` : '';
-        return `<div class="frow">${avatarHtml(p, 36)}<div><b ${roleAttr(p.id)}>${escapeHtml(p.username)}</b>${roleIcon(p.id)}${badgePills(p)}<span class="stx">${mine}</span></div><span style="flex:1"></span>${kick}</div>`;
+        return `<div class="frow">${avatarHtml(p, 36)}<div><b ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</b>${roleIcon(p.id)}${badgePills(p)}<span class="stx">${mine}</span></div><span style="flex:1"></span>${kick}</div>`;
       }).join('');
     }
 
@@ -1932,6 +1964,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       vc = { room, label, stream, sig, peers: {}, muted: false, deaf: false, cam: null, screen: null, vels: {}, meters: {}, speaking: new Set() };
       sig.on('presence', { event: 'sync' }, voiceSync)
         .on('broadcast', { event: 'rtc' }, ({ payload }) => onSignal(payload))
+        .on('broadcast', { event: 'sfx' }, ({ payload }) => playSfx(payload))
         .subscribe(s => { if (s === 'SUBSCRIBED') { sig.track(meta()); lobbyTrack(); } });
       startMeters();
       renderMe(); renderSide(); renderChat(true);
@@ -2047,18 +2080,18 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     async function toggleCam() {
       if (!vc) return;
       if (vc.cam) return stopVideo('cam');
-      try { vc.cam = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } }); }
+      try { vc.cam = await navigator.mediaDevices.getUserMedia({ video: vqc() }); }
       catch (e) { return toast('Allow camera access to turn on video.'); }
-      addVideo('cam', vc.cam);
+      addVideo('cam', vc.cam); setTimeout(boostVideo, 800);
     }
 
     async function toggleScreen() {
       if (!vc) return;
       if (vc.screen) return stopVideo('screen');
-      try { vc.screen = await navigator.mediaDevices.getDisplayMedia({ video: true }); }
+      try { vc.screen = await navigator.mediaDevices.getDisplayMedia({ video: vqc(), audio: true }); }
       catch (e) { return; }
       vc.screen.getVideoTracks()[0].onended = () => stopVideo('screen');
-      addVideo('screen', vc.screen);
+      addVideo('screen', vc.screen); setTimeout(boostVideo, 800);
     }
 
     // Green ring around whoever is talking
@@ -2132,6 +2165,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const b = (cls, title, code, svg) => `<button class="cbtn ${cls}" title="${title}" onclick="${code}">${svg}</button>`;
       return `<div class="vctl"><div class="cgroup">${b(vc.muted ? 'off' : '', vc.muted ? 'Unmute' : 'Mute', "voiceToggle('muted')", icon('mic', vc.muted))}${b(vc.cam ? 'on' : '', vc.cam ? 'Turn off camera' : 'Turn on camera', 'toggleCam()', icon('cam', !vc.cam))}</div>`
         + `<div class="cgroup">${b(vc.screen ? 'on' : '', vc.screen ? 'Stop sharing' : 'Share your screen', 'toggleScreen()', icon('screen'))}${b(vc.deaf ? 'off' : '', vc.deaf ? 'Undeafen' : 'Deafen', "voiceToggle('deaf')", icon('head', vc.deaf))}</div>`
+        + `<div class="cgroup">${b('', 'Soundboard', 'soundboard()', '🔊')}</div>`
         + `${b('end', 'Disconnect', 'leaveVoice()', icon('end'))}</div>`;
     }
 
@@ -2169,7 +2203,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const labels = { online: 'Online', idle: 'Idle', dnd: 'Do not disturb', invisible: 'Invisible' };
       if ($('#vbar')) $('#vbar').innerHTML = vc ? `<div class="vtop"><div style="flex:1;min-width:0"><b style="color:var(--green);font-size:13px">Voice Connected</b><small>${escapeHtml(vc.label)}</small></div><button class="ib" title="Disconnect" onclick="leaveVoice()">${icon('end', false, 20)}</button></div>
         <div class="vbtns"><button class="vb ${vc.cam ? 'on' : ''}" title="Camera" onclick="toggleCam()">${icon('cam', !vc.cam, 18)}</button><button class="vb ${vc.screen ? 'on' : ''}" title="Share your screen" onclick="toggleScreen()">${icon('screen', false, 18)}</button><button class="vb ${vc.muted ? 'off' : ''}" title="Mute" onclick="voiceToggle('muted')">${icon('mic', vc.muted, 18)}</button><button class="vb ${vc.deaf ? 'off' : ''}" title="Deafen" onclick="voiceToggle('deaf')">${icon('head', vc.deaf, 18)}</button></div>` : '';
-      $('#me').innerHTML = `<div class="dot">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm">${escapeHtml(me.username)}<small>${labels[S.status]}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
+      $('#me').innerHTML = `<div class="dot">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm"><span ${isFounder(me) ? 'data-f' : ''}>${escapeHtml(me.username)}</span><small>${labels[S.status]}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
     }
     // ---------- Custom icon set: Proanchat's own icons replace the stock emoji in the interface ----------
     const svg = body => `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
@@ -2268,7 +2302,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const isDM = !cur, kind = isDM ? 'dm' : curCh?.kind;
       const composer = isDM || ['text', 'announcement', 'rules'].includes(kind) || (kind === 'forum' && curThread);
       const locked = !isDM && ['announcement', 'rules'].includes(kind) && !can('administrator');
-      if (isDM) ch.innerHTML = `<span style="color:var(--mute);font-size:22px">@</span> ${escapeHtml(dmWith.username)}${vc && vc.room === dmRoom(dmWith.id) ? '<span class="incall">In a call</span>' : ''}<button class="ib" style="margin-left:auto" title="Start a voice call" onclick="startCall()">📞</button>`;
+      if (isDM) ch.innerHTML = `<span style="color:var(--mute);font-size:22px">@</span> <span ${isFounder(dmWith) ? 'data-f' : ''}>${escapeHtml(dmWith.username)}</span>${vc && vc.room === dmRoom(dmWith.id) ? '<span class="incall">In a call</span>' : ''}<button class="ib" style="margin-left:auto" title="Start a voice call" onclick="startCall()">📞</button>`;
       else if (curThread) ch.innerHTML = `<button class="ib" onclick="closeThread()">‹ Back</button> ${escapeHtml(curThread.title)}`;
       else ch.innerHTML = `<span style="color:var(--mute);font-size:22px">${ICON[kind] || '#'}</span> ${escapeHtml(curCh?.name || '')}${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}`;
       comp.style.display = composer ? '' : 'none';
@@ -2292,8 +2326,8 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         const acts = (m.user_id === me.id || (!m.dm && can('manage_messages'))) && m.content !== '[call]' ? `<div class="acts">${m.user_id === me.id ? `<button class="ib" onclick="editMsg(${m.id})" title="Edit">✏️</button>` : ''}<button class="ib" onclick="delMsg(${m.id})" title="Delete">🗑</button></div>` : '';
         const body = m.dm && m.content === '[call]'
           ? `<button class="b" onclick="joinVoice('${dmRoom(m.user_id === me.id ? m.recipient : m.user_id)}','Call with ${escapeHtml(dmWith?.username || 'friend')}')">📞 ${m.user_id === me.id ? 'You started a call' : escapeHtml(p.username) + ' started a call'} · Join</button>`
-          : `${fmtText(m.content || '')}${attHtml(m)}${m.edited ? ' <span class="ed">(edited)</span>' : ''}`;
-        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}">${left}<div class="mb">${head}<div class="mc">${body}</div></div>${acts}</div>`;
+          : `${fmtText(m.content || '')}${attHtml(m)}${m.edited ? ' <span class="ed">(edited)</span>' : ''}${rxHtml(m)}`;
+        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}">${left}<div class="mb">${head}<div class="mc">${body}</div></div>${acts}<div class="racts"><button class="ib" onclick="rxPick(event,${m.id},${m.dm ? 1 : 0})" title="Add reaction">😀</button></div></div>`;
       });
       animateLast = false;
       el.innerHTML = html || `<div class="empty"><h2>${isDM ? 'This is the start of your chat with ' + escapeHtml(dmWith.username) : 'Welcome to #' + escapeHtml(curCh?.name || '')}</h2><p>Say something!</p></div>`;
@@ -2305,7 +2339,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!box) return;
       $('#app').classList.toggle('nomem', !cur);
       const st = p => { const s = p.id === me.id ? S.status : online.get(p.id); return s && s !== 'invisible' ? s : null; };
-      const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><span ${roleAttr(p.id)}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${badgePills(p)}</div>`;
+      const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><div class="mn"><span ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${badgePills(p)}</div></div>`;
       const on = members.filter(st), off = members.filter(p => !st(p));
       box.innerHTML = cur ? `<div class="lbl">Online — ${on.length}</div>${on.map(row).join('')}<div class="lbl">Offline — ${off.length}</div>${off.map(row).join('')}` : '';
     }
@@ -2344,12 +2378,151 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       renderChat(true);
     }
 
+    // ---------- Custom emojis, stickers, reactions, soundboard ----------
+    let EM = {};                                        // every custom emoji: name -> image url
+    let LIB = { emojis: [], stickers: [], sounds: [] }; // my own library (works in every server and DM)
+    let rx = [];                                        // reactions on the messages on screen
+    const QUICK = ['👍', '❤️', '😂', '🔥', '🎉', '😮', '😢', '👀'];
+    const TABLES = { emojis: 'custom_emojis', stickers: 'stickers', sounds: 'sounds' };
+
+    async function loadLibrary() {
+      const q = t => supabaseClient.from(t).select('*').limit(1000);
+      const [a, b, c] = await Promise.all([q('custom_emojis'), q('stickers').eq('owner_id', me.id), q('sounds').eq('owner_id', me.id)]);
+      EM = {};
+      (a.data || []).forEach(e => { EM[e.name.toLowerCase()] = e.url; });
+      LIB = { emojis: (a.data || []).filter(e => e.owner_id === me.id), stickers: b.data || [], sounds: c.data || [] };
+      buildEmoji();
+      if (!window.rxWatch) {
+        window.rxWatch = supabaseClient.channel('rx-watch').on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, () => loadReactions()).subscribe();
+      }
+    }
+
+    async function loadReactions() {
+      const ids = msgs.map(m => m.id);
+      if (!ids.length) { rx = []; return; }
+      const { data } = await supabaseClient.from('reactions').select('*').in('message_id', ids);
+      rx = data || [];
+      renderChat(true);
+    }
+
+    function emojiHtml(e) {
+      const m = /^:(\w+):$/.exec(e);
+      return m && EM[m[1].toLowerCase()] ? `<img class="ce" src="${escapeHtml(EM[m[1].toLowerCase()])}" alt="${escapeHtml(e)}" title="${escapeHtml(e)}">` : escapeHtml(e);
+    }
+
+    function rxHtml(m) {
+      const mine = rx.filter(r => r.message_id === m.id && !!r.dm === !!m.dm);
+      if (!mine.length) return '';
+      const groups = {};
+      mine.forEach(r => { const k = r.emoji + '|' + !!r.super; (groups[k] = groups[k] || []).push(r); });
+      return '<div class="rxs">' + Object.entries(groups).map(([k, list]) => {
+        const [e, sup] = [list[0].emoji, !!list[0].super], did = list.some(r => r.user_id === me.id);
+        return `<button class="rx ${did ? 'mine' : ''} ${sup ? 'super' : ''}" onclick="rxToggle(${m.id},${m.dm ? 1 : 0},'${e.replace(/'/g, '')}',${sup})">${sup ? '⚡' : ''}${emojiHtml(e)} ${list.length}</button>`;
+      }).join('') + '</div>';
+    }
+
+    async function rxToggle(id, dm, emoji, sup) {
+      const mine = rx.find(r => r.message_id === id && !!r.dm === !!dm && r.emoji === emoji && !!r.super === !!sup && r.user_id === me.id);
+      const { error } = mine
+        ? await supabaseClient.from('reactions').delete().eq('id', mine.id)
+        : await supabaseClient.from('reactions').insert({ message_id: id, dm: !!dm, emoji, super: !!sup });
+      if (error) return toast(error.message);
+      loadReactions();
+    }
+
+    function rxPick(ev, id, dm) {
+      const old = $('#rxp'); if (old) old.remove();
+      const d = document.createElement('div');
+      d.id = 'rxp';
+      d.style.left = Math.min(ev.clientX, innerWidth - 300) + 'px';
+      d.style.top = Math.max(10, ev.clientY - 150) + 'px';
+      const all = [...QUICK, ...LIB.emojis.slice(0, 16).map(e => ':' + e.name + ':')];
+      d.innerHTML = all.map(e => `<button data-e="${escapeHtml(e)}">${emojiHtml(e)}</button>`).join('') + '<label><input type="checkbox" id="rxs"> ⚡ Super reaction (glows)</label>';
+      d.onclick = e => { const b = e.target.closest('button'); if (!b) return; rxToggle(id, dm, b.dataset.e, $('#rxs').checked); d.remove(); };
+      document.body.append(d);
+      setTimeout(() => document.addEventListener('mousedown', function f(e) { if (!d.contains(e.target)) { d.remove(); document.removeEventListener('mousedown', f); } }), 0);
+    }
+
+    async function sendSticker(i) {
+      const s = LIB.stickers[i];
+      if (!s || (!curCh && !dmWith)) return;
+      $('#emo').classList.remove('on');
+      const { data, error } = await postMessage({ content: '', attachment_url: s.url, attachment_name: 'sticker:' + s.name });
+      if (error) return toast(error.message);
+      addMsg(data);
+    }
+
+    // Library management (Settings > Emojis & Stickers)
+    async function libAdd(kind) {
+      const name = ($('#ln').value || '').trim().replace(/[^\w]/g, '').toLowerCase(), f = $('#lf').files[0];
+      if (!/^\w{2,32}$/.test(name)) return toast('Give it a name of 2 to 32 letters, numbers or _');
+      if (!f) return toast('Choose a file first');
+      if (f.size > (kind === 'sounds' ? 1 : 2) * 1024 * 1024) return toast('File too large (max ' + (kind === 'sounds' ? '1' : '2') + ' MB)');
+      toast('Uploading…');
+      const url = await uploadFile(f);
+      if (!url) return;
+      const row = { name, url, ...(kind === 'sounds' ? { emoji: '🔊' } : {}) };
+      const { error } = await supabaseClient.from(TABLES[kind]).insert(row);
+      if (error) return toast(error.message.includes('duplicate') ? 'That name is taken, pick another' : error.message);
+      await loadLibrary(); settings(kind === 'sounds' ? 'voice' : 'emojis'); toast('Added');
+    }
+
+    async function libDel(kind, id) {
+      const { error } = await supabaseClient.from(TABLES[kind]).delete().eq('id', id);
+      if (error) return toast(error.message);
+      await loadLibrary(); settings(kind === 'sounds' ? 'voice' : 'emojis');
+    }
+
+    const libList = (kind, items) => items.map(i => `<div class="libitem">${kind === 'sounds' ? '🔊' : `<img src="${escapeHtml(i.url)}" alt="">`}<span style="flex:1">${kind === 'emojis' ? ':' + escapeHtml(i.name) + ':' : escapeHtml(i.name)}</span><button class="b r" onclick="libDel('${kind}',${i.id})">Delete</button></div>`).join('') || '<p>Nothing here yet.</p>';
+    const libForm = (kind, accept) => `<div class="card2"><label class="f" style="margin-top:0">Name</label><input class="t" id="ln" maxlength="32" placeholder="e.g. pepe_dance"><label class="f">File</label><input type="file" id="lf" accept="${accept}" class="t"><div class="row" style="margin-top:8px"><button class="b" onclick="libAdd('${kind}')">Add</button></div></div>`;
+
+    // Soundboard: plays for everyone in your voice call
+    const TONES = { '📯 Horn': [[440, .15], [554, .15], [659, .4]], '🥁 Drum': [[120, .1], [90, .1], [60, .3]], '😂 Laugh': [[600, .08], [500, .08], [600, .08], [500, .08], [400, .2]], '🔔 Bell': [[1320, .5]] };
+    function playTone(steps) {
+      try {
+        const c = new (window.AudioContext || window.webkitAudioContext)(); let t = c.currentTime;
+        steps.forEach(([f, d]) => { const o = c.createOscillator(), g = c.createGain(); o.type = 'square'; o.frequency.value = f; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.08, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.start(t); o.stop(t + d); t += d; });
+      } catch (e) {}
+    }
+    function playSfx(p) {
+      if (!p || (vc && vc.deaf)) return;
+      if (p.tone && TONES[p.tone]) playTone(TONES[p.tone]);
+      else if (/^https?:\/\//.test(p.url || '')) { const a = new Audio(p.url); a.volume = .8; a.play().catch(() => {}); }
+    }
+    function sfx(payload) {
+      if (!vc) return toast('Join a voice channel first');
+      playSfx(payload);
+      vc.sig.send({ type: 'broadcast', event: 'sfx', payload });
+    }
+    function soundboard() {
+      if (!vc) return toast('Join a voice channel first');
+      modal(`<h2>Soundboard</h2><p>Your sounds work in every server. Everyone in the call hears them.</p>${Object.keys(TONES).map(k => `<button class="b g sfx" onclick="sfx({tone:'${k}'})">${k}</button>`).join('')}${LIB.sounds.map(s => `<button class="b sfx" onclick="sfx({url:'${escapeHtml(s.url)}'})">🔊 ${escapeHtml(s.name)}</button>`).join('')}<div class="row"><button class="b g" onclick="closeM();settings('voice')">Add your own sounds</button><button class="b g" onclick="closeM()">Close</button></div>`);
+    }
+
+    // HD video: picks resolution and frame rate, then lifts the bitrate so it stays sharp
+    const VQ = { '720p30': [1280, 720, 30, 2.5e6], '1080p60': [1920, 1080, 60, 8e6], '4k60': [3840, 2160, 60, 25e6] };
+    const vqc = () => { const [w, h, f] = VQ[S.vq || '720p30']; return { width: { ideal: w }, height: { ideal: h }, frameRate: { ideal: f } }; };
+    function boostVideo() {
+      if (!vc) return;
+      const bps = VQ[S.vq || '720p30'][3];
+      Object.values(vc.peers).forEach(p => p.pc.getSenders().forEach(async s => {
+        if (!s.track || s.track.kind !== 'video') return;
+        try { const pr = s.getParameters(); if (!pr.encodings || !pr.encodings.length) pr.encodings = [{}]; pr.encodings[0].maxBitrate = bps; pr.encodings[0].maxFramerate = VQ[S.vq || '720p30'][2]; await s.setParameters(pr); } catch (e) {}
+      }));
+    }
+
     // ---------- Emoji picker ----------
     const EMO = ['😀', '😂', '🥹', '😍', '😎', '🤔', '😭', '😡', '👍', '👎', '🙏', '🔥', '🎉', '💀', '❤️', '✨', '👀', '🚀'];
     const EMO_P = ['🪩', '🦄', '🐉', '🛸', '🧿', '🌈', '🍕', '🎮', '🎧', '🏆', '💎', '👑', '🧠', '🫡', '🥳', '🤩', '😈', '🦊'];
 
     function buildEmoji() {
-      $('#emo').innerHTML = [...EMO, ...EMO_P].map(e => `<button onclick="ins('${e}')">${e}</button>`).join('');
+      const std = [...EMO, ...EMO_P].map(e => `<button onclick="ins('${e}')">${e}</button>`).join('');
+      const cus = LIB.emojis.map(e => `<button onclick="ins(':${e.name}:')" title=":${e.name}:"><img class="ce" style="height:28px" src="${escapeHtml(e.url)}" alt=""></button>`).join('');
+      const stk = LIB.stickers.map((s, i) => `<img src="${escapeHtml(s.url)}" title="${escapeHtml(s.name)}" onclick="sendSticker(${i})">`).join('');
+      $('#emo').innerHTML = std
+        + (cus ? '<div class="emo-h">Your custom emojis (work everywhere)</div>' + cus : '')
+        + (stk ? '<div class="emo-h">Stickers</div><div class="stkgrid">' + stk + '</div>' : '')
+        + (!cus && !stk ? '<div class="emo-h">Add emojis and stickers in Settings, Emojis &amp; Stickers</div>' : '');
     }
 
     function ins(e) {
@@ -2522,6 +2695,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     function attHtml(m) {
       if (!m.attachment_url) return '';
+      if ((m.attachment_name || '').startsWith('sticker:')) return `<img class="stk" src="${escapeHtml(m.attachment_url)}" alt="${escapeHtml(m.attachment_name.slice(8))}">`;
       const u = escapeHtml(m.attachment_url), n = escapeHtml(m.attachment_name || 'file');
       if (/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(n)) return `<div><img class="att" src="${u}" alt="${n}" loading="lazy"></div>`;
       if (/\.(mp4|webm|mov|m4v)$/i.test(n)) return `<div><video class="att" src="${u}" controls preload="metadata"></video></div>`;
@@ -2545,7 +2719,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     // ---------- Profiles and settings ----------
-    const profileCardHtml = p => `<div class="ban" style="background:${p.banner_url ? `url('${escapeHtml(p.banner_url)}') center/cover` : `linear-gradient(135deg,${escapeHtml(p.banner_color || '#e11d2e')},#000)`}"></div><div class="pop">${avatarHtml(p, 80)}</div><h2 style="margin:8px 0 0">${escapeHtml(p.username)} <span class="badge">PLUS</span>${badgePills(p, true)}</h2><p style="margin:4px 0 0">${escapeHtml(p.bio || '')}</p>`;
+    const profileCardHtml = p => `<div class="ban" style="background:${p.banner_url ? `url('${escapeHtml(p.banner_url)}') center/cover` : `linear-gradient(135deg,${escapeHtml(p.banner_color || '#e11d2e')},#000)`}"></div><div class="pop">${avatarHtml(p, 80)}</div><h2 style="margin:8px 0 0"><span ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span> <span class="badge">PLUS</span>${badgePills(p, true)}</h2><p style="margin:4px 0 0">${escapeHtml(p.bio || '')}</p>`;
 
     function showProfile(id) {
       const p = members.find(x => x.id === id) || msgs.find(m => m.user_id === id)?.profiles || (id === me.id ? me : null);
@@ -2567,7 +2741,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     function settings(tab = 'account') {
-      const NAV = [['User settings'], ['account', 'My account'], ['profile', 'Profiles'], ['server', 'Server profile'], ['App settings'], ['appearance', 'Theme'], ['look', 'App Icon & Text'], ['access', 'Accessibility'], ['notifications', 'Notifications'], ['perks', 'Perks']];
+      const NAV = [['User settings'], ['account', 'My account'], ['profile', 'Profiles'], ['server', 'Server profile'], ['App settings'], ['appearance', 'Theme'], ['look', 'App Icon & Text'], ['access', 'Accessibility'], ['notifications', 'Notifications'], ['emojis', 'Emojis & Stickers'], ['voice', 'Voice & Video'], ['perks', 'Perks']];
       const chk = (k, label) => `<label class="opt"><span>${label}</span><input type="checkbox" ${S[k] ? 'checked' : ''} onchange="S.${k}=this.checked;saveS();renderChat(true)"></label>`;
       const field = (id, label, val, ev = '') => `<label class="f">${label}</label><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}>`;
       const upl = (id, label, val, ev = '') => `<label class="f">${label}</label><div style="display:flex;gap:8px"><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}><button class="b g" onclick="pickImage('${id}')">Upload</button></div>`;
@@ -2593,9 +2767,11 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       ${chk('compact', 'Compact message spacing')}`],
     access: ['Accessibility', `${chk('anim', 'Animations')}${chk('h24', '24-hour clock')}`],
         notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages')}<div class="row"><button class="b g" onclick="beep()">Test sound</button></div>`],
+        emojis: ['Emojis & Stickers', `<p>Emojis you add here work in every server and DM. Type <b>:name:</b> in a message. GIF and WebP files animate. Max 2 MB each.</p><h3>Add a custom emoji</h3>${libForm('emojis', 'image/*')}<h3>Your emojis (${LIB.emojis.length})</h3>${libList('emojis', LIB.emojis)}<h3>Add a sticker</h3>${libForm('stickers', 'image/*')}<h3>Your stickers (${LIB.stickers.length})</h3>${libList('stickers', LIB.stickers)}`],
+        voice: ['Voice & Video', `<label class="f" style="margin-top:0">Camera and screen share quality</label><select class="t" onchange="S.vq=this.value;saveS();boostVideo()">${[['720p30', '720p, 30 fps (default)'], ['1080p60', '1080p, 60 fps (HD)'], ['4k60', '4K, 60 fps (needs a 4K camera and a fast connection)']].map(([v, l]) => `<option value="${v}" ${(S.vq || '720p30') === v ? 'selected' : ''}>${l}</option>`).join('')}</select><p>Applies the next time you turn your camera or screen share on. Your device and internet decide what you actually get.</p><h3>Soundboard sounds</h3><p>Use them from the 🔊 button in a voice call. Max 1 MB each.</p>${libForm('sounds', 'audio/*')}${libList('sounds', LIB.sounds)}`],
         perks: ['Perks', `<p>Every Nitro-style perk that can run on a website is unlocked for everyone, free.</p>
           ${perk('4,000-character messages', 'Unlocked')}${perk('File uploads up to 1 GB', 'Unlocked (limited by your Supabase plan)')}${perk('Animated avatars', 'Unlocked')}${perk('Profile banners', 'Unlocked')}${perk('Custom profile themes', 'Unlocked')}${perk('Server-specific profiles', 'Unlocked')}${perk('Custom app icons', 'Unlocked')}${perk('Custom app colour themes', 'Unlocked')}${perk('Join any number of servers', 'Unlocked')}${perk('Profile badge', 'Unlocked')}
-          <h3>Not available</h3>${perk('Custom emojis, stickers, super reactions', 'Not built yet')}${perk('Custom video backgrounds', 'Not built yet')}${perk('HD video streaming, soundboard', 'Needs a calling service')}${perk('Server boosts', 'Not applicable')}`]
+          ${perk('Custom emojis and animated emojis anywhere', 'Unlocked')}${perk('Custom stickers anywhere', 'Unlocked')}${perk('Reactions and Super Reactions', 'Unlocked')}${perk('Global soundboard', 'Unlocked')}${perk('HD streaming up to 4K 60 fps', 'Unlocked (depends on your device and connection)')}<h3>Not available</h3>${perk('Custom video backgrounds', 'Not built yet')}${perk('Server boosts', 'Not applicable, there are no payments')}`]
       };
       const [title, body] = pages[tab];
       const nav = NAV.map(n => n.length === 1 ? `<div class="sg">${n[0]}</div>` : `<button class="sn ${n[0] === tab ? 'on' : ''}" onclick="settings('${n[0]}')">${n[1]}</button>`).join('');
