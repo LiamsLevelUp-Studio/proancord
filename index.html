@@ -774,6 +774,8 @@
     .mm { overflow: hidden; white-space: nowrap; }
     .mm .bdg { margin-left: 4px; padding: 0 3px; }
     .bdg { display: inline-block; font-size: 11px; line-height: 16px; padding: 0 5px; border-radius: 4px; background: #ffffff1c; margin-left: 6px; vertical-align: middle; font-weight: 600; cursor: default; }
+    .bdg.site_owner { background: linear-gradient(110deg, #1a0a0c 30%, #3d1510 50%, #1a0a0c 70%); background-size: 220% 100%; color: #ffb347; border: 1px solid #ff5a3c88; box-shadow: 0 0 10px #ff5a3c55; letter-spacing: .4px; animation: sheen 3s linear infinite; }
+    @keyframes sheen { to { background-position: -220% 0; } }
     .bdg.og { background: linear-gradient(135deg, #ffd166, #b8860b); color: #2a1a00; }
     .bdg.owner { background: #f0b13233; color: #f0b132; }
     .bdg.tester { background: #23a55933; color: #4ade80; }
@@ -1019,8 +1021,10 @@
       return `hsl(${h} 50% 45%)`;
     };
     const avatarHtml = (p, n = 40) => p?.avatar_url ? `<img class="av" style="width:${n}px;height:${n}px" src="${escapeHtml(p.avatar_url)}" alt="">` : `<div class="av" style="width:${n}px;height:${n}px;background:${colorFromName(p?.username)};font-size:${n * .42}px">${escapeHtml((p?.username || '?')[0].toUpperCase())}</div>`;
-    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🧪', 'Tester'], og: ['OG', 'OG: an early Proanchat member'] };
-    const badgePills = (p, full) => [...(cur && cur.owner_id === p?.id ? ['owner'] : []), ...(p?.badges || [])].filter(k => BADGES[k]).map(k => `<span class="bdg ${k}" title="${BADGES[k][1]}">${BADGES[k][0]}${full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`).join('');
+    const BADGES = { owner: ['👑', 'Server owner'], tester: ['🧪', 'Tester'], og: ['OG', 'OG: an early Proanchat member'], site_owner: ['💎', 'Owner of Proanchat'] };
+    const badgePills = (p, full) => [...(cur && cur.owner_id === p?.id ? ['owner'] : []), ...(p?.badges || [])]
+      .filter(k => BADGES[k]).sort((a, b) => (b === 'site_owner') - (a === 'site_owner'))
+      .map(k => `<span class="bdg ${k}" title="${BADGES[k][1]}">${BADGES[k][0]}${k === 'site_owner' ? (full ? ' Proanchat Owner' : ' OWNER') : full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`).join('');
     const safeColor = c => /^#[0-9a-f]{3,8}$/i.test(c || '') ? c : '#99aab5';
     const roleColor = uid => { if (!cur) return null; const r = roles.find(x => memberRoles.some(m => m.user_id === uid && m.role_id === x.id)); return r ? safeColor(r.color) : null; };
     const STYLES = [['solid', 'Solid'], ['gradient', 'Gradient'], ['holo', 'Holographic']];
@@ -2199,9 +2203,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       doc: svg('<path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#dfe4ee"/><path d="M14 3v5h5z" fill="#aab0bd"/>'),
       mic: svg('<rect x="9" y="3" width="6" height="11" rx="3" fill="#aab0bd"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="#aab0bd" stroke-width="2" stroke-linecap="round"/>'),
       head: svg('<path d="M4 15v-3a8 8 0 0 1 16 0v3" fill="none" stroke="#aab0bd" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14" width="4.5" height="6.5" rx="2" fill="#aab0bd"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="2" fill="#aab0bd"/>'),
-      door: svg('<path d="M5 3h9a2 2 0 0 1 2 2v3h-2V5H7v14h7v-3h2v3a2 2 0 0 1-2 2H5z" fill="#ff5a5f"/><path d="M13 12h8m0 0l-3-3m3 3l-3 3" stroke="#ff8a8e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
+      gem: svg('<path d="M12 21L2.5 9.5 6 4h12l3.5 5.5z" fill="#ffd166"/><path d="M2.5 9.5h19L12 21z" fill="#ff9f43"/><path d="M6 4l2.5 5.5L12 4zm12 0l-2.5 5.5L12 4z" fill="#fff3c4"/>'),
+  door: svg('<path d="M5 3h9a2 2 0 0 1 2 2v3h-2V5H7v14h7v-3h2v3a2 2 0 0 1-2 2H5z" fill="#ff5a5f"/><path d="M13 12h8m0 0l-3-3m3 3l-3 3" stroke="#ff8a8e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
     };
-    const EMOJI_BASE = { '🔗': 'link', '⚙': 'gear', '➕': 'plus', '📁': 'folder', '🧑': 'user', '🗑': 'trash', '🔊': 'voice', '💬': 'forum', '📢': 'megaphone', '📜': 'rules', '🎙': 'stage', '🔇': 'mute', '🙉': 'deaf', '🖥': 'screen', '📷': 'camera', '👑': 'crown', '🧪': 'flask', '🔒': 'lock', '👥': 'friends', '📞': 'phone', '📎': 'clip', '🔍': 'search', '🛡': 'shield', '✏': 'pencil', '😀': 'smile', '🎨': 'palette', '📄': 'doc', '🎤': 'mic', '🎧': 'head', '🚪': 'door' };
+    const EMOJI_BASE = { '🔗': 'link', '⚙': 'gear', '➕': 'plus', '📁': 'folder', '🧑': 'user', '🗑': 'trash', '🔊': 'voice', '💬': 'forum', '📢': 'megaphone', '📜': 'rules', '🎙': 'stage', '🔇': 'mute', '🙉': 'deaf', '🖥': 'screen', '📷': 'camera', '👑': 'crown', '🧪': 'flask', '🔒': 'lock', '👥': 'friends', '📞': 'phone', '📎': 'clip', '🔍': 'search', '🛡': 'shield', '✏': 'pencil', '😀': 'smile', '🎨': 'palette', '📄': 'doc', '🎤': 'mic', '🎧': 'head', '🚪': 'door', '💎': 'gem' };
     const EMOJI_ICON = {};
     Object.entries(EMOJI_BASE).forEach(([e, n]) => { EMOJI_ICON[e] = n; EMOJI_ICON[e + '\uFE0F'] = n; });
     const EMOJI_RE = new RegExp('(' + Object.keys(EMOJI_ICON).sort((a, b) => b.length - a.length).join('|') + ')');
