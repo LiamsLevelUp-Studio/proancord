@@ -1237,6 +1237,24 @@
     .audit-row small { color: var(--mute); font-size: 12px; display: block; margin-top: 2px; }
     .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 12px 0; }
     @media (max-width: 920px) { .srv-split { grid-template-columns: 1fr; } .srv-card { position: static; } .srv-ban-grid { grid-template-columns: repeat(5, 1fr); } .srv-traits { grid-template-columns: 1fr 1fr; } }
+
+    /* ---- Full Discord User Settings Sidebar & Developer Mode ---- */
+    .uset-prof { display: flex; align-items: center; gap: 10px; width: 100%; background: #ffffff0a; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; text-align: left; color: var(--text); transition: background .15s, border-color .15s; }
+    .uset-prof:hover { background: #ffffff14; border-color: #ffffff28; }
+    .uset-prof .up-meta { flex: 1; min-width: 0; }
+    .uset-prof .up-meta b { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .uset-prof .up-meta small { display: block; font-size: 12px; color: var(--mute); }
+    .uset-search { display: flex; align-items: center; gap: 8px; background: #0f1014; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin-bottom: 12px; }
+    .uset-search input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--text); font-size: 13px; }
+    .sn-sub-wrap { margin: 2px 0 6px 14px; padding-left: 10px; border-left: 1px solid #ffffff1c; display: flex; flex-direction: column; gap: 2px; }
+    .sn-sub { position: relative; display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 6px; padding: 6px 10px; color: var(--mute); font-size: 13px; font-weight: 500; }
+    .sn-sub:hover { background: var(--hover); color: var(--text); }
+    .sn-sub.on { color: #fff; font-weight: 600; background: #ffffff0e; }
+    .sn-sub.on::before { content: ""; position: absolute; left: -11px; top: 6px; bottom: 6px; width: 2px; background: #fff; border-radius: 2px; }
+    .id-badge { display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; letter-spacing: .3px; padding: 2px 4px; border-radius: 4px; background: #e4e4e7; color: #18191e; line-height: 1; flex: none; font-family: system-ui, sans-serif; }
+    body.high-contrast { --border: #ffffff38; --mute: #cbd5e1; }
+    .conn-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .conn-pill { display: inline-flex; align-items: center; gap: 5px; background: #00000050; border: 1px solid #ffffff1a; border-radius: 7px; padding: 3px 8px; font-size: 11px; color: #e4e4e7; }
   </style>
 </head>
 
@@ -1343,10 +1361,29 @@
       theme: 'dark', custom: [], compact: false, fs: 16, sound: true, h24: false, anim: true,
       status: 'online', accent: null, icon: 'red',
       audioIn: '', audioOut: '', videoIn: '', inVol: 100, outVol: 100,
-      echo: true, noise: true, agc: true, recentEmojis: [], flair: {}, srvMeta: {}
+      echo: true, noise: true, agc: true, recentEmojis: [], flair: {}, srvMeta: {},
+      devMode: false,
+      privacy: { analytics: false, personalize: true, safetyScan: 'friends', linkPreviews: true },
+      messaging: { serverDms: true, friendReq: 'everyone', messageRequests: true },
+      accessibility: { highContrast: false, reducedMotion: false, ttsRate: 1, autoplayGifs: true },
+      system: { hwAccel: true, minToTray: true, autoStart: false },
+      language: 'en-US',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+      games: { active: '', list: ['Valorant', 'Minecraft', 'Counter-Strike 2', 'Roblox'] },
+      activity: { showCurrent: true, shareFriends: true },
+      clips: { enabled: true, length: 60, mic: true },
+      overlay: { enabled: false, corner: 'top-left', notif: true },
+      connections: []
     };
     let S = { ...DEFAULTS };
     try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem('procord-settings') || '{}') }; } catch (e) {}
+
+    function copyId(label, id) {
+      if (!id) return toast('No ID available');
+      navigator.clipboard.writeText(String(id)).catch(() => {});
+      toast(`Copied ${label} ID: ${id}`);
+    }
+    const devIdItem = (label, id) => (S.devMode && id) ? [`<span class="ci"><span class="id-badge">ID</span></span>Copy ${label} ID`, `copyId('${label}','${String(id).replace(/'/g, '')}')`] : null;
 
     // ---------- Server Profile & Full Server Settings Helpers ----------
     const SRV_BANNERS = [
@@ -1517,7 +1554,8 @@
       applyTheme(tdraft || currentTheme());
       root.style.setProperty('--fs', S.fs + 'px');
       document.body.classList.toggle('compact', S.compact);
-      document.body.classList.toggle('noanim', !S.anim);
+      document.body.classList.toggle('noanim', !S.anim || !!S.accessibility?.reducedMotion);
+      document.body.classList.toggle('high-contrast', !!S.accessibility?.highContrast);
       const [a, b] = ICONS[S.icon] || ICONS.red;
       document.querySelectorAll('#pc-grad stop').forEach((s, i) => s.setAttribute('stop-color', i ? b : a));
       const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='${a}'/><path d='M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z' fill='#fff'/></svg>`;
@@ -1954,7 +1992,7 @@
         const inner = m.icon_url && /^https?:\/\//i.test(m.icon_url)
           ? `<img src="${escapeHtml(m.icon_url)}" alt="">`
           : escapeHtml(s.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase());
-        return `<button class="sv ${cur?.id === s.id ? 'on' : ''}" title="${escapeHtml(s.name)}" onclick="selectServer('${s.id}')">${inner}</button>`;
+        return `<button class="sv ${cur?.id === s.id ? 'on' : ''}" title="${escapeHtml(s.name)}" onclick="selectServer('${s.id}')" oncontextmenu="svCtx(event,'${s.id}')">${inner}</button>`;
       }).join('') + `<div class="sep"></div><button class="sv add" title="Add a server" onclick="serverModal()">+</button>`;
     }
 
@@ -1967,29 +2005,86 @@
     function ctxMenu(e, items) {
       e.preventDefault();
       closeCtx();
+      const clean = items.filter(Boolean);
+      if (!clean.length) return;
       const m = document.createElement('div');
       m.id = 'ctx';
-      m.innerHTML = items.map(i => i === '-' ? '<hr>' : `<button class="${i[2] ? 'dg' : ''}" onclick="closeCtx();${i[1]}">${i[0]}</button>`).join('');
+      m.innerHTML = clean.map(i => i === '-' ? '<hr>' : `<button class="${i[2] ? 'dg' : ''}" onclick="closeCtx();${i[1]}">${i[0]}</button>`).join('');
       document.body.append(m);
       const r = m.getBoundingClientRect();
       m.style.left = Math.max(8, Math.min(e.clientX, innerWidth - r.width - 8)) + 'px';
       m.style.top = Math.max(8, Math.min(e.clientY, innerHeight - r.height - 8)) + 'px';
     }
 
+    function svCtx(e, sid) {
+      e.stopPropagation();
+      const s = servers.find(x => x.id === sid);
+      const it = (ic, t, code, dg) => [`<span class="ci">${ic}</span>${t}`, code, dg];
+      const items = [
+        it('🔗', 'Invite to Server', `selectServer('${sid}').then(()=>serverMenu())`),
+        it('⚙️', 'Server Settings', `selectServer('${sid}').then(()=>serverSettings())`)
+      ];
+      const idItem = devIdItem('Server', sid);
+      if (idItem) items.push('-', idItem);
+      if (s && s.owner_id !== me.id) items.push('-', it('🚪', 'Leave Server', `selectServer('${sid}').then(()=>leave())`, true));
+      ctxMenu(e, items);
+    }
+
+    function memCtx(e, uid) {
+      e.preventDefault();
+      e.stopPropagation();
+      const it = (ic, t, code) => [`<span class="ci">${ic}</span>${t}`, code];
+      const items = [it('🧑', 'Profile', `showProfile('${uid}')`)];
+      if (uid !== me.id && myFriends().some(f => f.id === uid)) items.push(it('💬', 'Message', `openDM('${uid}')`));
+      const idItem = devIdItem('User', uid);
+      if (idItem) items.push('-', idItem);
+      ctxMenu(e, items);
+    }
+
+    function msgCtx(e, id, uid) {
+      e.preventDefault();
+      e.stopPropagation();
+      const m = msgs.find(x => x.id === id);
+      const it = (ic, t, code, dg) => [`<span class="ci">${ic}</span>${t}`, code, dg];
+      const items = [];
+      if (m && m.content && m.content !== '[call]') items.push(it('📄', 'Copy Text', `copyInvite(null,${JSON.stringify(m.content)},'Message copied')`));
+      if (m && m.user_id === me.id && m.content !== '[call]') items.push(it('✏️', 'Edit Message', `editMsg(${id})`));
+      if (m && (m.user_id === me.id || (!m.dm && can('manage_messages'))) && m.content !== '[call]') items.push(it('🗑', 'Delete Message', `delMsg(${id})`, true));
+      const mid = devIdItem('Message', id);
+      const uitem = devIdItem('User', uid);
+      if (mid || uitem) {
+        if (items.length) items.push('-');
+        if (mid) items.push(mid);
+        if (uitem) items.push(uitem);
+      }
+      if (!items.length) items.push(it('😀', 'Add Reaction', `rxPick({currentTarget:document.body}, ${id}, ${m?.dm ? 1 : 0})`));
+      ctxMenu(e, items);
+    }
+
     function sideCtx(e) {
       if (!cur) return;
       const it = (ic, t, code) => [`<span class="ci">${ic}</span>${t}`, code], m = can('manage_channels');
-      ctxMenu(e, [...(m ? [it('➕', 'Create Channel', "channelModal('')"), it('📁', 'Create Category', 'categoryModal()'), '-'] : []), ...(m || can('manage_roles') ? [it('⚙️', 'Server Settings', 'serverSettings()')] : []), it('🔗', 'Invite to Server', 'serverMenu()')]);
+      const items = [...(m ? [it('➕', 'Create Channel', "channelModal('')"), it('📁', 'Create Category', 'categoryModal()'), '-'] : []), ...(m || can('manage_roles') ? [it('⚙️', 'Server Settings', 'serverSettings()')] : []), it('🔗', 'Invite to Server', 'serverMenu()')];
+      const sid = devIdItem('Server', cur.id);
+      if (sid) items.push('-', sid);
+      ctxMenu(e, items);
     }
 
     function chanCtx(e, id) {
-      if (!can('manage_channels')) return sideCtx(e);
-      ctxMenu(e, [['Edit Channel', `channelSettings('${id}')`], '-', ['Delete Channel', `delChannel('${id}')`, true]]);
+      const items = can('manage_channels') ? [['Edit Channel', `channelSettings('${id}')`], '-', ['Delete Channel', `delChannel('${id}')`, true]] : [];
+      const cid = devIdItem('Channel', id);
+      if (cid) { if (items.length) items.push('-'); items.push(cid); }
+      if (!items.length) return sideCtx(e);
+      ctxMenu(e, items);
     }
 
     function catCtx(e, i) {
-      if (!can('manage_channels')) return sideCtx(e);
-      ctxMenu(e, [['Create Channel', `channelModal(catList[${i}])`], ['Create Category', 'categoryModal()'], '-', ['Delete Category', `delCategory(${i})`, true]]);
+      const catRow = cats.find(c => c.name === catList[i]);
+      const items = can('manage_channels') ? [['Create Channel', `channelModal(catList[${i}])`], ['Create Category', 'categoryModal()'], '-', ['Delete Category', `delCategory(${i})`, true]] : [];
+      const cid = devIdItem('Category', catRow?.id || catList[i]);
+      if (cid) { if (items.length) items.push('-'); items.push(cid); }
+      if (!items.length) return sideCtx(e);
+      ctxMenu(e, items);
     }
 
     async function delCategory(i) {
@@ -2111,7 +2206,7 @@
 
     function friendsHtml() {
       const label = { online: 'Online', idle: 'Idle', dnd: 'Do Not Disturb' };
-      const row = (p, actions) => `<div class="frow" data-n="${escapeHtml(p.username.toLowerCase())}"><div class="dot">${avatarHtml(p, 36)}<i class="${friendStatus(p) || 'off'}"></i></div><div><b ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</b>${badgePills(p)}<span class="stx">${label[friendStatus(p)] || 'Offline'}</span></div><span style="flex:1"></span>${actions}</div>`;
+      const row = (p, actions) => `<div class="frow" data-n="${escapeHtml(p.username.toLowerCase())}" oncontextmenu="memCtx(event,'${p.id}')"><div class="dot">${avatarHtml(p, 36)}<i class="${friendStatus(p) || 'off'}"></i></div><div><b ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</b>${badgePills(p)}<span class="stx">${label[friendStatus(p)] || 'Offline'}</span></div><span style="flex:1"></span>${actions}</div>`;
       let body;
       if (friendTab === 'add') body = `<h3>Add Friend</h3><p>You can add friends with their Proanchat username.</p><div class="nm2"><input id="fu" placeholder="You can add friends with their username" onkeydown="if(event.key==='Enter')addFriend()"><button class="b" style="margin:6px 0" onclick="addFriend()">Send Friend Request</button></div><div class="err" id="ferr"></div>`;
       else if (friendTab === 'pending') {
@@ -2279,7 +2374,10 @@
       const items = [it('🔗', 'Invite to Server', 'serverMenu()')];
       if (can('manage_roles') || can('manage_channels')) items.push(it('⚙️', 'Server Settings', 'serverSettings()'));
       if (can('manage_channels')) items.push('-', it('➕', 'Create Channel', "channelModal('')"), it('📁', 'Create Category', 'categoryModal()'));
-      items.push('-', it('🧑', 'Edit Per-server Profile', "settings('server')"), '-', cur.owner_id === me.id ? it('🗑️', 'Delete Server', 'delServer()', true) : it('🚪', 'Leave Server', 'leave()', true));
+      items.push('-', it('🧑', 'Edit Per-server Profile', "settings('server')"));
+      const sid = devIdItem('Server', cur.id);
+      if (sid) items.push('-', sid);
+      items.push('-', cur.owner_id === me.id ? it('🗑️', 'Delete Server', 'delServer()', true) : it('🚪', 'Leave Server', 'leave()', true));
       ctxMenu({ preventDefault() {}, clientX: r.left + 8, clientY: r.bottom + 6 }, items);
     }
 
@@ -3104,7 +3202,8 @@
       const canR = can('manage_roles'), q = sset.q.toLowerCase();
       return roles.filter(r => r.name.toLowerCase().includes(q)).map(r => {
         const n = memberRoles.filter(m => m.role_id === r.id).length, c = safeColor(r.color);
-        return `<div class="frow"><span class="dotc" style="background:${c}"></span><b ${roleStyleAttr(r)}>${escapeHtml(r.name)}</b>${iconHtml(r)}${(r.perms || []).includes('administrator') ? '<span class="ts">🛡️ Administrator</span>' : ''}<span style="flex:1"></span><span class="ts">${n} 👥</span>${canR ? `<button class="ib" title="Move up" onclick="moveRole('${r.id}',-1)">▲</button><button class="ib" title="Move down" onclick="moveRole('${r.id}',1)">▼</button><button class="ib" title="Edit role" onclick="editRole('${r.id}')">✎</button>` : ''}</div>`;
+        const copyR = S.devMode ? `<button class="ib" title="Copy Role ID" onclick="copyId('Role','${r.id}')"><span class="id-badge">ID</span></button>` : '';
+        return `<div class="frow"><span class="dotc" style="background:${c}"></span><b ${roleStyleAttr(r)}>${escapeHtml(r.name)}</b>${iconHtml(r)}${(r.perms || []).includes('administrator') ? '<span class="ts">🛡️ Administrator</span>' : ''}<span style="flex:1"></span><span class="ts">${n} 👥</span>${copyR}${canR ? `<button class="ib" title="Move up" onclick="moveRole('${r.id}',-1)">▲</button><button class="ib" title="Move down" onclick="moveRole('${r.id}',1)">▼</button><button class="ib" title="Edit role" onclick="editRole('${r.id}')">✎</button>` : ''}</div>`;
       }).join('') || '<p class="ts">No roles yet.</p>';
     }
 
@@ -3664,10 +3763,11 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     function renderMe() {
       const labels = { online: 'Online', idle: 'Idle', dnd: 'Do not disturb', invisible: 'Invisible' };
+      const actText = (S.activity?.showCurrent !== false && S.games?.active) ? `Playing ${S.games.active}` : labels[S.status];
       const sp = (cls, title, code, svg, mode) => `<div class="vsplit"><button class="vb ${cls}" title="${title}" onclick="${code}">${svg}</button><button class="vchev" title="Device settings" onclick="openVcPop(event,'${mode}')">▾</button></div>`;
       if ($('#vbar')) $('#vbar').innerHTML = vc ? `<div class="vtop"><div style="flex:1;min-width:0"><b style="color:var(--green);font-size:13px">Voice Connected</b><small>${escapeHtml(vc.label)}</small></div><button class="ib" title="Disconnect" onclick="leaveVoice()">${icon('end', false, 20)}</button></div>
         <div class="vbtns">${sp(vc.cam ? 'on' : '', 'Camera', 'toggleCam()', icon('cam', !vc.cam, 18), 'cam')}<button class="vb ${vc.screen ? 'on' : ''}" title="Share your screen" onclick="toggleScreen()">${icon('screen', false, 18)}</button>${sp(vc.muted ? 'off' : '', 'Mute', "voiceToggle('muted')", icon('mic', vc.muted, 18), 'mic')}${sp(vc.deaf ? 'off' : '', 'Deafen', "voiceToggle('deaf')", icon('head', vc.deaf, 18), 'spk')}</div>` : '';
-      $('#me').innerHTML = `<div class="dot">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm"><span ${isFounder(me) ? 'data-f' : ''}>${escapeHtml(me.username)}</span><small>${labels[S.status]}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
+      $('#me').innerHTML = `<div class="dot" oncontextmenu="memCtx(event,'${me.id}')">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm" oncontextmenu="memCtx(event,'${me.id}')"><span ${isFounder(me) ? 'data-f' : ''}>${escapeHtml(me.username)}</span><small>${escapeHtml(actText)}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
     }
     // ---------- Custom icon set: Proanchat's own icons replace the stock emoji in the interface ----------
     const svg = body => `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
@@ -3743,7 +3843,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         $('#sh').onclick = null;
         $('#chl').oncontextmenu = null;
         $('#chl').innerHTML = `<input class="find" placeholder="Find or start a conversation" oninput="filterDMs(this.value)"><button class="ch ${dmWith ? '' : 'on'}" onclick="showFriends()">👥 Friends</button><div class="lbl"><span>Direct messages</span></div>`
-          + myFriends().map(p => `<button class="ch dm dmrow ${dmWith?.id === p.id ? 'on' : ''}" data-n="${escapeHtml(p.username.toLowerCase())}" onclick="openDM('${p.id}')"><div class="dot">${avatarHtml(p, 32)}<i class="${friendStatus(p) || 'off'}"></i></div><span>${escapeHtml(p.username)}</span></button>`).join('');
+          + myFriends().map(p => `<button class="ch dm dmrow ${dmWith?.id === p.id ? 'on' : ''}" data-n="${escapeHtml(p.username.toLowerCase())}" onclick="openDM('${p.id}')" oncontextmenu="memCtx(event,'${p.id}')"><div class="dot">${avatarHtml(p, 32)}<i class="${friendStatus(p) || 'off'}"></i></div><span>${escapeHtml(p.username)}</span></button>`).join('');
         return;
       }
       $('#sh').innerHTML = `<span>${escapeHtml(cur.name)}</span><span class="chev">⌄</span>`;
@@ -3793,7 +3893,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         const body = m.dm && m.content === '[call]'
           ? `<button class="b" onclick="joinVoice('${dmRoom(m.user_id === me.id ? m.recipient : m.user_id)}','Call with ${escapeHtml(dmWith?.username || 'friend')}')">📞 ${m.user_id === me.id ? 'You started a call' : escapeHtml(p.username) + ' started a call'} · Join</button>`
           : `${fmtText(m.content || '')}${attHtml(m)}${embeds}${m.edited ? ' <span class="ed">(edited)</span>' : ''}${rxHtml(m)}`;
-        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}">${left}<div class="mb">${head}<div class="mc ${jumbo ? 'jumbo' : ''}">${body}</div></div>${acts}<div class="racts"><button class="ib" onclick="rxPick(event,${m.id},${m.dm ? 1 : 0})" title="Add reaction">😀</button></div></div>`;
+        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}" oncontextmenu="msgCtx(event,${m.id},'${m.user_id}')">${left}<div class="mb">${head}<div class="mc ${jumbo ? 'jumbo' : ''}">${body}</div></div>${acts}<div class="racts"><button class="ib" onclick="rxPick(event,${m.id},${m.dm ? 1 : 0})" title="Add reaction">😀</button></div></div>`;
       });
       animateLast = false;
       el.innerHTML = html || `<div class="empty"><h2>${isDM ? 'This is the start of your chat with ' + escapeHtml(dmWith.username) : 'Welcome to #' + escapeHtml(curCh?.name || '')}</h2><p>Say something!</p></div>`;
@@ -3843,7 +3943,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!box) return;
       $('#app').classList.toggle('nomem', !cur);
       const st = p => { const s = p.id === me.id ? S.status : online.get(p.id); return s && s !== 'invisible' ? s : null; };
-      const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><div class="mn"><span ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${srvTagPill(p.id)}${badgePills(p)}</div></div>`;
+      const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')" oncontextmenu="memCtx(event,'${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><div class="mn"><span ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${srvTagPill(p.id)}${badgePills(p)}</div></div>`;
       const on = members.filter(st), off = members.filter(p => !st(p));
       box.innerHTML = cur ? `<div class="lbl">Online — ${on.length}</div>${on.map(row).join('')}<div class="lbl">Offline — ${off.length}</div>${off.map(row).join('')}` : '';
     }
@@ -4499,6 +4599,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const canManage = !!cur && !opts.preview && can('manage_roles');
       const isFriend = myFriends().some(f => f.id === p.id);
       const topActs = opts.preview ? '' : `<div class="ppop-top-acts">
+        ${S.devMode ? `<button class="ppop-cbtn" title="Copy User ID" onclick="copyId('User','${p.id}')"><span class="id-badge">ID</span></button>` : ''}
         ${p.id === me.id ? `<button class="ppop-cbtn" title="Edit Profile" onclick="closeM();settings('${cur ? 'server' : 'profile'}')">✎</button>`
         : `${isFriend
           ? `<button class="ppop-cbtn" title="Open DM" onclick="closeM();openDM('${p.id}')">💬</button>`
@@ -4507,6 +4608,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         <button class="ppop-cbtn" title="Close" onclick="closeM()">✕</button>
       </div>`;
       const badges = badgePills(p, false);
+      const conns = (p.id === me.id && (S.connections || []).length) ? `<div class="ppop-card"><div class="ppop-lbl">Connections</div><div class="conn-pills">${S.connections.map(c => `<span class="conn-pill"><b>${escapeHtml(c.type)}</b> ${escapeHtml(c.handle)}</span>`).join('')}</div></div>` : '';
       const rolesSec = (cur && !opts.preview) ? `<div class="ppop-card">
         <div class="ppop-lbl"><span>${uRoles.length ? `Roles (${uRoles.length})` : 'Roles'}</span>${canManage ? '<span style="font-weight:500;color:#94a3b8">Manageable</span>' : ''}</div>
         <div class="ppop-roles" id="ppop-roles">
@@ -4532,6 +4634,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
           ${!opts.preview ? `<div class="ppop-mutual" id="ppop-mut">🛡️ ${cur ? 'Member of ' + escapeHtml(cur.name) : `${servers.length} Mutual Server${servers.length === 1 ? '' : 's'}`}</div>` : ''}
           ${(p.bio || opts.preview) ? `<div class="ppop-card"><div class="ppop-lbl">About Me</div><div class="ppop-bio">${escapeHtml(p.bio || 'Tell everyone a bit about yourself…')}</div></div>` : ''}
           ${rolesSec}
+          ${conns}
           ${msgBar}
         </div>
       </div>`;
@@ -4678,10 +4781,65 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       pv();
     }
 
-    function settings(tab = 'account') {
+    const USET_IC = {
+      account: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5z"/></svg>',
+      privacy: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L4 5v6.1c0 5 3.4 9.7 8 10.9 4.6-1.2 8-5.9 8-10.9V5l-8-3zm0 6a2 2 0 0 1 1 3.7V15h-2v-3.3A2 2 0 0 1 12 8z"/></svg>',
+      messaging: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>',
+      notifications: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.4-2H9.6A2.5 2.5 0 0 0 12 22zm6-6v-5a6 6 0 0 0-4.5-5.8V4.5a1.5 1.5 0 0 0-3 0v.7A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>',
+      voice: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/></svg>',
+      appearance: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 3a9 9 0 0 0 0 18c1.4 0 2-1 1.5-2-.6-1.2.2-2.5 1.6-2.5H17a4 4 0 0 0 4-4C21 7 17 3 12 3zm-4.5 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>',
+      accessibility: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm7 7h-5v12h-2v-6h-2v6H8V9H3V7h16v2z"/></svg>',
+      system: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zM7 9h2v2H7V9zm3 0h2v2h-2V9zm3 0h2v2h-2V9zm3 0h2v2h-2V9zm-9 4h10v2H7v-2z"/></svg>',
+      language: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.9 15l-2.5-2.5.1-.1A17.5 17.5 0 0 0 14 6h3V4h-7V2H8v2H1v2h11.2a15.7 15.7 0 0 1-3.1 5.4 15.6 15.6 0 0 1-2.3-3.4H4.8a17.6 17.6 0 0 0 3 4.6L3.3 17l1.4 1.4 4.5-4.5 2.5 2.5.7-1.4zM18.5 10h-2L12 22h2l1.1-3h4.8L21 22h2l-4.5-12zm-2.6 7l1.6-4.3 1.6 4.3h-3.2z"/></svg>',
+      emojis: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-3.5 7.5c-2.6 0-4.8-1.6-5.6-3.8h11.2c-.8 2.2-3 3.8-5.6 3.8z"/></svg>',
+      perks: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L4.5 7v10L12 22l7.5-5V7L12 2z"/></svg>',
+      games: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 6H3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>',
+      activity: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-7 2-7 4v2h10v-2c0-1.2.4-2.3 1-3.2A9.8 9.8 0 0 0 12 14zm8.5 1H16a1.5 1.5 0 0 0-1.5 1.5v3A1.5 1.5 0 0 0 16 21h4.5A1.5 1.5 0 0 0 22 19.5v-3A1.5 1.5 0 0 0 20.5 15z"/></svg>',
+      clips: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4h-4z"/></svg>',
+      overlay: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M4 4h11v4h4v12H8v-4H4V4zm2 2v8h7V6H6zm5 10v2h6v-8h-2v6h-4z"/></svg>',
+      connections: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3.9 12a3.1 3.1 0 0 1 3.1-3.1h4V7H7a5 5 0 0 0 0 10h4v-1.9H7A3.1 3.1 0 0 1 3.9 12zm4.1 1h8v-2H8v2zm9-6h-4v1.9h4a3.1 3.1 0 0 1 0 6.2h-4V17h4a5 5 0 0 0 0-10z"/></svg>',
+      developer: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>',
+      logout: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5v-2H5V5h5V3zm7.5 4l-1.4 1.4 2.6 2.6H9v2h9.7l-2.6 2.6 1.4 1.4 5-5-5-5z"/></svg>'
+    };
+    let usetQ = '';
+    let usetVoiceSub = 'voice';
+
+    function filterUSetNav(v) {
+      usetQ = v;
+      const ql = v.trim().toLowerCase();
+      document.querySelectorAll('#setnav .sn[data-label], #setnav .sn-sub[data-label]').forEach(el => {
+        el.style.display = (!ql || el.dataset.label.includes(ql)) ? '' : 'none';
+      });
+    }
+
+    function exportUserSettingsJson() {
+      const data = JSON.stringify({ user: { id: me.id, username: me.username }, settings: S }, null, 2);
+      navigator.clipboard.writeText(data).catch(() => {});
+      toast('Settings & profile snapshot copied to clipboard');
+    }
+
+    function addRegisteredGame() {
+      const g = ($('#rg-in')?.value || '').trim();
+      if (!g) return;
+      S.games = S.games || { active: '', list: [] };
+      if (!S.games.list.includes(g)) S.games.list.unshift(g);
+      S.games.active = g;
+      saveS(); renderMe(); settings('games');
+    }
+
+    function addConnection() {
+      const type = $('#cn-type')?.value || 'GitHub';
+      const handle = ($('#cn-val')?.value || '').trim();
+      if (!handle) return toast('Enter your username or link');
+      S.connections = [...(S.connections || []), { type, handle }];
+      saveS(); settings('connections');
+    }
+
+    function settings(tab = 'account', voiceSub = null) {
+      if (tab === 'look') tab = 'appearance';
+      if (voiceSub) usetVoiceSub = voiceSub;
       if (tab !== 'voice') stopMicTest();
-      const NAV = [['User settings'], ['account', 'My account'], ['profile', 'Profiles'], ['server', 'Server profile'], ['App settings'], ['appearance', 'Theme'], ['look', 'App Icon & Text'], ['access', 'Accessibility'], ['notifications', 'Notifications'], ['emojis', 'Emojis & Stickers'], ['voice', 'Voice & Video'], ['perks', 'Perks']];
-      const chk = (k, label) => `<label class="opt"><span>${label}</span><input type="checkbox" ${S[k] ? 'checked' : ''} onchange="S.${k}=this.checked;saveS();renderChat(true)"></label>`;
+      const chk = (k, label) => `<label class="opt"><span>${label}</span><input type="checkbox" class="tg" ${S[k] ? 'checked' : ''} onchange="S.${k}=this.checked;saveS();renderChat(true)"></label>`;
       const field = (id, label, val, ev = '') => `<label class="f">${label}</label><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}>`;
       const upl = (id, label, val, ev = '') => `<label class="f">${label}</label><div style="display:flex;gap:8px"><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}><button class="b g" onclick="pickImage('${id}')">Upload</button></div>`;
       const perk = (a, b) => `<div class="perk"><span>${a}</span><i>${b}</i></div>`;
@@ -4795,26 +4953,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
           </div>`;
       };
 
-      const pages = {
-        account: ['My account', `<div class="card2"><div class="srow"><div><b>Username</b>${escapeHtml(me.username)}</div><button class="b g" onclick="settings('profile')">Edit</button></div>
-          <div class="srow"><div><b>Email</b><span id="em2">••••••••••</span> <a href="#" id="rev" style="color:#ff6b78" onclick="revealEmail();return false">Reveal</a></div></div></div>
-          <h3>Password and security</h3><div class="card2"><label class="f" style="margin-top:0">New password</label><input class="t" id="np" type="password" placeholder="At least 6 characters"><div class="err" id="serr"></div><div class="row" style="margin-top:8px"><button class="b" onclick="changePw()">Change password</button></div></div>
-          <h3>Account removal</h3><p>Deleting your account permanently removes your profile, your messages and every server you own.</p><button class="b r" onclick="deleteModal()">Delete account</button>`],
-        profile: ['Profiles', profileEditorHtml()],
-        server: ['Server profile', serverProfileHtml()],
-        appearance: ['Theme', themePageHtml()],
-        look: ['App Icon & Text', `<label class="f">Accent colour (overrides the theme's accent)</label><div style="display:flex;align-items:center">${ACCENTS.map(c => `<span class="sw" style="background:${c};${S.accent === c ? 'border-color:#fff' : ''}" onclick="S.accent='${c}';saveS();settings('look')"></span>`).join('')}<input type="color" value="${safeColor(S.accent || currentTheme().accent)}" oninput="S.accent=this.value;saveS()"><button class="b g" style="margin-left:8px" onclick="S.accent=null;saveS();settings('look')">Reset</button></div>
-          <label class="f">App icon</label><div>${Object.keys(ICONS).map(k => `<button class="b ${S.icon === k ? '' : 'g'}" onclick="S.icon='${k}';saveS();settings('look')">${k}</button>`).join(' ')}</div>
-          <label class="f">Chat font size: <span id="fsv">${S.fs}</span>px</label><input type="range" min="12" max="20" value="${S.fs}" style="width:100%;accent-color:var(--accent)" oninput="S.fs=+this.value;$('#fsv').textContent=this.value;saveS()">
-          ${chk('compact', 'Compact message spacing')}`],
-        access: ['Accessibility', `${chk('anim', 'Animations')}${chk('h24', '24-hour clock')}`],
-        notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages')}<div class="row"><button class="b g" onclick="beep()">Test sound</button></div>`],
-        emojis: ['Emojis & Stickers', `<p>Custom emojis work across every server and DM. Type <b>:name:</b> in chat for autocomplete, or click any custom emoji in chat to save or copy it. Animated GIF &amp; WebP files supported (max 2 MB).</p>
-          <h3>Add a custom emoji</h3>${libForm('emojis', 'image/*')}
-          <h3>Your emojis (${LIB.emojis.length})</h3><div class="libgrid">${libList('emojis', LIB.emojis)}</div>
-          <h3 style="margin-top:28px">Add a sticker</h3>${libForm('stickers', 'image/*')}
-          <h3>Your stickers (${LIB.stickers.length})</h3><div class="libgrid">${libList('stickers', LIB.stickers)}</div>`],
-        voice: ['Voice & Video', `<div class="card2">
+      const voiceBodyHtml = () => {
+        const subTabs = [['voice', 'Voice'], ['camera', 'Camera'], ['streaming', 'Streaming'], ['sounds', 'Sounds'], ['soundboard', 'Soundboard'], ['advanced', 'Advanced']];
+        return `<div class="tabs" style="margin-top:0">${subTabs.map(([k, l]) => `<button class="tab ${usetVoiceSub === k ? 'on' : ''}" onclick="settings('voice','${k}')">${l}</button>`).join('')}</div>
+          <div class="card2" style="${usetVoiceSub === 'voice' || usetVoiceSub === 'advanced' ? '' : 'display:none'}">
             <h3 style="margin-top:0">Voice Settings</h3>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
               <div><label class="f" style="margin-top:0">Input Device</label><select class="t" id="v-in" onchange="switchAudioIn(this.value)"><option>Loading devices…</option></select></div>
@@ -4828,31 +4970,203 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
               <button class="b" id="mictest-btn" onclick="toggleMicTest()">Let's Check</button>
               <div class="mic-meter" style="flex:1;margin:0"><div id="test-lvl"></div></div>
             </div>
-            <div style="margin-top:10px">
-              <label class="opt"><span>Noise Suppression</span><input type="checkbox" ${S.noise !== false ? 'checked' : ''} onchange="toggleAudioOpt('noise',this.checked)"></label>
-              <label class="opt"><span>Echo Cancellation</span><input type="checkbox" ${S.echo !== false ? 'checked' : ''} onchange="toggleAudioOpt('echo',this.checked)"></label>
-              <label class="opt" style="border:0"><span>Automatic Gain Control</span><input type="checkbox" ${S.agc !== false ? 'checked' : ''} onchange="toggleAudioOpt('agc',this.checked)"></label>
-            </div>
           </div>
-          <div class="card2">
-            <h3 style="margin-top:0">Video Settings</h3>
+          <div class="card2" style="${usetVoiceSub === 'advanced' || usetVoiceSub === 'voice' ? '' : 'display:none'}">
+            <h3 style="margin-top:0">Voice Processing &amp; Advanced</h3>
+            <label class="opt"><span>Noise Suppression</span><input type="checkbox" class="tg" ${S.noise !== false ? 'checked' : ''} onchange="toggleAudioOpt('noise',this.checked)"></label>
+            <label class="opt"><span>Echo Cancellation</span><input type="checkbox" class="tg" ${S.echo !== false ? 'checked' : ''} onchange="toggleAudioOpt('echo',this.checked)"></label>
+            <label class="opt" style="border:0"><span>Automatic Gain Control</span><input type="checkbox" class="tg" ${S.agc !== false ? 'checked' : ''} onchange="toggleAudioOpt('agc',this.checked)"></label>
+          </div>
+          <div class="card2" style="${usetVoiceSub === 'camera' || usetVoiceSub === 'streaming' ? '' : 'display:none'}">
+            <h3 style="margin-top:0">${usetVoiceSub === 'streaming' ? 'Streaming Quality' : 'Camera Settings'}</h3>
             <label class="f" style="margin-top:0">Camera</label><select class="t" id="v-cam" onchange="switchVideoIn(this.value)"><option>Loading devices…</option></select>
             <label class="f">Camera and screen share quality</label>
             <select class="t" onchange="S.vq=this.value;saveS();boostVideo()">${[['720p30', '720p, 30 fps (default)'], ['1080p60', '1080p, 60 fps (HD)'], ['4k60', '4K, 60 fps (needs a 4K camera and a fast connection)']].map(([v, l]) => `<option value="${v}" ${(S.vq || '720p30') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
           </div>
-          <h3>Soundboard sounds</h3><p>Use them from the 🔊 button in a voice call. Max 1 MB each.</p>${libForm('sounds', 'audio/*')}${libList('sounds', LIB.sounds)}`],
-        perks: ['Perks', `<p>Every Nitro-style perk that can run on a website is unlocked for everyone, free.</p>
-          ${perk('4,000-character messages', 'Unlocked')}${perk('File uploads up to 1 GB', 'Unlocked (limited by your Supabase plan)')}${perk('Animated avatars', 'Unlocked')}${perk('Profile banners', 'Unlocked')}${perk('Custom profile themes', 'Unlocked')}${perk('Server-specific profiles', 'Unlocked')}${perk('Custom app icons', 'Unlocked')}${perk('Custom app colour themes', 'Unlocked')}${perk('Join any number of servers', 'Unlocked')}${perk('Profile badge', 'Unlocked')}
-          ${perk('Custom emojis and animated emojis anywhere', 'Unlocked')}${perk('Custom stickers anywhere', 'Unlocked')}${perk('Reactions and Super Reactions', 'Unlocked')}${perk('Global soundboard', 'Unlocked')}${perk('HD streaming up to 4K 60 fps', 'Unlocked (depends on your device and connection)')}<h3>Not available</h3>${perk('Custom video backgrounds', 'Not built yet')}${perk('Server boosts', 'Not applicable, there are no payments')}`]
+          <div class="card2" style="${usetVoiceSub === 'sounds' ? '' : 'display:none'}">
+            <h3 style="margin-top:0">System &amp; Call Sounds</h3>
+            ${chk('sound', 'Play message notification sound')}
+            <div class="row" style="justify-content:flex-start"><button class="b g" onclick="beep()">Test Ping</button></div>
+          </div>
+          <div style="${usetVoiceSub === 'soundboard' ? '' : 'display:none'}">
+            <h3 style="margin-top:0">Soundboard Sounds</h3>
+            <p class="ts">Use them from the 🔊 button in a voice call. Max 1 MB each.</p>
+            ${libForm('sounds', 'audio/*')}${libList('sounds', LIB.sounds)}
+          </div>`;
       };
-      const [title, body] = pages[tab];
-      const nav = NAV.map(n => n.length === 1 ? `<div class="sg">${n[0]}</div>` : `<button class="sn ${n[0] === tab ? 'on' : ''}" onclick="settings('${n[0]}')">${n[1]}</button>`).join('');
-      const mob = `<div class="tabs mob">${NAV.filter(n => n.length > 1).map(n => `<button class="tab ${n[0] === tab ? 'on' : ''}" onclick="settings('${n[0]}')">${n[1]}</button>`).join('')}</div>`;
+
+      const pages = {
+        account: ['Account', `<div class="card2"><div class="srow"><div><b>Username</b>${escapeHtml(me.username)}</div><button class="b g" onclick="settings('profile')">Edit Profile</button></div>
+          <div class="srow"><div><b>Email</b><span id="em2">••••••••••</span> <a href="#" id="rev" style="color:#ff6b78" onclick="revealEmail();return false">Reveal</a></div></div></div>
+          <h3>Password and security</h3><div class="card2"><label class="f" style="margin-top:0">New password</label><input class="t" id="np" type="password" placeholder="At least 6 characters"><div class="err" id="serr"></div><div class="row" style="margin-top:8px"><button class="b" onclick="changePw()">Change password</button></div></div>
+          <h3>Account removal</h3><p>Deleting your account permanently removes your profile, your messages and every server you own.</p><button class="b r" onclick="deleteModal()">Delete account</button>`],
+        profile: ['Profiles', profileEditorHtml()],
+        server: ['Server Profile', serverProfileHtml()],
+        privacy: ['Data & Privacy', `<p class="ts">Control how your personal data and safety settings work across Proanchat.</p>
+          <div class="card2">
+            <label class="opt"><span><b>Use data to improve Proanchat</b><small class="ts">Helps us diagnose errors and improve performance.</small></span><input type="checkbox" class="tg" ${S.privacy?.analytics ? 'checked' : ''} onchange="S.privacy.analytics=this.checked;saveS()"></label>
+            <label class="opt"><span><b>Use data to personalise my experience</b><small class="ts">Remembers your preferred themes, recent emojis, and voice devices.</small></span><input type="checkbox" class="tg" ${S.privacy?.personalize !== false ? 'checked' : ''} onchange="S.privacy.personalize=this.checked;saveS()"></label>
+            <label class="opt" style="border:0"><span><b>Show link &amp; invite embed previews</b><small class="ts">Renders rich server invite cards inside chat.</small></span><input type="checkbox" class="tg" ${S.privacy?.linkPreviews !== false ? 'checked' : ''} onchange="S.privacy.linkPreviews=this.checked;saveS()"></label>
+          </div>
+          <div class="card2"><div class="srow"><div><b>Export Your Settings</b><small class="ts">Copy a JSON snapshot of your local preferences &amp; profile settings.</small></div><button class="b g" onclick="exportUserSettingsJson()">Copy Snapshot</button></div></div>`],
+        messaging: ['Messaging Permissions', `<p class="ts">Manage who can message you directly and send friend requests.</p>
+          <div class="card2">
+            <label class="opt"><span><b>Allow Direct Messages from server members</b><small class="ts">Applies when you share a server with another user.</small></span><input type="checkbox" class="tg" ${S.messaging?.serverDms !== false ? 'checked' : ''} onchange="S.messaging.serverDms=this.checked;saveS()"></label>
+            <label class="opt"><span><b>Enable Message Requests</b><small class="ts">Filter DMs from non-friends into pending requests.</small></span><input type="checkbox" class="tg" ${S.messaging?.messageRequests !== false ? 'checked' : ''} onchange="S.messaging.messageRequests=this.checked;saveS()"></label>
+            <label class="f">Who can add you as a friend</label>
+            <select class="t" onchange="S.messaging.friendReq=this.value;saveS()">
+              <option value="everyone" ${(S.messaging?.friendReq || 'everyone') === 'everyone' ? 'selected' : ''}>Everyone</option>
+              <option value="friends_of_friends" ${S.messaging?.friendReq === 'friends_of_friends' ? 'selected' : ''}>Friends of Friends</option>
+              <option value="server_members" ${S.messaging?.friendReq === 'server_members' ? 'selected' : ''}>Server Members</option>
+            </select>
+          </div>`],
+        notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages')}<div class="row" style="justify-content:flex-start"><button class="b g" onclick="beep()">Test sound</button></div>`],
+        voice: ['Voice &amp; Video', voiceBodyHtml()],
+        appearance: ['Appearance', `${themePageHtml()}
+          <h3 style="margin-top:26px">App Icon &amp; Text</h3>
+          <label class="f">Accent colour (overrides the theme's accent)</label><div style="display:flex;align-items:center">${ACCENTS.map(c => `<span class="sw" style="background:${c};${S.accent === c ? 'border-color:#fff' : ''}" onclick="S.accent='${c}';saveS();settings('appearance')"></span>`).join('')}<input type="color" value="${safeColor(S.accent || currentTheme().accent)}" oninput="S.accent=this.value;saveS()"><button class="b g" style="margin-left:8px" onclick="S.accent=null;saveS();settings('appearance')">Reset</button></div>
+          <label class="f">App icon</label><div>${Object.keys(ICONS).map(k => `<button class="b ${S.icon === k ? '' : 'g'}" onclick="S.icon='${k}';saveS();settings('appearance')">${k}</button>`).join(' ')}</div>
+          <label class="f">Chat font size: <span id="fsv">${S.fs}</span>px</label><input type="range" min="12" max="20" value="${S.fs}" style="width:100%;accent-color:var(--accent)" oninput="S.fs=+this.value;$('#fsv').textContent=this.value;saveS()">
+          ${chk('compact', 'Compact message spacing')}`],
+        accessibility: ['Accessibility', `<div class="card2">
+          ${chk('anim', 'Enable UI &amp; message animations')}
+          <label class="opt"><span><b>Reduced Motion</b><small class="ts">Minimise animated transitions across panels.</small></span><input type="checkbox" class="tg" ${S.accessibility?.reducedMotion ? 'checked' : ''} onchange="S.accessibility.reducedMotion=this.checked;saveS()"></label>
+          <label class="opt"><span><b>High Contrast Borders</b><small class="ts">Boost panel outlines and muted label contrast.</small></span><input type="checkbox" class="tg" ${S.accessibility?.highContrast ? 'checked' : ''} onchange="S.accessibility.highContrast=this.checked;saveS()"></label>
+          <label class="opt" style="border:0"><span><b>Automatically play animated GIFs &amp; stickers</b></span><input type="checkbox" class="tg" ${S.accessibility?.autoplayGifs !== false ? 'checked' : ''} onchange="S.accessibility.autoplayGifs=this.checked;saveS()"></label>
+        </div>`],
+        system: ['System', `<div class="card2">
+          <label class="opt"><span><b>Hardware Acceleration</b><small class="ts">Use GPU compositing for smooth video &amp; animations.</small></span><input type="checkbox" class="tg" ${S.system?.hwAccel !== false ? 'checked' : ''} onchange="S.system.hwAccel=this.checked;saveS()"></label>
+          <label class="opt"><span><b>Minimise to Background</b><small class="ts">Keep voice &amp; notifications active while navigating tabs.</small></span><input type="checkbox" class="tg" ${S.system?.minToTray !== false ? 'checked' : ''} onchange="S.system.minToTray=this.checked;saveS()"></label>
+          <label class="opt" style="border:0"><span><b>Open Proanchat on Launch</b><small class="ts">Remember last open server when returning.</small></span><input type="checkbox" class="tg" ${S.system?.autoStart ? 'checked' : ''} onchange="S.system.autoStart=this.checked;saveS()"></label>
+        </div>
+        <div class="card2"><b>Keyboard Shortcuts</b>
+          <div class="perk"><span>Send Message</span><i>Enter</i></div>
+          <div class="perk"><span>New Line</span><i>Shift + Enter</i></div>
+          <div class="perk"><span>Emoji Autocomplete</span><i>:emoji_name: + Tab / Enter</i></div>
+          <div class="perk" style="border:0"><span>Close Settings / Modals</span><i>Esc</i></div>
+        </div>`],
+        language: ['Language &amp; Time', `<div class="card2">
+          <label class="f" style="margin-top:0">Display Language</label>
+          <select class="t" onchange="S.language=this.value;saveS();toast('Language preference saved')">
+            ${[['en-US', 'English, US'], ['en-GB', 'English, UK'], ['es-ES', 'Español'], ['fr-FR', 'Français'], ['de-DE', 'Deutsch'], ['ja-JP', '日本語'], ['pt-BR', 'Português (Brasil)']].map(([v, l]) => `<option value="${v}" ${(S.language || 'en-US') === v ? 'selected' : ''}>${l}</option>`).join('')}
+          </select>
+          <label class="f">Timezone</label>
+          <input class="t" value="${escapeHtml(S.timezone || 'UTC')}" onchange="S.timezone=this.value.trim()||'UTC';saveS()">
+          <div style="margin-top:10px">${chk('h24', 'Use 24-hour clock format')}</div>
+        </div>`],
+        emojis: ['Emojis &amp; Stickers', `<p>Custom emojis work across every server and DM. Type <b>:name:</b> in chat for autocomplete, or click any custom emoji in chat to save or copy it. Animated GIF &amp; WebP files supported (max 2 MB).</p>
+          <h3>Add a custom emoji</h3>${libForm('emojis', 'image/*')}
+          <h3>Your emojis (${LIB.emojis.length})</h3><div class="libgrid">${libList('emojis', LIB.emojis)}</div>
+          <h3 style="margin-top:28px">Add a sticker</h3>${libForm('stickers', 'image/*')}
+          <h3>Your stickers (${LIB.stickers.length})</h3><div class="libgrid">${libList('stickers', LIB.stickers)}</div>`],
+        perks: ['Perks &amp; Nitro', `<p>Every Nitro-style perk that can run on a website is unlocked for everyone, free.</p>
+          ${perk('4,000-character messages', 'Unlocked')}${perk('File uploads up to 1 GB', 'Unlocked (limited by your Supabase plan)')}${perk('Animated avatars', 'Unlocked')}${perk('Profile banners', 'Unlocked')}${perk('Custom profile themes', 'Unlocked')}${perk('Server-specific profiles', 'Unlocked')}${perk('Custom app icons', 'Unlocked')}${perk('Custom app colour themes', 'Unlocked')}${perk('Join any number of servers', 'Unlocked')}${perk('Profile badge', 'Unlocked')}
+          ${perk('Custom emojis and animated emojis anywhere', 'Unlocked')}${perk('Custom stickers anywhere', 'Unlocked')}${perk('Reactions and Super Reactions', 'Unlocked')}${perk('Global soundboard', 'Unlocked')}${perk('HD streaming up to 4K 60 fps', 'Unlocked (depends on your device and connection)')}`],
+        games: ['Registered Games', `<p class="ts">Set a custom game or activity status displayed under your username in the bottom-left bar.</p>
+          <div class="card2">
+            <div style="display:flex;gap:8px"><input class="t" id="rg-in" placeholder="Add a game (e.g. Elden Ring)"><button class="b" onclick="addRegisteredGame()">Add Game</button></div>
+            <div style="margin-top:12px">
+              <div class="frow"><b>None (Hide game status)</b><span style="flex:1"></span><button class="b ${!S.games?.active ? '' : 'g'}" onclick="S.games.active='';saveS();renderMe();settings('games')">${!S.games?.active ? 'Active' : 'Select'}</button></div>
+              ${(S.games?.list || []).map(g => `<div class="frow"><b>🎮 ${escapeHtml(g)}</b><span style="flex:1"></span><button class="b ${S.games?.active === g ? '' : 'g'}" onclick="S.games.active='${escapeHtml(g.replace(/'/g, ''))}';saveS();renderMe();settings('games')">${S.games?.active === g ? 'Playing ✓' : 'Set Active'}</button></div>`).join('')}
+            </div>
+          </div>`],
+        activity: ['Activity Privacy', `<div class="card2">
+          <label class="opt"><span><b>Display current activity as a status message</b><small class="ts">Shows your active Registered Game in your user panel.</small></span><input type="checkbox" class="tg" ${S.activity?.showCurrent !== false ? 'checked' : ''} onchange="S.activity.showCurrent=this.checked;saveS();renderMe()"></label>
+          <label class="opt" style="border:0"><span><b>Share your detected games with friends</b><small class="ts">Allows friends to see when you're in a voice room or game.</small></span><input type="checkbox" class="tg" ${S.activity?.shareFriends !== false ? 'checked' : ''} onchange="S.activity.shareFriends=this.checked;saveS()"></label>
+        </div>`],
+        clips: ['Clips', `<div class="card2">
+          <label class="opt"><span><b>Enable Voice &amp; Stream Clips</b><small class="ts">Prepare clip settings for voice &amp; screen share sessions.</small></span><input type="checkbox" class="tg" ${S.clips?.enabled !== false ? 'checked' : ''} onchange="S.clips.enabled=this.checked;saveS()"></label>
+          <label class="opt"><span><b>Capture Microphone Audio in Clips</b></span><input type="checkbox" class="tg" ${S.clips?.mic !== false ? 'checked' : ''} onchange="S.clips.mic=this.checked;saveS()"></label>
+          <label class="f">Clip Length</label>
+          <select class="t" onchange="S.clips.length=+this.value;saveS()">${[[30, '30 Seconds'], [60, '1 Minute'], [120, '2 Minutes']].map(([v, l]) => `<option value="${v}" ${(S.clips?.length || 60) === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        </div>`],
+        overlay: ['Game Overlay', `<div class="card2">
+          <label class="opt"><span><b>Enable In-App Overlay</b><small class="ts">Show floating voice &amp; call status notifications.</small></span><input type="checkbox" class="tg" ${S.overlay?.enabled ? 'checked' : ''} onchange="S.overlay.enabled=this.checked;saveS()"></label>
+          <label class="opt"><span><b>Show Overlay Notifications</b></span><input type="checkbox" class="tg" ${S.overlay?.notif !== false ? 'checked' : ''} onchange="S.overlay.notif=this.checked;saveS()"></label>
+          <label class="f">Overlay Corner Position</label>
+          <select class="t" onchange="S.overlay.corner=this.value;saveS()">${[['top-left', 'Top Left'], ['top-right', 'Top Right'], ['bottom-left', 'Bottom Left'], ['bottom-right', 'Bottom Right']].map(([v, l]) => `<option value="${v}" ${(S.overlay?.corner || 'top-left') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        </div>`],
+        connections: ['Connected Apps', `<p class="ts">Display linked social &amp; developer accounts on your Proanchat profile card.</p>
+          <div class="card2">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <select class="t" id="cn-type" style="width:150px">${['GitHub', 'YouTube', 'Twitch', 'Spotify', 'Steam', 'Website'].map(t => `<option value="${t}">${t}</option>`).join('')}</select>
+              <input class="t" id="cn-val" style="flex:1;min-width:160px" placeholder="Username or handle">
+              <button class="b" onclick="addConnection()">Connect</button>
+            </div>
+          </div>
+          ${(S.connections || []).map((c, i) => `<div class="frow"><b>🔗 ${escapeHtml(c.type)}</b><span>${escapeHtml(c.handle)}</span><span style="flex:1"></span><button class="b r" style="padding:5px 10px;font-size:12px" onclick="S.connections.splice(${i},1);saveS();settings('connections')">Remove</button></div>`).join('') || '<p class="ts">No connected apps yet.</p>'}`],
+        developer: ['Developer', `<div class="card2" style="background:transparent;border:0;padding:0">
+            <label class="opt" style="border-bottom:1px solid var(--border);padding-bottom:16px">
+              <span>
+                <b style="font-size:15px">Developer Mode</b>
+                <small class="ts">Developer Mode exposes context menu items helpful for people writing apps using the Proanchat / Discord API.</small>
+              </span>
+              <input type="checkbox" class="tg" ${S.devMode ? 'checked' : ''} onchange="S.devMode=this.checked;saveS();settings('developer')">
+            </label>
+          </div>
+          ${S.devMode ? `<div class="card2" style="margin-top:16px">
+            <b style="display:block;margin-bottom:8px">Developer Quick IDs &amp; Context Menus Enabled</b>
+            <p class="ts" style="margin-top:0">Right-click any Server icon, Channel, Category, User, or Message to access <b>Copy ID</b> actions.</p>
+            <div class="perk"><span>Your User ID</span><i><code class="mono">${escapeHtml(me.id)}</code> <button class="b g" style="padding:3px 8px;font-size:11px;margin-left:6px" onclick="copyId('User','${me.id}')">Copy</button></i></div>
+            ${cur ? `<div class="perk"><span>Current Server ID</span><i><code class="mono">${escapeHtml(cur.id)}</code> <button class="b g" style="padding:3px 8px;font-size:11px;margin-left:6px" onclick="copyId('Server','${cur.id}')">Copy</button></i></div>` : ''}
+            ${curCh ? `<div class="perk" style="border:0"><span>Current Channel ID</span><i><code class="mono">${escapeHtml(curCh.id)}</code> <button class="b g" style="padding:3px 8px;font-size:11px;margin-left:6px" onclick="copyId('Channel','${curCh.id}')">Copy</button></i></div>` : ''}
+          </div>` : ''}`]
+      };
+
+      const NAV = [
+        ['account', 'Account'],
+        ['privacy', 'Data & Privacy'],
+        ['messaging', 'Messaging Permissions'],
+        ['notifications', 'Notifications'],
+        { sep: 1 },
+        { g: 'Experience' },
+        ['voice', 'Voice &amp; Video'],
+        ['appearance', 'Appearance'],
+        ['accessibility', 'Accessibility'],
+        ['system', 'System'],
+        ['language', 'Language &amp; Time'],
+        { sep: 1 },
+        { g: 'Expression' },
+        ['emojis', 'Emojis &amp; Stickers'],
+        ['perks', 'Perks &amp; Nitro'],
+        { sep: 1 },
+        { g: 'Games & Apps' },
+        ['games', 'Registered Games'],
+        ['activity', 'Activity Privacy'],
+        ['clips', 'Clips'],
+        ['overlay', 'Game Overlay'],
+        ['connections', 'Connected Apps'],
+        { sep: 1 },
+        ['developer', 'Developer'],
+        ['__logout', 'Log Out']
+      ];
+
+      const voiceSubs = [['voice', 'Voice'], ['camera', 'Camera'], ['streaming', 'Streaming'], ['sounds', 'Sounds'], ['soundboard', 'Soundboard'], ['advanced', 'Advanced']];
+      const navHtml = NAV.map(n => {
+        if (n.sep) return '<div class="ssep"></div>';
+        if (n.g) return `<div class="sg">${n.g}</div>`;
+        const [k, label] = n;
+        const isOut = k === '__logout';
+        const click = isOut ? 'logout()' : `settings('${k}')`;
+        const btn = `<button class="sn ${isOut ? 'danger' : ''} ${k === tab ? 'on' : ''}" data-label="${escapeHtml(label.toLowerCase().replace(/&amp;/g, '&'))}" onclick="${click}"><span class="sn-ic">${USET_IC[isOut ? 'logout' : k] || ''}</span><span>${label}</span></button>`;
+        if (k === 'voice' && tab === 'voice') {
+          return btn + `<div class="sn-sub-wrap">${voiceSubs.map(([sk, sl]) => `<button class="sn-sub ${usetVoiceSub === sk ? 'on' : ''}" data-label="${sl.toLowerCase()}" onclick="settings('voice','${sk}')">${sl}</button>`).join('')}</div>`;
+        }
+        return btn;
+      }).join('');
+
+      const profActive = tab === 'profile' || tab === 'server';
+      const profHead = `<button class="uset-prof" style="${profActive ? 'border-color:var(--accent);background:#ffffff14' : ''}" onclick="settings('profile')">${avatarDecoHtml(me, 36, fl.deco)}<span class="up-meta"><b>${escapeHtml(me.username)}</b><small>Edit Profiles ✎</small></span></button>
+        <div class="uset-search"><span>🔍</span><input id="uset-q" placeholder="Search" value="${escapeHtml(usetQ)}" oninput="filterUSetNav(this.value)"></div>`;
+
+      const [title, body] = pages[tab] || pages.account;
+      const mob = `<div class="tabs mob" style="overflow-x:auto;flex-wrap:nowrap">${NAV.filter(Array.isArray).filter(n => n[0] !== '__logout').map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" style="white-space:nowrap" onclick="settings('${k}')">${l}</button>`).join('')}</div>`;
       let el = $('#set');
       if (!el) { el = document.createElement('div'); el.id = 'set'; document.body.append(el); }
       delete el.dataset.kind;
       const isWide = tab === 'profile' || tab === 'server';
-      el.innerHTML = `<div id="setnav"><div>${nav}<div class="sg"></div><button class="sn" style="color:#ff6b78" onclick="logout()">Log out</button></div></div><div id="setmain"><div class="${isWide ? 'wide' : ''}">${mob}<h2>${title}</h2>${body}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button>`;
+      el.innerHTML = `<div id="setnav"><div>${profHead}${navHtml}</div></div><div id="setmain"><div class="${isWide ? 'wide' : ''}">${mob}<h2>${title}</h2>${body}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button><span class="esc">ESC</span>`;
+      if (usetQ) filterUSetNav(usetQ);
       if (tab === 'profile' || tab === 'server') pv();
       if (tab === 'voice') populateVoiceDevices();
     }
