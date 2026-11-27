@@ -5157,7 +5157,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
       const profActive = tab === 'profile' || tab === 'server';
       const profHead = `<button class="uset-prof" style="${profActive ? 'border-color:var(--accent);background:#ffffff14' : ''}" onclick="settings('profile')">${avatarDecoHtml(me, 36, fl.deco)}<span class="up-meta"><b>${escapeHtml(me.username)}</b><small>Edit Profiles ✎</small></span></button>
-        <div class="uset-search"><span>🔍</span><input id="uset-q" type="text" autocomplete="off" placeholder="Search" value="${escapeHtml(usetQ)}" oninput="filterUSetNav(this.value)"></div>`;
+        <div class="uset-search"><span>🔍</span><input id="uset-q" type="search" name="q_uset_search" autocomplete="new-password" placeholder="Search" value="${escapeHtml(usetQ)}" oninput="filterUSetNav(this.value)"></div>`;
 
       const [title, body] = pages[tab] || pages.account;
       const mob = `<div class="tabs mob" style="overflow-x:auto;flex-wrap:nowrap">${NAV.filter(Array.isArray).filter(n => n[0] !== '__logout').map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" style="white-space:nowrap" onclick="settings('${k}')">${l}</button>`).join('')}</div>`;
