@@ -1461,8 +1461,9 @@
       const local = (s && S.srvMeta?.[s.id]) || {};
       const remote = (s && s.settings && typeof s.settings === 'object') ? s.settings : (s && s.metadata ? (typeof s.metadata === 'object' ? s.metadata : (() => { try { return JSON.parse(s.metadata); } catch(e){ return {}; } })()) : {});
       const m = { ...base, ...remote, ...local };
-      if (!m.icon_url && s && ((s.name || '').toLowerCase().includes('proanfun') || (s.name || '').toLowerCase().includes('proanchat') || (s.invite_code || '').toLowerCase() === 'proanchat')) {
-        m.icon_url = '/assets/aistudio/procord-logo_1__c85137bf.svg';
+      const isProanchat = s && ((s.invite_code || '').toLowerCase() === 'proanchat' || (s.name || '').toLowerCase().includes('proanchat'));
+      if ((!m.icon_url || m.icon_url.includes('procord-logo_1__c85137bf.svg') || (isProanchat && !m.procord_logo_v2)) && (isProanchat || (s && (s.name || '').toLowerCase().includes('proanfun')))) {
+        m.icon_url = '/assets/aistudio/procord-logo_910755f1.jpg';
       }
       m.engagement = { ...base.engagement, ...(remote.engagement || {}), ...(local.engagement || {}) };
       m.access = { ...base.access, ...(remote.access || {}), ...(local.access || {}) };
@@ -1856,7 +1857,10 @@
     async function ensureOfficialServer(session) {
       try {
         const { data: srvs } = await supabaseClient.from('servers').select('*');
-        let srv = srvs && srvs.find(s => (s.name || '').toLowerCase().includes('proanfun') || (s.name || '').toLowerCase().includes('proanchat') || (s.invite_code || '').toLowerCase() === 'proanchat');
+        let srv = srvs && (
+          srvs.find(s => (s.invite_code || '').toLowerCase() === 'proanchat' || (s.name || '').toLowerCase().includes('proanchat'))
+          || srvs.find(s => (s.name || '').toLowerCase().includes('proanfun'))
+        );
 
         let proanfunId = null;
         const { data: profs } = await supabaseClient.from('profiles').select('id,username').eq('username', 'Proanfun').limit(1);
@@ -1866,21 +1870,28 @@
         const ownerId = proanfunId || session.user.id;
 
         if (!srv) {
-          const { data: newSrv } = await supabaseClient.from('servers').insert({
+          const initMeta = {
+            icon_url: '/assets/aistudio/procord-logo_910755f1.jpg',
+            procord_logo_v2: true,
+            description: 'Official Proanchat Community Server',
+            banner_id: 'sunset'
+          };
+          let { data: newSrv, error: insErr } = await supabaseClient.from('servers').insert({
             name: 'proanchat server',
             owner_id: ownerId,
             invite_code: 'proanchat',
-            metadata: JSON.stringify({
-              icon_url: '/assets/aistudio/procord-logo_1__c85137bf.svg',
-              description: 'Official Proanchat Community Server',
-              banner_id: 'sunset'
-            }),
-            settings: {
-              icon_url: '/assets/aistudio/procord-logo_1__c85137bf.svg',
-              description: 'Official Proanchat Community Server',
-              banner_id: 'sunset'
-            }
+            metadata: JSON.stringify(initMeta),
+            settings: initMeta
           }).select().single();
+          if (insErr) {
+            const fallbackIns = await supabaseClient.from('servers').insert({
+              name: 'proanchat server',
+              owner_id: ownerId,
+              invite_code: 'proanchat',
+              metadata: JSON.stringify(initMeta)
+            }).select().single();
+            newSrv = fallbackIns.data;
+          }
           srv = newSrv;
 
           if (srv) {
@@ -1927,15 +1938,26 @@
             }
           }
         } else {
-          const currentSettings = typeof srv.settings === 'object' && srv.settings ? srv.settings : (srv.metadata ? (typeof srv.metadata === 'object' ? srv.metadata : (() => { try { return JSON.parse(srv.metadata); } catch(e){ return {}; } })()) : {});
-          if (!currentSettings.icon_url) {
-            currentSettings.icon_url = '/assets/aistudio/procord-logo_1__c85137bf.svg';
+          const currentSettings = typeof srv.settings === 'object' && srv.settings ? { ...srv.settings } : (srv.metadata ? (typeof srv.metadata === 'object' ? { ...srv.metadata } : (() => { try { return JSON.parse(srv.metadata); } catch(e){ return {}; } })()) : {});
+          if (!currentSettings.icon_url || currentSettings.icon_url.includes('procord-logo_1__c85137bf.svg') || !currentSettings.procord_logo_v2) {
+            currentSettings.icon_url = '/assets/aistudio/procord-logo_910755f1.jpg';
+            currentSettings.procord_logo_v2 = true;
           }
           currentSettings.description = currentSettings.description || 'Official Proanchat Community Server';
-          
+
           const patch = { settings: currentSettings, metadata: JSON.stringify(currentSettings) };
           if (proanfunId && srv.owner_id !== proanfunId) patch.owner_id = proanfunId;
-          await supabaseClient.from('servers').update(patch).eq('id', srv.id);
+          const { error: upErr } = await supabaseClient.from('servers').update(patch).eq('id', srv.id);
+          if (upErr) {
+            const metaPatch = { metadata: JSON.stringify(currentSettings) };
+            if (proanfunId && srv.owner_id !== proanfunId) metaPatch.owner_id = proanfunId;
+            await supabaseClient.from('servers').update(metaPatch).eq('id', srv.id);
+          }
+          if (S.srvMeta && S.srvMeta[srv.id] && (!S.srvMeta[srv.id].procord_logo_v2 || !S.srvMeta[srv.id].icon_url || S.srvMeta[srv.id].icon_url.includes('procord-logo_1__c85137bf.svg'))) {
+            S.srvMeta[srv.id].icon_url = '/assets/aistudio/procord-logo_910755f1.jpg';
+            S.srvMeta[srv.id].procord_logo_v2 = true;
+            saveS();
+          }
 
           const { data: existingChans } = await supabaseClient.from('channels').select('name').eq('server_id', srv.id);
           const existingNames = new Set((existingChans || []).map(c => c.name));
@@ -2926,6 +2948,7 @@
       const { name: _drop, ...patch } = d;
       if ($('#sp-in-ico')) patch.icon_url = $('#sp-in-ico').value.trim() || d.icon_url || '';
       if ($('#sp-in-ban')) patch.banner_url = $('#sp-in-ban').value.trim() || d.banner_url || '';
+      patch.procord_logo_v2 = true;
       await saveSrvMeta(patch, newName !== cur.name ? newName : null);
       sset.sdirty = false;
       const b = $('#ssavebar');
