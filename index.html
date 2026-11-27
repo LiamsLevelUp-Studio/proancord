@@ -1449,12 +1449,13 @@
       return `<div class="${cls}">${escapeHtml(mono)}</div>`;
     }
     function srvTagPill(uid) {
-      if (!cur || !uid) return '';
-      const m = srvMeta(cur);
+      if (!uid) return '';
+      const targetSrv = (S.activeServerTag && servers.find(s => s.id === S.activeServerTag)) || cur;
+      if (!targetSrv) return '';
+      const m = srvMeta(targetSrv);
       if (!m.tag_enabled || !m.tag_text) return '';
-      if (!members.some(x => x.id === uid)) return '';
       const c = safeColor(m.tag_color || '#5865f2');
-      return `<span class="stag" style="border-color:${c}66;background:${c}24" title="${escapeHtml(cur.name)} Server Tag"><span data-noico>${escapeHtml(m.tag_icon || '🏷️')}</span>${escapeHtml(m.tag_text.slice(0, 4).toUpperCase())}</span>`;
+      return `<span class="stag" style="border-color:${c}66;background:${c}24" title="${escapeHtml(targetSrv.name)} Server Tag"><span data-noico>${escapeHtml(m.tag_icon || '🏷️')}</span>${escapeHtml(m.tag_text.slice(0, 4).toUpperCase())}</span>`;
     }
     async function saveSrvMeta(patch, newName = null) {
       if (!cur) return false;
@@ -5074,6 +5075,18 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
                 <div class="prof-sec-h"><span>Profile Effect</span></div>
                 <input type="hidden" id="sfx" value="${escapeHtml(fl.effect)}">
                 <div class="tabs" style="margin-top:0">${PROFILE_EFFECTS.map(([k, l]) => `<button class="tab fx-opt ${fl.effect === k ? 'on' : ''}" onclick="setPField('sfx','${k}','.fx-opt',this)">${l}</button>`).join('')}</div>
+              </div>
+              <div class="prof-sec">
+                <div class="prof-sec-h"><span>Active Server Tag</span></div>
+                <p class="ts" style="margin-bottom:6px">Choose which server's tag badge to display next to your name across chats.</p>
+                <select class="t" onchange="S.activeServerTag=this.value;saveS();renderChat(true);renderMembers()">
+                  <option value="">None (No Server Tag)</option>
+                  ${servers.map(s => {
+                    const sm = srvMeta(s);
+                    if (!sm.tag_enabled || !sm.tag_text) return '';
+                    return `<option value="${s.id}" ${S.activeServerTag === s.id ? 'selected' : ''}>[${sm.tag_text}] ${escapeHtml(s.name)}</option>`;
+                  }).join('')}
+                </select>
               </div>
               <div class="prof-sec">
                 <label class="f" style="margin-top:0">About Me</label>
