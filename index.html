@@ -1450,12 +1450,24 @@
     }
     function srvTagPill(uid) {
       if (!uid) return '';
-      const targetSrv = (S.activeServerTag && servers.find(s => s.id === S.activeServerTag)) || cur;
+      const stObj = uid === me.id ? { activeTag: S.activeServerTag } : (online.get(uid) || onlineAll.get(uid));
+      const tagSrvId = stObj?.activeTag;
+      if (!tagSrvId) return '';
+      const targetSrv = servers.find(s => s.id === tagSrvId);
       if (!targetSrv) return '';
       const m = srvMeta(targetSrv);
       if (!m.tag_enabled || !m.tag_text) return '';
       const c = safeColor(m.tag_color || '#5865f2');
       return `<span class="stag" style="border-color:${c}66;background:${c}24" title="${escapeHtml(targetSrv.name)} Server Tag"><span data-noico>${escapeHtml(m.tag_icon || '🏷️')}</span>${escapeHtml(m.tag_text.slice(0, 4).toUpperCase())}</span>`;
+    }
+    function updateActiveTag(val) {
+      S.activeServerTag = val || '';
+      saveS();
+      if (pr) pr.track({ status: S.status, activeTag: S.activeServerTag });
+      if (gp) gp.track({ status: S.status, activeTag: S.activeServerTag });
+      renderChat(true);
+      renderMembers();
+      toast('Active Server Tag updated');
     }
     async function saveSrvMeta(patch, newName = null) {
       if (!cur) return false;
@@ -2079,9 +2091,9 @@
       if (pr) supabaseClient.removeChannel(pr);
       pr = supabaseClient.channel('pres-' + id, { config: { presence: { key: me.id } } });
       pr.on('presence', { event: 'sync' }, () => {
-        online = new Map(Object.entries(pr.presenceState()).map(([k, v]) => [k, v[0]?.status || 'online']));
+        online = new Map(Object.entries(pr.presenceState()).map(([k, v]) => [k, v[0] || {}]));
         renderMembers();
-      }).subscribe(s => { if (s === 'SUBSCRIBED') pr.track({ status: S.status }); });
+      }).subscribe(s => { if (s === 'SUBSCRIBED') pr.track({ status: S.status, activeTag: S.activeServerTag || '' }); });
       renderAll();
       if (channels.length) selectChannel(channels[0].id);
       else { curCh = null; msgs = []; renderChat(); }
@@ -2316,9 +2328,9 @@
       watchers.forEach(c => supabaseClient.removeChannel(c));
       gp = supabaseClient.channel('procord-online', { config: { presence: { key: me.id } } });
       gp.on('presence', { event: 'sync' }, () => {
-        onlineAll = new Map(Object.entries(gp.presenceState()).map(([k, v]) => [k, v[0]?.status || 'online']));
+        onlineAll = new Map(Object.entries(gp.presenceState()).map(([k, v]) => [k, v[0] || {}]));
         if (!cur) { renderSide(); if (!dmWith) renderChat(true); }
-      }).subscribe(s => { if (s === 'SUBSCRIBED') gp.track({ status: S.status }); });
+      }).subscribe(s => { if (s === 'SUBSCRIBED') gp.track({ status: S.status, activeTag: S.activeServerTag || '' }); });
       watchers = [gp,
         supabaseClient.channel('dm-in-' + me.id).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages', filter: 'recipient=eq.' + me.id }, p => {
           beep();
@@ -2469,7 +2481,7 @@
       ['kick_members', 'Kick Members', 'Remove members from the server.']];
     const ROLE_COLORS = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#e91e63', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6', '#607d8b', '#11806a', '#1f8b4c', '#206694', '#71368a', '#ad1457', '#c27c0e', '#a84300', '#992d22', '#979c9f', '#546e7a'];
     const can = p => !!cur && (cur.owner_id === me.id || roles.some(r => memberRoles.some(m => m.user_id === me.id && m.role_id === r.id) && (r.perms || []).some(x => x === p || x === 'administrator')));
-    const friendStatus = p => { const s = onlineAll.get(p.id); return s && s !== 'invisible' ? s : null; };
+    const friendStatus = p => { const d = onlineAll.get(p.id); const s = d?.status; return s && s !== 'invisible' ? s : null; };
 
     // ---------- Live updates: other people's changes appear without a refresh ----------
     function liveServer(id) {
@@ -4095,7 +4107,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const box = $('#mem');
       if (!box) return;
       $('#app').classList.toggle('nomem', !cur);
-      const st = p => { const s = p.id === me.id ? S.status : online.get(p.id); return s && s !== 'invisible' ? s : null; };
+      const st = p => { const d = p.id === me.id ? { status: S.status } : online.get(p.id); const s = d?.status; return s && s !== 'invisible' ? s : null; };
       const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')" oncontextmenu="memCtx(event,'${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><div class="mn"><span ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${srvTagPill(p.id)}${badgePills(p)}</div></div>`;
       if (!cur) { box.innerHTML = ''; return; }
 
