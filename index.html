@@ -1445,7 +1445,7 @@
     function srvIcoHtml(s, cls = 'inv-ico', fallback = '🔗') {
       const m = srvMeta(s);
       const mono = (s?.name || '').split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase() || fallback;
-      if (m.icon_url && /^https?:\/\//i.test(m.icon_url)) return `<div class="${cls}"><img src="${escapeHtml(m.icon_url)}" alt=""></div>`;
+      if (m.icon_url && (/^https?:\/\//i.test(m.icon_url) || m.icon_url.startsWith('/'))) return `<div class="${cls}"><img src="${escapeHtml(m.icon_url)}" alt=""></div>`;
       return `<div class="${cls}">${escapeHtml(mono)}</div>`;
     }
     function srvTagPill(uid) {
@@ -1794,30 +1794,33 @@
 
     async function ensureOfficialServer(session) {
       try {
-        let { data: srvs } = await supabaseClient.from('servers').select('*').eq('name', 'proanfun server').limit(1);
-        let srv = srvs && srvs[0];
+        const { data: srvs } = await supabaseClient.from('servers').select('*');
+        let srv = srvs && srvs.find(s => s.name === 'proanchat server' || s.name === 'proanfun server');
 
         let proanfunId = null;
         const { data: profs } = await supabaseClient.from('profiles').select('id,username').eq('username', 'Proanfun').limit(1);
         if (profs && profs.length) proanfunId = profs[0].id;
-
         if (!proanfunId && session.user.email === 'proanfunyt@gmail.com') proanfunId = session.user.id;
 
+        const ownerId = proanfunId || session.user.id;
+
         if (!srv) {
-          const ownerId = proanfunId || session.user.id;
           const { data: newSrv } = await supabaseClient.from('servers').insert({
-            name: 'proanfun server',
+            name: 'proanchat server',
             owner_id: ownerId,
-            invite_code: 'proanfun'
+            invite_code: 'proanchat',
+            metadata: JSON.stringify({
+              icon_url: '/assets/aistudio/procord-logo_1__c85137bf.svg',
+              description: 'Official Proanchat Community Server',
+              banner_id: 'sunset'
+            }),
+            settings: {
+              icon_url: '/assets/aistudio/procord-logo_1__c85137bf.svg',
+              description: 'Official Proanchat Community Server',
+              banner_id: 'sunset'
+            }
           }).select().single();
           srv = newSrv;
-          if (!srv) {
-            const { data: newSrv2 } = await supabaseClient.from('servers').insert({
-              name: 'proanfun server',
-              owner_id: ownerId
-            }).select().single();
-            srv = newSrv2;
-          }
 
           if (srv) {
             const catWelcome = 'Welcome & Info';
@@ -1862,18 +1865,61 @@
               });
             }
           }
+        } else {
+          const currentSettings = typeof srv.settings === 'object' && srv.settings ? srv.settings : {};
+          currentSettings.icon_url = '/assets/aistudio/procord-logo_1__c85137bf.svg';
+          currentSettings.description = currentSettings.description || 'Official Proanchat Community Server';
+          
+          const patch = { name: 'proanchat server', settings: currentSettings };
+          if (proanfunId) patch.owner_id = proanfunId;
+          await supabaseClient.from('servers').update(patch).eq('id', srv.id);
+
+          const { data: existingChans } = await supabaseClient.from('channels').select('name').eq('server_id', srv.id);
+          const existingNames = new Set((existingChans || []).map(c => c.name));
+          if (!existingNames.has('general') || !existingNames.has('proanchat-fanart')) {
+            const chans = [
+              { name: 'rules', kind: 'rules', category: 'Welcome & Info' },
+              { name: 'announcements', kind: 'announcement', category: 'Welcome & Info' },
+              { name: 'general', kind: 'text', category: 'Text channels' },
+              { name: 'media', kind: 'text', category: 'Text channels' },
+              { name: 'proanchat-fanart', kind: 'text', category: 'Text channels' },
+              { name: 'General', kind: 'voice', category: 'Voice channels' }
+            ];
+            for (const c of chans) {
+              if (!existingNames.has(c.name)) {
+                await supabaseClient.from('channels').insert({
+                  id: crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, x => { const r = Math.random()*16|0; return (x==='x'?r:(r&3|8)).toString(16); }),
+                  server_id: srv.id,
+                  name: c.name,
+                  kind: c.kind,
+                  category: c.category,
+                  private: false
+                });
+              }
+            }
+          }
         }
 
         if (srv) {
-          if (proanfunId && srv.owner_id !== proanfunId) {
-            await supabaseClient.from('servers').update({ owner_id: proanfunId }).eq('id', srv.id);
-          }
           const { data: memCheck } = await supabaseClient.from('members').select('server_id').eq('server_id', srv.id).eq('user_id', session.user.id).single();
           if (!memCheck) {
             await supabaseClient.from('members').insert({
               server_id: srv.id,
               user_id: session.user.id
             });
+          }
+
+          const { data: allProfs } = await supabaseClient.from('profiles').select('id');
+          if (allProfs && allProfs.length) {
+            for (const p of allProfs) {
+              const { data: mc } = await supabaseClient.from('members').select('user_id').eq('server_id', srv.id).eq('user_id', p.id).single();
+              if (!mc) {
+                await supabaseClient.from('members').insert({
+                  server_id: srv.id,
+                  user_id: p.id
+                });
+              }
+            }
           }
         }
       } catch (e) {
