@@ -1187,6 +1187,56 @@
     .inv-banner { display: flex; align-items: center; gap: 12px; background: #0c0c10; border: 1px solid #ffffff1c; border-radius: 12px; padding: 12px; margin-bottom: 16px; text-align: left; }
     .inv-banner b { display: block; font-size: 14px; }
     .inv-banner small { color: var(--mute); font-size: 12px; }
+
+    /* ---- Full Discord Server Settings & Server Profile ---- */
+    .sv { overflow: hidden; }
+    .sv img, .inv-ico img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
+    .inv-ico { overflow: hidden; }
+    .ssep { height: 1px; background: var(--border); margin: 10px 8px; }
+    .sn { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .sn .sn-ic { width: 18px; height: 18px; flex: none; opacity: .82; display: inline-flex; align-items: center; justify-content: center; }
+    .sn.on .sn-ic { opacity: 1; }
+    .sn .sn-ext { margin-left: auto; opacity: .65; font-size: 12px; }
+    .sn.danger { color: #f23f43; }
+    .sn.danger:hover { background: #f23f431c; color: #ff6b6e; }
+
+    .srv-split { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 28px; align-items: start; margin-top: 12px; }
+    .srv-sec { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
+    .srv-sec:last-child { border-bottom: 0; margin-bottom: 0; }
+    .srv-lbl { display: block; font-size: 14px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
+    .srv-sub { font-size: 13px; color: var(--mute); margin: 0 0 12px; line-height: 1.4; }
+    .srv-ban-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }
+    .srv-ban-tile { height: 54px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; position: relative; transition: transform .12s, border-color .15s; overflow: hidden; }
+    .srv-ban-tile:hover { transform: translateY(-2px); border-color: #ffffff44; }
+    .srv-ban-tile.on { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
+    .srv-traits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .srv-trait { display: flex; align-items: center; gap: 6px; background: #0f1014; border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; }
+    .srv-trait input.temo { width: 26px; background: none; border: 0; text-align: center; font-size: 15px; outline: 0; padding: 0; }
+    .srv-trait input.tlbl { flex: 1; min-width: 0; background: none; border: 0; color: var(--text); font-size: 13px; outline: 0; }
+    .srv-card { background: #18191e; border: 1px solid #ffffff14; border-radius: 14px; overflow: hidden; box-shadow: 0 16px 40px #000a; position: sticky; top: 24px; }
+    .srv-card-ban { height: 112px; background-size: cover; background-position: center; }
+    .srv-card-body { padding: 0 16px 16px; position: relative; }
+    .srv-card-ico { width: 58px; height: 58px; border-radius: 16px; border: 4px solid #18191e; background: #26272f; margin-top: -30px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; color: #fff; overflow: hidden; }
+    .srv-card-ico img { width: 100%; height: 100%; object-fit: cover; }
+    .srv-card-name { font-size: 16px; font-weight: 800; color: #fff; margin: 8px 0 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .srv-card-meta { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--mute); }
+    .srv-card-meta span { display: inline-flex; align-items: center; gap: 5px; }
+    .srv-card-meta i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .srv-card-est { font-size: 12px; color: var(--mute); margin-top: 4px; }
+    .srv-card-desc { font-size: 13px; color: #d4d4d8; margin-top: 10px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
+    .srv-card-traits { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .srv-tpill { display: inline-flex; align-items: center; gap: 4px; background: #ffffff0e; border: 1px solid #ffffff16; border-radius: 99px; padding: 2px 8px; font-size: 11px; color: #e4e4e7; }
+
+    .stag { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 800; letter-spacing: .3px; padding: 1px 6px; border-radius: 5px; background: #ffffff14; border: 1px solid #ffffff1f; color: #f4f4f5; vertical-align: middle; margin-left: 4px; text-transform: uppercase; }
+    .ins-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 12px 0; }
+    .ins-card { background: var(--side); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .ins-card small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--mute); margin-bottom: 4px; }
+    .ins-card b { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .audit-row { background: var(--side); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin: 8px 0; display: flex; align-items: center; gap: 12px; }
+    .audit-row .am { flex: 1; min-width: 0; }
+    .audit-row small { color: var(--mute); font-size: 12px; display: block; margin-top: 2px; }
+    .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 12px 0; }
+    @media (max-width: 920px) { .srv-split { grid-template-columns: 1fr; } .srv-card { position: static; } .srv-ban-grid { grid-template-columns: repeat(5, 1fr); } .srv-traits { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
 
@@ -1243,7 +1293,7 @@
     const roleAttr = uid => { const r = userRoles(uid).find(x => x.style === 'gradient' || x.style === 'holo' || safeColor(x.color).toLowerCase() !== '#99aab5'); return r ? roleStyleAttr(r) : ''; };
     const roleIcon = uid => { const r = userRoles(uid).find(x => x.icon); return r ? iconHtml(r) : ''; };
     const isFounder = p => (p?.badges || []).includes('site_owner');
-    const nameHtml = p => `<b ${roleAttr(p?.id)} ${isFounder(p) ? 'data-f' : ''} onclick="showProfile('${p?.id}')">${escapeHtml(p?.username)}</b>${roleIcon(p?.id)}${badgePills(p)}`;
+    const nameHtml = p => `<b ${roleAttr(p?.id)} ${isFounder(p) ? 'data-f' : ''} onclick="showProfile('${p?.id}')">${escapeHtml(p?.username)}</b>${roleIcon(p?.id)}${srvTagPill(p?.id)}${badgePills(p)}`;
     const formatDateTime = d => new Date(d).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: !S.h24 });
     const formatTime = d => new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !S.h24 });
 
@@ -1268,7 +1318,7 @@
     let friendRows = [];     // friendship rows (pending + accepted)
     let friendTab = 'online';
     let watchers = [];       // always-on realtime subscriptions
-    let sset = { tab: 'roles', rid: null, rtab: 'display', q: '', draft: null, dirty: false }; // server settings page
+    let sset = { tab: 'profile', rid: null, rtab: 'display', q: '', draft: null, dirty: false, sdraft: null, sdirty: false, mq: '', aq: '' }; // server settings page
     let sl = null;           // live updates for the open server
     let gp = null;           // everyone-online presence
     let onlineAll = new Map();
@@ -1284,16 +1334,140 @@
     const MAX_UPLOAD = 1024 * 1024 * 1024; // 1 GB here; your Supabase project has its own limit too
     let rt = null;           // realtime subscription (new messages)
     let pr = null;           // presence subscription (who is online)
+    let srvBans = [];        // banned users in current server (cached)
+    let srvAudits = [];      // audit logs in current server (cached)
+    const slowLast = {};     // channelId -> last message timestamp for slowmode
 
     // ---------- Settings (saved in this browser) ----------
     const DEFAULTS = {
       theme: 'dark', custom: [], compact: false, fs: 16, sound: true, h24: false, anim: true,
       status: 'online', accent: null, icon: 'red',
       audioIn: '', audioOut: '', videoIn: '', inVol: 100, outVol: 100,
-      echo: true, noise: true, agc: true, recentEmojis: [], flair: {}
+      echo: true, noise: true, agc: true, recentEmojis: [], flair: {}, srvMeta: {}
     };
     let S = { ...DEFAULTS };
     try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem('procord-settings') || '{}') }; } catch (e) {}
+
+    // ---------- Server Profile & Full Server Settings Helpers ----------
+    const SRV_BANNERS = [
+      ['charcoal', 'linear-gradient(135deg,#2a2b30,#141518 55%,#34363d)'],
+      ['pink', 'linear-gradient(135deg,#ff2d92,#ff6cb6)'],
+      ['crimson', 'linear-gradient(135deg,#e11d2e,#ff5a4f)'],
+      ['orange', 'linear-gradient(135deg,#f97316,#fb923c)'],
+      ['gold', 'linear-gradient(135deg,#eab308,#fde047)'],
+      ['violet', 'linear-gradient(135deg,#7e22ce,#c084fc)'],
+      ['sky', 'linear-gradient(135deg,#0284c7,#38bdf8)'],
+      ['mint', 'linear-gradient(135deg,#2dd4bf,#99f6e4)'],
+      ['olive', 'linear-gradient(135deg,#4d7c0f,#84cc16)'],
+      ['slate', 'linear-gradient(135deg,#334155,#64748b)']
+    ];
+    const srvDefaultMeta = () => ({
+      icon_url: '',
+      banner_id: 'crimson',
+      banner_url: '',
+      traits: [{ e: '🎮', l: '' }, { e: '💬', l: '' }, { e: '✨', l: '' }, { e: '🎵', l: '' }, { e: '🌍', l: '' }],
+      description: '',
+      tag_enabled: false,
+      tag_text: '',
+      tag_icon: '🛡️',
+      tag_color: '#5865f2',
+      boost_level: 0,
+      boost_count: 0,
+      engagement: { sys_ch: '', welcome_msg: true, boost_msg: true, default_notif: 'all', highlights: true },
+      access: { mode: 'open', paused: false, verification: 'low', media_filter: 'members', note: '' },
+      safety: { blocked_words: '', block_invites: false, slowmode: 0, raid_shield: true },
+      community: { enabled: false, rules_ch: '', updates_ch: '' },
+      onboarding: { title: 'Welcome!', message: 'Pick your favorite channels and introduce yourself.', default_chs: [] },
+      webpage: { enabled: true, vanity_tagline: '' },
+      webhooks: [],
+      apps: { automod: true, greeter: true, slowmod: false, invtrack: true },
+      bans: [],
+      audit: []
+    });
+    function srvMeta(srv = cur) {
+      const s = typeof srv === 'string' ? servers.find(x => x.id === srv) : srv;
+      const base = srvDefaultMeta();
+      const local = (s && S.srvMeta?.[s.id]) || {};
+      const remote = (s && s.settings && typeof s.settings === 'object') ? s.settings : {};
+      const m = { ...base, ...remote, ...local };
+      m.engagement = { ...base.engagement, ...(remote.engagement || {}), ...(local.engagement || {}) };
+      m.access = { ...base.access, ...(remote.access || {}), ...(local.access || {}) };
+      m.safety = { ...base.safety, ...(remote.safety || {}), ...(local.safety || {}) };
+      m.community = { ...base.community, ...(remote.community || {}), ...(local.community || {}) };
+      m.onboarding = { ...base.onboarding, ...(remote.onboarding || {}), ...(local.onboarding || {}) };
+      m.webpage = { ...base.webpage, ...(remote.webpage || {}), ...(local.webpage || {}) };
+      m.apps = { ...base.apps, ...(remote.apps || {}), ...(local.apps || {}) };
+      if (!Array.isArray(m.traits) || m.traits.length < 5) m.traits = [...(m.traits || []), ...base.traits].slice(0, 5);
+      return m;
+    }
+    function srvBannerCss(m) {
+      if (m.banner_url && /^https?:\/\//i.test(m.banner_url)) return `background-image:url('${escapeHtml(m.banner_url)}');background-size:cover;background-position:center`;
+      const found = SRV_BANNERS.find(x => x[0] === m.banner_id) || SRV_BANNERS[2];
+      return `background:${found[1]}`;
+    }
+    function srvIcoHtml(s, cls = 'inv-ico', fallback = '🔗') {
+      const m = srvMeta(s);
+      const mono = (s?.name || '').split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase() || fallback;
+      if (m.icon_url && /^https?:\/\//i.test(m.icon_url)) return `<div class="${cls}"><img src="${escapeHtml(m.icon_url)}" alt=""></div>`;
+      return `<div class="${cls}">${escapeHtml(mono)}</div>`;
+    }
+    function srvTagPill(uid) {
+      if (!cur || !uid) return '';
+      const m = srvMeta(cur);
+      if (!m.tag_enabled || !m.tag_text) return '';
+      if (!members.some(x => x.id === uid)) return '';
+      const c = safeColor(m.tag_color || '#5865f2');
+      return `<span class="stag" style="border-color:${c}66;background:${c}24" title="${escapeHtml(cur.name)} Server Tag"><span data-noico>${escapeHtml(m.tag_icon || '🏷️')}</span>${escapeHtml(m.tag_text.slice(0, 4).toUpperCase())}</span>`;
+    }
+    async function saveSrvMeta(patch, newName = null) {
+      if (!cur) return false;
+      const prev = srvMeta(cur);
+      const next = { ...prev, ...patch };
+      S.srvMeta = { ...(S.srvMeta || {}), [cur.id]: next };
+      saveS();
+      cur.settings = next;
+      const inList = servers.find(x => x.id === cur.id);
+      if (inList) inList.settings = next;
+      if (newName && newName.trim()) {
+        cur.name = newName.trim();
+        if (inList) inList.name = cur.name;
+      }
+      // Try optional Supabase RPC / column sync cleanly without breaking schemas without server-settings.sql
+      try {
+        const rpc = await supabaseClient.rpc('update_server_settings', { srv_id: cur.id, patch, new_name: newName || null });
+        if (rpc.error && newName && cur.owner_id === me.id) {
+          await supabaseClient.from('servers').update({ name: newName.trim() }).eq('id', cur.id);
+        }
+      } catch (e) {}
+      renderRail(); renderSide(); renderMembers(); renderChat(true);
+      return true;
+    }
+    async function logAudit(action, target = '', details = {}) {
+      if (!cur || !me) return;
+      const entry = { id: Date.now() + Math.random(), actor_id: me.id, actor_name: me.username, action, target, details, created_at: new Date().toISOString() };
+      const m = srvMeta(cur);
+      const list = [entry, ...(m.audit || [])].slice(0, 80);
+      S.srvMeta = { ...(S.srvMeta || {}), [cur.id]: { ...m, audit: list } };
+      saveS();
+      srvAudits = list;
+      try {
+        await supabaseClient.from('audit_logs').insert({ server_id: cur.id, actor_id: me.id, action, target, details });
+      } catch (e) {}
+    }
+    async function loadServerExtras() {
+      if (!cur) return;
+      const m = srvMeta(cur);
+      srvAudits = m.audit || [];
+      srvBans = m.bans || [];
+      try {
+        const [bRes, aRes] = await Promise.all([
+          supabaseClient.from('server_bans').select('user_id,reason,created_at,profiles:user_id(username)').eq('server_id', cur.id),
+          supabaseClient.from('audit_logs').select('id,actor_id,action,target,details,created_at,profiles:actor_id(username)').eq('server_id', cur.id).order('created_at', { ascending: false }).limit(60)
+        ]);
+        if (!bRes.error && bRes.data) srvBans = bRes.data.map(x => ({ user_id: x.user_id, username: x.profiles?.username || x.user_id, reason: x.reason || '', created_at: x.created_at }));
+        if (!aRes.error && aRes.data) srvAudits = aRes.data.map(x => ({ ...x, actor_name: x.profiles?.username || 'Moderator' }));
+      } catch (e) {}
+    }
 
     // Profile flair (persisted locally so existing Supabase schemas never error)
     const NAME_STYLES = [
@@ -1775,7 +1949,13 @@
     }
 
     function renderRail() {
-      $('#rail').innerHTML = `<div class="brand" title="Home" style="cursor:pointer" onclick="goHome()"><svg width="36" height="36"><use href="#logo"/></svg></div><div class="sep"></div>` + servers.map(s => `<button class="sv ${cur?.id === s.id ? 'on' : ''}" title="${escapeHtml(s.name)}" onclick="selectServer('${s.id}')">${escapeHtml(s.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase())}</button>`).join('') + `<div class="sep"></div><button class="sv add" title="Add a server" onclick="serverModal()">+</button>`;
+      $('#rail').innerHTML = `<div class="brand" title="Home" style="cursor:pointer" onclick="goHome()"><svg width="36" height="36"><use href="#logo"/></svg></div><div class="sep"></div>` + servers.map(s => {
+        const m = srvMeta(s);
+        const inner = m.icon_url && /^https?:\/\//i.test(m.icon_url)
+          ? `<img src="${escapeHtml(m.icon_url)}" alt="">`
+          : escapeHtml(s.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase());
+        return `<button class="sv ${cur?.id === s.id ? 'on' : ''}" title="${escapeHtml(s.name)}" onclick="selectServer('${s.id}')">${inner}</button>`;
+      }).join('') + `<div class="sep"></div><button class="sv add" title="Add a server" onclick="serverModal()">+</button>`;
     }
 
     // ---------- Right-click menus ----------
@@ -2017,10 +2197,12 @@
 
     async function delRole(id) {
       if (!confirm('Delete this role?')) return;
+      const old = roles.find(r => r.id === id);
       const { error } = await supabaseClient.from('roles').delete().eq('id', id);
       if (error) return toast(error.message);
       roles = roles.filter(r => r.id !== id);
       memberRoles = memberRoles.filter(m => m.role_id !== id);
+      logAudit('Role Deleted', old?.name || id);
       closeRole(); renderMembers(); renderChat(true);
     }
 
@@ -2031,6 +2213,9 @@
         : await supabaseClient.from('member_roles').insert({ server_id: cur.id, user_id: uid, role_id: rid });
       if (error) return toast(error.message);
       memberRoles = has ? memberRoles.filter(m => !(m.user_id === uid && m.role_id === rid)) : [...memberRoles, { server_id: cur.id, user_id: uid, role_id: rid }];
+      const rName = roles.find(r => r.id === rid)?.name || 'Role';
+      const uName = members.find(m => m.id === uid)?.username || uid;
+      logAudit(has ? 'Role Removed' : 'Role Assigned', `${uName} (${rName})`);
       serverSettings('roles'); renderMembers(); renderChat(true);
     }
     // ---------- Permissions ----------
@@ -2143,7 +2328,8 @@
       const s = servers.find(x => x.id === cur.id);
       if (s) s.invite_code = newCode;
       toast('New invite link generated');
-      if ($('#set')?.dataset.kind === 'server') serverSettings('overview');
+      logAudit('Invite Regenerated', 'proanchat.com/' + newCode);
+      if ($('#set')?.dataset.kind === 'server') serverSettings('invites');
       else if ($('#modal')?.classList.contains('on')) serverMenu();
     }
 
@@ -2166,7 +2352,8 @@
       const s = servers.find(x => x.id === cur.id);
       if (s) s.invite_code = saved;
       toast('Invite link updated to proanchat.com/' + saved);
-      serverSettings('overview');
+      logAudit('Invite URL Updated', 'proanchat.com/' + saved);
+      serverSettings('invites');
     }
 
     function serverMenu() {
@@ -2186,32 +2373,425 @@
         <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy</button></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px;flex-wrap:wrap">
           <small style="color:var(--mute)">Code: <code class="mono" style="color:var(--text);cursor:pointer" title="Click to copy code" onclick="copyInvite(null,'${escapeHtml(cur.invite_code)}','Invite code copied')">${escapeHtml(cur.invite_code)}</code></small>
-          <div style="display:flex;gap:6px">${canRegen ? `<button class="b g" style="padding:4px 10px;font-size:12px" onclick="closeM();serverSettings('overview')">Customize URL</button><button class="b g" style="padding:4px 10px;font-size:12px" onclick="regenerateInvite()">New link</button>` : ''}</div>
+          <div style="display:flex;gap:6px">${canRegen ? `<button class="b g" style="padding:4px 10px;font-size:12px" onclick="closeM();serverSettings('invites')">Customize URL</button><button class="b g" style="padding:4px 10px;font-size:12px" onclick="regenerateInvite()">New link</button>` : ''}</div>
         </div>`);
     }
 
-    // ---------- Server settings page: Overview, Roles, Members ----------
-    function serverSettings(tab = 'roles') {
+    // ---------- Full Discord Server Settings ----------
+    const SSET_IC = {
+      profile: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5z"/></svg>',
+      tag: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V4a1 1 0 0 1 1-1h9l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 9A1.5 1.5 0 1 0 7.5 6a1.5 1.5 0 0 0 0 3z"/></svg>',
+      engagement: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3zm-8 0c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3zm0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5c0-2.3-4.7-3.5-7-3.5zm8 0c-.3 0-.6 0-1 .1 1.2.8 2 2 2 3.4V19h6v-2.5c0-2.3-4.7-3.5-7-3.5z"/></svg>',
+      boost: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L4.5 7v10L12 22l7.5-5V7L12 2zm0 3.2L17 8.5v7L12 18.8 7 15.5v-7l5-3.3z"/></svg>',
+      emoji: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-3.5 7.5c-2.6 0-4.8-1.6-5.6-3.8h11.2c-.8 2.2-3 3.8-5.6 3.8z"/></svg>',
+      stickers: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M5 3h14a2 2 0 0 1 2 2v8l-8 8H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm8 16l6-6h-5a1 1 0 0 0-1 1v5z"/></svg>',
+      soundboard: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 3v10.6a3.5 3.5 0 1 0 2 3.1V7h5V3h-7z"/></svg>',
+      members: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3zm-8 0c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>',
+      roles: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L4 5v6.1c0 5 3.4 9.7 8 10.9 4.6-1.2 8-5.9 8-10.9V5l-8-3zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>',
+      invites: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>',
+      access: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
+      integrations: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20.5 11H19V7a2 2 0 0 0-2-2h-4V3.5a2.5 2.5 0 0 0-5 0V5H4a2 2 0 0 0-2 2v3.8h1.5a2.5 2.5 0 0 1 0 5H2V20a2 2 0 0 0 2 2h3.8v-1.5a2.5 2.5 0 0 1 5 0V22H17a2 2 0 0 0 2-2v-4h1.5a2.5 2.5 0 0 0 0-5z"/></svg>',
+      apps: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 4a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0z"/></svg>',
+      safety: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L4 5v6.1c0 5 3.4 9.7 8 10.9 4.6-1.2 8-5.9 8-10.9V5l-8-3zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>',
+      audit: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 3h-4.2A3 3 0 0 0 12 1a3 3 0 0 0-2.8 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5 14H7v-2h10v2zm0-4H7v-2h10v2zm-3-4H7V7h7v2z"/></svg>',
+      bans: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM5 12a7 7 0 0 1 11.2-5.6L6.4 16.2A6.9 6.9 0 0 1 5 12zm7 7a6.9 6.9 0 0 1-4.2-1.4l9.8-9.8A7 7 0 0 1 12 19z"/></svg>',
+      community: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zm0 4.5l-4.5 2.5v4.5L12 17l4.5-2.5V10L12 7.5z"/></svg>',
+      onboarding: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 7h14v2H7V7zm0 8h14v2H7v-2zM3 5h2v4H3V5zm0 8h2v4H3v-4z"/></svg>',
+      insights: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 3h18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm2 13l4.5-4.5 3 3L19 8v2.5h2V5h-5.5v2H18l-5.5 5.5-3-3L4 15v1z"/></svg>',
+      webpage: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 4h18a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm1 5v9h8V9H4zm10 0v4h6V9h-6zm0 6v3h6v-3h-6z"/></svg>',
+      template: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></svg>',
+      del: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>'
+    };
+
+    function serverSettings(tab = 'profile') {
       if (!cur) return;
+      if (tab === 'overview') tab = 'profile';
+      const firstOpen = !$('#set') || $('#set').dataset.kind !== 'server';
+      if (firstOpen) {
+        sset.sdraft = null;
+        sset.sdirty = false;
+        loadServerExtras();
+      }
       sset.tab = tab;
-      const NAV = [['Server settings'], ['overview', 'Overview'], ['roles', 'Roles'], ['members', 'Members']];
-      const pages = { overview: overviewHtml, roles: rolesHtml, members: membersHtml };
-      const go = k => `sset.rid=null;sset.dirty=false;serverSettings('${k}')`;
-      const nav = NAV.map(n => n.length === 1 ? `<div class="sg">${escapeHtml(cur.name)}</div>` : `<button class="sn ${n[0] === tab ? 'on' : ''}" onclick="${go(n[0])}">${n[1]}</button>`).join('');
-      const mob = `<div class="tabs mob">${NAV.filter(n => n.length > 1).map(n => `<button class="tab ${n[0] === tab ? 'on' : ''}" onclick="${go(n[0])}">${n[1]}</button>`).join('')}</div>`;
+      const NAV = [
+        { g: cur.name },
+        ['profile', 'Server Profile'],
+        ['tag', 'Server Tag'],
+        ['engagement', 'Engagement'],
+        ['boost', 'Boost Perks'],
+        { sep: 1 },
+        { g: 'Expression' },
+        ['emoji', 'Emoji'],
+        ['stickers', 'Stickers'],
+        ['soundboard', 'Soundboard'],
+        { sep: 1 },
+        { g: 'People' },
+        ['members', 'Members', '↗'],
+        ['roles', 'Roles'],
+        ['invites', 'Invites'],
+        ['access', 'Access'],
+        { sep: 1 },
+        { g: 'Apps' },
+        ['integrations', 'Integrations'],
+        ['apps', 'App Directory', '↗'],
+        { sep: 1 },
+        { g: 'Moderation' },
+        ['safety', 'Safety Setup'],
+        ['audit', 'Audit Log'],
+        ['bans', 'Bans'],
+        { sep: 1 },
+        { g: 'Community' },
+        ['community', 'Community Overview'],
+        ['onboarding', 'Onboarding'],
+        ['insights', 'Server Insights'],
+        ['webpage', 'Server Web Page'],
+        { sep: 1 },
+        ['template', 'Server Template'],
+        ...(cur.owner_id === me.id ? [['__del', 'Delete Server']] : [])
+      ];
+      const pages = {
+        profile: srvProfileHtml,
+        tag: srvTagHtml,
+        engagement: srvEngagementHtml,
+        boost: srvBoostHtml,
+        emoji: () => srvExprHtml('emojis'),
+        stickers: () => srvExprHtml('stickers'),
+        soundboard: () => srvExprHtml('sounds'),
+        members: membersHtml,
+        roles: rolesHtml,
+        invites: srvInvitesHtml,
+        access: srvAccessHtml,
+        integrations: srvIntegrationsHtml,
+        apps: srvAppsHtml,
+        safety: srvSafetyHtml,
+        audit: srvAuditHtml,
+        bans: srvBansHtml,
+        community: srvCommunityHtml,
+        onboarding: srvOnboardingHtml,
+        insights: srvInsightsHtml,
+        webpage: srvWebPageHtml,
+        template: srvTemplateHtml
+      };
+      const go = k => k === '__del' ? 'delServer()' : `sset.rid=null;sset.dirty=false;sset.sdraft=null;sset.sdirty=false;serverSettings('${k}')`;
+      const nav = NAV.map(n => n.sep ? '<div class="ssep"></div>'
+        : n.g ? `<div class="sg">${escapeHtml(n.g)}</div>`
+        : `<button class="sn ${n[0] === '__del' ? 'danger' : ''} ${n[0] === tab ? 'on' : ''}" onclick="${go(n[0])}"><span class="sn-ic">${SSET_IC[n[0] === '__del' ? 'del' : n[0]] || ''}</span><span>${n[1]}</span>${n[2] ? `<span class="sn-ext">${n[2]}</span>` : ''}</button>`).join('');
+      const mob = `<div class="tabs mob" style="overflow-x:auto;flex-wrap:nowrap">${NAV.filter(Array.isArray).filter(n => n[0] !== '__del').map(n => `<button class="tab ${n[0] === tab ? 'on' : ''}" style="white-space:nowrap" onclick="${go(n[0])}">${n[1]}</button>`).join('')}</div>`;
+      const wide = ['profile', 'tag', 'insights', 'webpage'].includes(tab);
       let el = $('#set');
       if (!el) { el = document.createElement('div'); el.id = 'set'; document.body.append(el); }
       el.dataset.kind = 'server';
-      el.innerHTML = `<div id="setnav"><div>${nav}</div></div><div id="setmain"><div>${mob}${pages[tab]()}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button><span class="esc">ESC</span>`;
+      const renderFn = pages[tab] || srvProfileHtml;
+      el.innerHTML = `<div id="setnav"><div>${nav}</div></div><div id="setmain"><div class="${wide ? 'wide' : ''}">${mob}${renderFn()}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button><span class="esc">ESC</span>`;
     }
 
-    function overviewHtml() {
-      const own = cur.owner_id === me.id;
-      const canRegen = own || can('manage_channels');
+    function ensureSrvDraft() {
+      if (!sset.sdraft) sset.sdraft = { name: cur.name, ...JSON.parse(JSON.stringify(srvMeta(cur))) };
+      return sset.sdraft;
+    }
+
+    function srvCardPreviewHtml(name, m) {
+      const onCount = Math.max(1, members.filter(p => (p.id === me.id ? S.status : online.get(p.id)) && (p.id === me.id ? S.status : online.get(p.id)) !== 'invisible').length);
+      const est = new Date(cur.created_at || Date.now()).toLocaleDateString([], { month: 'short', year: 'numeric' });
+      const mono = (name || '').split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase() || 'S';
+      const icoInner = m.icon_url && /^https?:\/\//i.test(m.icon_url) ? `<img src="${escapeHtml(m.icon_url)}" alt="">` : escapeHtml(mono);
+      const traits = (m.traits || []).filter(t => t && (t.l || '').trim()).map(t => `<span class="srv-tpill"><span data-noico>${escapeHtml(t.e || '✨')}</span>${escapeHtml(t.l)}</span>`).join('');
+      return `<div class="srv-card">
+        <div class="srv-card-ban" id="sp-ban" style="${srvBannerCss(m)}"></div>
+        <div class="srv-card-body">
+          <div class="srv-card-ico" id="sp-ico">${icoInner}</div>
+          <div class="srv-card-name"><span id="sp-name">${escapeHtml(name || cur.name)}</span><span title="Server Badge" style="color:#b8c0ff;font-size:13px">✦</span></div>
+          <div class="srv-card-meta">
+            <span><i style="background:#23a559"></i>${onCount} Online</span>
+            <span><i style="background:#80848e"></i>${members.length} Member${members.length === 1 ? '' : 's'}</span>
+          </div>
+          <div class="srv-card-est">Est. ${escapeHtml(est)}</div>
+          ${traits ? `<div class="srv-card-traits" id="sp-traits">${traits}</div>` : '<div class="srv-card-traits" id="sp-traits" style="display:none"></div>'}
+          <div class="srv-card-desc" id="sp-desc">${escapeHtml(m.description || '')}</div>
+        </div>
+      </div>`;
+    }
+
+    function refreshSrvCardPreview() {
+      const d = ensureSrvDraft();
+      if ($('#sp-name')) $('#sp-name').textContent = d.name || cur.name;
+      if ($('#sp-desc')) $('#sp-desc').textContent = d.description || '';
+      if ($('#sp-ban')) $('#sp-ban').setAttribute('style', srvBannerCss(d));
+      if ($('#sp-ico')) {
+        const mono = (d.name || cur.name).split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase() || 'S';
+        $('#sp-ico').innerHTML = d.icon_url && /^https?:\/\//i.test(d.icon_url) ? `<img src="${escapeHtml(d.icon_url)}" alt="">` : escapeHtml(mono);
+      }
+      if ($('#sp-traits')) {
+        const html = (d.traits || []).filter(t => t && (t.l || '').trim()).map(t => `<span class="srv-tpill"><span data-noico>${escapeHtml(t.e || '✨')}</span>${escapeHtml(t.l)}</span>`).join('');
+        $('#sp-traits').innerHTML = html;
+        $('#sp-traits').style.display = html ? 'flex' : 'none';
+      }
+      if ($('#ssavebar')) $('#ssavebar').style.display = sset.sdirty ? 'flex' : 'none';
+    }
+
+    function srvProfileHtml() {
+      const d = ensureSrvDraft();
+      const canEdit = cur.owner_id === me.id || can('manage_channels') || can('administrator');
+      const dis = canEdit ? '' : 'disabled';
+      return `<h2>Server Profile</h2>
+        <p class="srv-sub">Customise how your server appears in invite links and, if enabled, in Server Discovery and Announcement Channel messages.</p>
+        <div class="srv-split">
+          <div>
+            <div class="srv-sec">
+              <label class="srv-lbl">Name</label>
+              <div class="nm2"><input id="sp-in-name" value="${escapeHtml(d.name)}" maxlength="50" ${dis} oninput="sset.sdraft.name=this.value;sset.sdirty=true;refreshSrvCardPreview()"></div>
+            </div>
+            <div class="srv-sec">
+              <label class="srv-lbl">Icon</label>
+              <p class="srv-sub">We recommend an image of at least 512x512.</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <button class="b" style="background:#5865f2" ${dis} onclick="pickSrvImage('icon_url')">Change Server Icon</button>
+                <button class="b g" ${dis} onclick="sset.sdraft.icon_url='';$('#sp-in-ico').value='';sset.sdirty=true;refreshSrvCardPreview()">Remove Icon</button>
+              </div>
+              <input class="t" id="sp-in-ico" style="margin-top:8px" placeholder="Or paste icon image URL (https://...)" value="${escapeHtml(d.icon_url || '')}" ${dis} oninput="sset.sdraft.icon_url=this.value.trim();sset.sdirty=true;refreshSrvCardPreview()">
+            </div>
+            <div class="srv-sec">
+              <label class="srv-lbl">Banner</label>
+              <div class="srv-ban-grid">
+                ${SRV_BANNERS.map(([id, grad]) => `<button type="button" class="srv-ban-tile ${!d.banner_url && d.banner_id === id ? 'on' : ''}" style="background:${grad}" title="${id}" ${dis} onclick="sset.sdraft.banner_id='${id}';sset.sdraft.banner_url='';sset.sdirty=true;serverSettings('profile')"></button>`).join('')}
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <input class="t" id="sp-in-ban" placeholder="Custom banner image URL (optional)" value="${escapeHtml(d.banner_url || '')}" ${dis} oninput="sset.sdraft.banner_url=this.value.trim();sset.sdirty=true;refreshSrvCardPreview()">
+                <button class="b g" ${dis} onclick="pickSrvImage('banner_url')">Upload</button>
+              </div>
+            </div>
+            <div class="srv-sec">
+              <label class="srv-lbl">Traits</label>
+              <p class="srv-sub">Add up to 5 traits to show off your server's interests and personality.</p>
+              <div class="srv-traits" data-noico>
+                ${(d.traits || []).slice(0, 5).map((t, i) => `<div class="srv-trait"><input class="temo" value="${escapeHtml(t.e || '😊')}" maxlength="4" ${dis} oninput="sset.sdraft.traits[${i}].e=this.value;sset.sdirty=true;refreshSrvCardPreview()"><input class="tlbl" placeholder="Add trait..." value="${escapeHtml(t.l || '')}" maxlength="20" ${dis} oninput="sset.sdraft.traits[${i}].l=this.value;sset.sdirty=true;refreshSrvCardPreview()"></div>`).join('')}
+              </div>
+            </div>
+            <div class="srv-sec">
+              <label class="srv-lbl">Description</label>
+              <p class="srv-sub">How did your server get started? Why should people join?</p>
+              <textarea class="t" rows="3" maxlength="300" placeholder="Tell people about your community..." ${dis} oninput="sset.sdraft.description=this.value;sset.sdirty=true;refreshSrvCardPreview()">${escapeHtml(d.description || '')}</textarea>
+            </div>
+          </div>
+          <div>${srvCardPreviewHtml(d.name, d)}</div>
+        </div>
+        <div id="ssavebar" class="savebar" style="display:${sset.sdirty ? 'flex' : 'none'}">
+          <span>Careful, you have unsaved changes!</span>
+          <button class="b g" onclick="sset.sdraft=null;sset.sdirty=false;serverSettings('profile')">Reset</button>
+          <button class="b" style="background:var(--green)" onclick="saveSrvProfile()">Save Changes</button>
+        </div>`;
+    }
+
+    async function pickSrvImage(field) {
+      const i = document.createElement('input');
+      i.type = 'file'; i.accept = 'image/*';
+      i.onchange = async () => {
+        if (!i.files[0]) return;
+        toast('Uploading…');
+        const url = await uploadFile(i.files[0]);
+        if (!url) return;
+        ensureSrvDraft()[field] = url;
+        sset.sdirty = true;
+        toast('Uploaded');
+        serverSettings('profile');
+      };
+      i.click();
+    }
+
+    async function saveSrvProfile() {
+      const d = ensureSrvDraft();
+      const newName = (d.name || '').trim();
+      if (!newName) return toast('Server needs a name.');
+      const { name: _drop, ...patch } = d;
+      await saveSrvMeta(patch, newName !== cur.name ? newName : null);
+      sset.sdirty = false;
+      logAudit('Server Profile Updated', cur.name);
+      toast('Server profile saved');
+      serverSettings('profile');
+    }
+
+    function srvTagHtml() {
+      const m = srvMeta(cur);
+      const c = safeColor(m.tag_color || '#5865f2');
+      const sample = (m.tag_text || 'PRO').slice(0, 4).toUpperCase();
+      return `<h2>Server Tag</h2>
+        <p class="srv-sub">Give members a 4-character guild tag badge shown next to their display name across the server.</p>
+        <div class="srv-split">
+          <div>
+            <label class="opt"><span><b>Enable Server Tag</b><small class="ts">Display the server tag next to members' names.</small></span><input type="checkbox" class="tg" id="st-en" ${m.tag_enabled ? 'checked' : ''}></label>
+            <span class="f2">Tag Text (max 4 characters)</span>
+            <div class="nm2"><input id="st-txt" maxlength="4" value="${escapeHtml(m.tag_text || '')}" placeholder="e.g. MIMI" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');$('#st-prev-pill').textContent=this.value||'PRO'"></div>
+            <span class="f2">Badge Icon</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" data-noico>
+              ${['🛡️', '🌸', '⚡', '👑', '🔥', '🎮', '💎', '⭐'].map(ic => `<button type="button" class="b g" style="padding:6px 10px" onclick="$('#st-ico').value='${ic}';$('#st-prev-ic').textContent='${ic}'">${ic}</button>`).join('')}
+            </div>
+            <input class="t" id="st-ico" maxlength="4" value="${escapeHtml(m.tag_icon || '🛡️')}" oninput="$('#st-prev-ic').textContent=this.value||'🛡️'">
+            <span class="f2">Tag Accent Colour</span>
+            <div class="row" style="justify-content:flex-start"><input type="color" id="st-col" value="${c}"></div>
+            <div class="row" style="justify-content:flex-start;margin-top:16px"><button class="b" onclick="saveSrvTag()">Save Server Tag</button></div>
+          </div>
+          <div class="card2" style="margin:0">
+            <div class="prof-preview-lbl">Tag Preview</div>
+            <div class="msg" style="margin:0;padding:8px 0">
+              <div>${avatarHtml(me, 40)}</div>
+              <div class="mb">
+                <div class="mh"><b>${escapeHtml(me.username)}</b><span class="stag" style="border-color:${c}66;background:${c}24"><span id="st-prev-ic" data-noico>${escapeHtml(m.tag_icon || '🛡️')}</span><span id="st-prev-pill">${escapeHtml(sample)}</span></span> <span class="ts">Today</span></div>
+                <div class="mc">Everyone in ${escapeHtml(cur.name)} can rep this tag!</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function saveSrvTag() {
+      const enabled = $('#st-en').checked;
+      const text = ($('#st-txt').value || '').trim().toUpperCase().slice(0, 4);
+      const icon = ($('#st-ico').value || '🛡️').trim();
+      const color = $('#st-col').value || '#5865f2';
+      if (enabled && text.length < 2) return toast('Enter at least 2 letters/numbers for the Server Tag.');
+      await saveSrvMeta({ tag_enabled: enabled, tag_text: text, tag_icon: icon, tag_color: color });
+      logAudit('Server Tag Updated', enabled ? text : 'Disabled');
+      toast('Server Tag saved');
+      serverSettings('tag');
+    }
+
+    function srvEngagementHtml() {
+      const m = srvMeta(cur), e = m.engagement;
+      const tChs = channels.filter(c => ['text', 'announcement'].includes(c.kind));
+      return `<h2>Engagement</h2>
+        <p class="srv-sub">Configure system messages, welcome prompts, and default notification rules.</p>
+        <span class="f2">System Messages Channel</span>
+        <select class="t" id="eng-ch"><option value="">No System Messages</option>${tChs.map(c => `<option value="${c.id}" ${e.sys_ch === c.id ? 'selected' : ''}>#${escapeHtml(c.name)}</option>`).join('')}</select>
+        <label class="opt"><span><b>Send a random welcome message when someone joins</b><small class="ts">Posts a friendly greeting in your System Messages channel.</small></span><input type="checkbox" class="tg" id="eng-w" ${e.welcome_msg ? 'checked' : ''}></label>
+        <label class="opt"><span><b>Send a message when someone boosts this server</b><small class="ts">Celebrates server boosters automatically.</small></span><input type="checkbox" class="tg" id="eng-b" ${e.boost_msg ? 'checked' : ''}></label>
+        <label class="opt"><span><b>Activity &amp; Event Highlights</b><small class="ts">Surface popular conversations to returning members.</small></span><input type="checkbox" class="tg" id="eng-h" ${e.highlights ? 'checked' : ''}></label>
+        <span class="f2">Default Notification Settings</span>
+        <select class="t" id="eng-n">
+          <option value="all" ${e.default_notif === 'all' ? 'selected' : ''}>All Messages</option>
+          <option value="mentions" ${e.default_notif === 'mentions' ? 'selected' : ''}>Only @mentions</option>
+        </select>
+        <div class="row" style="justify-content:flex-start;margin-top:16px"><button class="b" onclick="saveSrvEngagement()">Save Engagement</button></div>`;
+    }
+
+    async function saveSrvEngagement() {
+      const engagement = {
+        sys_ch: $('#eng-ch').value,
+        welcome_msg: $('#eng-w').checked,
+        boost_msg: $('#eng-b').checked,
+        highlights: $('#eng-h').checked,
+        default_notif: $('#eng-n').value
+      };
+      await saveSrvMeta({ engagement });
+      logAudit('Engagement Updated', engagement.default_notif);
+      toast('Engagement settings saved');
+      serverSettings('engagement');
+    }
+
+    function srvBoostHtml() {
+      const m = srvMeta(cur), lvl = m.boost_level || 0, cnt = m.boost_count || 0;
+      const tiers = [
+        [1, 'Level 1 · 2 Boosts', ['+50 Custom Emoji Slots', 'Custom Server Invite Background', 'Better Voice Audio Quality (128 kbps)']],
+        [2, 'Level 2 · 7 Boosts', ['Server Banner Image', '+50 Additional Emoji Slots', '1080p 60fps Go Live Streams']],
+        [3, 'Level 3 · 14 Boosts', ['Custom Vanity Invite URL (proanchat.com/name)', 'Animated Server Icon', '384 kbps Studio Voice Audio']]
+      ];
+      return `<h2>Boost Perks</h2>
+        <p class="srv-sub">Current Boost Status: <b>Level ${lvl}</b> (${cnt} Boost${cnt === 1 ? '' : 's'})</p>
+        <div class="card2" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div><b>Boost ${escapeHtml(cur.name)}</b><p class="ts" style="margin:4px 0 0">Add a Server Boost to unlock higher audio, banner &amp; expression perks.</p></div>
+          <div style="display:flex;gap:8px">
+            <button class="b" style="background:linear-gradient(135deg,#f472b6,#9333ea)" onclick="boostServerAction(1)">💎 Boost Server</button>
+            ${cnt > 0 ? `<button class="b g" onclick="boostServerAction(-1)">Remove</button>` : ''}
+          </div>
+        </div>
+        ${tiers.map(([t, title, perks]) => `<div class="card2" style="border:1px solid ${lvl >= t ? '#f472b688' : 'var(--border)'}">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><b>${title}</b><span class="chip ${lvl >= t ? 'on' : ''}">${lvl >= t ? 'Unlocked ✓' : 'Locked'}</span></div>
+          ${perks.map(p => `<div class="perk"><span>${p}</span><i>${lvl >= t ? 'Active' : 'Needs Level ' + t}</i></div>`).join('')}
+        </div>`).join('')}`;
+    }
+
+    async function boostServerAction(delta) {
+      const m = srvMeta(cur);
+      const count = Math.max(0, (m.boost_count || 0) + delta);
+      const level = count >= 14 ? 3 : count >= 7 ? 2 : count >= 2 ? 1 : 0;
+      await saveSrvMeta({ boost_count: count, boost_level: level });
+      logAudit(delta > 0 ? 'Server Boosted' : 'Boost Removed', `Level ${level} (${count})`);
+      toast(delta > 0 ? `Boosted! Server is now Level ${level} (${count} boosts)` : 'Boost updated');
+      serverSettings('boost');
+    }
+
+    function srvExprHtml(kind) {
+      const meta = {
+        emojis: ['Emoji', 'Upload custom server emojis (type :name: in chat).', 'image/*', LIB.emojis],
+        stickers: ['Stickers', 'Upload custom stickers for your server picker.', 'image/*', LIB.stickers],
+        sounds: ['Soundboard', 'Upload custom audio clips to play in voice channels.', 'audio/*', LIB.sounds]
+      }[kind];
+      return `<h2>${meta[0]}</h2><p class="srv-sub">${meta[1]}</p>${libForm(kind, meta[2])}<div class="${kind === 'sounds' ? '' : 'libgrid'}">${libList(kind, meta[3])}</div>`;
+    }
+
+    function membersHtml() {
+      const q = (sset.mq || '').toLowerCase();
+      const filtered = members.filter(p => (p.username || '').toLowerCase().includes(q));
+      return `<h2>Members</h2>
+        <p class="srv-sub">${members.length} member${members.length === 1 ? '' : 's'} in ${escapeHtml(cur.name)}</p>
+        <div class="nm2" style="margin-bottom:12px"><span>🔍</span><input placeholder="Search members by username..." value="${escapeHtml(sset.mq || '')}" oninput="sset.mq=this.value;serverSettings('members')"></div>` +
+        (filtered.map(p => {
+          const mine = roles.filter(r => memberRoles.some(m => m.user_id === p.id && m.role_id === r.id)).map(r => `<span class="chip on" style="--c:${safeColor(r.color)}">${escapeHtml(r.name)}</span>`).join(' ');
+          const canMod = (can('kick_members') || can('administrator')) && p.id !== cur.owner_id && p.id !== me.id;
+          const acts = canMod ? `<div style="display:flex;gap:6px"><button class="b g" style="padding:5px 10px;font-size:12px" onclick="showProfile('${p.id}')">Roles</button><button class="b g" style="padding:5px 10px;font-size:12px" onclick="kick('${p.id}')">Kick</button><button class="b r" style="padding:5px 10px;font-size:12px" onclick="banMember('${p.id}')">Ban</button></div>` : `<button class="b g" style="padding:5px 10px;font-size:12px" onclick="showProfile('${p.id}')">View</button>`;
+          return `<div class="frow">${avatarHtml(p, 36)}<div><b ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</b>${roleIcon(p.id)}${srvTagPill(p.id)}${badgePills(p)}<span class="stx">${mine || (p.id === cur.owner_id ? '👑 Owner' : 'Member')}</span></div><span style="flex:1"></span>${acts}</div>`;
+        }).join('') || '<p class="ts">No members match that search.</p>');
+    }
+
+    async function kick(uid) {
+      if (!confirm('Kick this member from the server?')) return;
+      const target = members.find(m => m.id === uid)?.username || uid;
+      const { error } = await supabaseClient.from('members').delete().eq('server_id', cur.id).eq('user_id', uid);
+      if (error) return toast(error.message);
+      logAudit('Member Kicked', target);
+      await loadMembers(); renderMembers(); serverSettings('members');
+    }
+
+    async function banMember(uid) {
+      const target = members.find(m => m.id === uid);
+      const reason = prompt(`Ban ${target?.username || 'this member'}? Optional reason:`, 'Rule violation');
+      if (reason === null) return;
+      try {
+        await supabaseClient.from('server_bans').upsert({ server_id: cur.id, user_id: uid, reason: reason.trim(), banned_by: me.id });
+      } catch (e) {}
+      await supabaseClient.from('members').delete().eq('server_id', cur.id).eq('user_id', uid);
+      const m = srvMeta(cur);
+      const bans = [{ user_id: uid, username: target?.username || uid, reason: reason.trim(), created_at: new Date().toISOString() }, ...(m.bans || []).filter(b => b.user_id !== uid)];
+      await saveSrvMeta({ bans });
+      srvBans = bans;
+      logAudit('Member Banned', target?.username || uid, { reason: reason.trim() });
+      await loadMembers(); renderMembers();
+      toast('Member banned');
+      serverSettings(sset.tab);
+    }
+
+    async function unbanMember(uid) {
+      if (!confirm('Unban this user?')) return;
+      try {
+        await supabaseClient.from('server_bans').delete().eq('server_id', cur.id).eq('user_id', uid);
+      } catch (e) {}
+      const old = srvBans.find(b => b.user_id === uid);
+      const m = srvMeta(cur);
+      const bans = (m.bans || []).filter(b => b.user_id !== uid);
+      await saveSrvMeta({ bans });
+      srvBans = bans;
+      logAudit('Member Unbanned', old?.username || uid);
+      toast('User unbanned');
+      serverSettings('bans');
+    }
+
+    function srvInvitesHtml() {
+      const canRegen = cur.owner_id === me.id || can('manage_channels');
       const link = inviteUrl(cur.invite_code);
-      return `<h2>Server Overview</h2><span class="f2">Server name</span><div class="nm2"><input id="sname" value="${escapeHtml(cur.name)}" maxlength="50" ${own ? '' : 'disabled'}></div>
-        ${own ? `<div class="row" style="justify-content:flex-start"><button class="b" onclick="renameServer()">Save changes</button></div>` : '<p class="ts">Only the server owner can rename the server.</p>'}
-        <span class="f2">Server Invite Link</span>
+      const m = srvMeta(cur);
+      return `<h2>Invites</h2>
+        <p class="srv-sub">Manage your shareable <code class="mono">proanchat.com/</code> link and invite code.</p>
+        ${m.access.paused ? `<div class="card2" style="border:1px solid #f0b13266"><b>⏸️ Invites are currently paused</b><p class="ts" style="margin:4px 0 0">Turn off Pause Invites in the Access tab to allow new joins.</p></div>` : ''}
+        <span class="f2">Active Invite Link</span>
         <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy Link</button></div>
         ${canRegen ? `<span class="f2">Custom Invite URL</span>
         <div style="display:flex;gap:8px;align-items:center">
@@ -2219,30 +2799,305 @@
           <button class="b" onclick="saveCustomInvite()">Save URL</button>
           <button class="b g" onclick="regenerateInvite()">Random</button>
         </div>
-        <p class="ts">Anyone visiting <b>proanchat.com/${escapeHtml(cur.invite_code)}</b> can join your server.</p>` : `<p class="ts" style="margin-top:8px">Code: <code class="mono">${escapeHtml(cur.invite_code)}</code></p>`}`;
+        <p class="ts">Anyone opening <b>proanchat.com/${escapeHtml(cur.invite_code)}</b> can preview and join this server.</p>` : `<p class="ts" style="margin-top:8px">Invite code: <code class="mono">${escapeHtml(cur.invite_code)}</code></p>`}`;
     }
 
-    async function renameServer() {
-      const name = $('#sname').value.trim();
-      if (!name) return;
-      const { error } = await supabaseClient.from('servers').update({ name }).eq('id', cur.id);
+    function srvAccessHtml() {
+      const m = srvMeta(cur), a = m.access;
+      return `<h2>Access</h2>
+        <p class="srv-sub">Control how new members join and what verification checks apply.</p>
+        <span class="f2">Join Method</span>
+        <select class="t" id="acc-mode">
+          <option value="open" ${a.mode === 'open' ? 'selected' : ''}>Invite Link — Anyone with proanchat.com/${escapeHtml(cur.invite_code)} can join</option>
+          <option value="apply" ${a.mode === 'apply' ? 'selected' : ''}>Apply to Join — Show server rules &amp; entry note before joining</option>
+        </select>
+        <label class="opt"><span><b>Pause Invites</b><small class="ts">Temporarily prevent anyone new from joining via invites.</small></span><input type="checkbox" class="tg" id="acc-p" ${a.paused ? 'checked' : ''}></label>
+        <span class="f2">Verification Level</span>
+        <select class="t" id="acc-ver">
+          <option value="none" ${a.verification === 'none' ? 'selected' : ''}>None — Unrestricted</option>
+          <option value="low" ${a.verification === 'low' ? 'selected' : ''}>Low — Must have a verified account</option>
+          <option value="medium" ${a.verification === 'medium' ? 'selected' : ''}>Medium — Must be registered for 5+ minutes</option>
+          <option value="high" ${a.verification === 'high' ? 'selected' : ''}>High — Strict member screening</option>
+        </select>
+        <span class="f2">Explicit Media Content Filter</span>
+        <select class="t" id="acc-med">
+          <option value="off" ${a.media_filter === 'off' ? 'selected' : ''}>Don't scan media content</option>
+          <option value="no_role" ${a.media_filter === 'no_role' ? 'selected' : ''}>Scan media from members without a role</option>
+          <option value="members" ${a.media_filter === 'members' ? 'selected' : ''}>Scan media from all members</option>
+        </select>
+        <div class="row" style="justify-content:flex-start;margin-top:16px"><button class="b" onclick="saveSrvAccess()">Save Access Settings</button></div>`;
+    }
+
+    async function saveSrvAccess() {
+      const access = {
+        mode: $('#acc-mode').value,
+        paused: $('#acc-p').checked,
+        verification: $('#acc-ver').value,
+        media_filter: $('#acc-med').value
+      };
+      await saveSrvMeta({ access });
+      logAudit('Access Settings Updated', access.paused ? 'Invites Paused' : access.mode);
+      toast('Access settings saved');
+      serverSettings('access');
+    }
+
+    function srvIntegrationsHtml() {
+      const m = srvMeta(cur), hooks = m.webhooks || [];
+      const tChs = channels.filter(c => ['text', 'announcement'].includes(c.kind));
+      return `<h2>Integrations</h2>
+        <p class="srv-sub">Manage Webhooks to post automated announcements and updates directly into channels.</p>
+        <div class="card2">
+          <b style="display:block;margin-bottom:8px">Create Webhook</b>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input class="t" id="wh-name" style="flex:1;min-width:160px" placeholder="Webhook name (e.g. News Bot)">
+            <select class="t" id="wh-ch" style="width:190px">${tChs.map(c => `<option value="${c.id}">#${escapeHtml(c.name)}</option>`).join('')}</select>
+            <button class="b" onclick="addWebhook()">New Webhook</button>
+          </div>
+        </div>
+        ${hooks.map((w, idx) => {
+          const ch = channels.find(c => c.id === w.channel_id);
+          return `<div class="card2" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <div><b>🪝 ${escapeHtml(w.name)}</b><small class="ts" style="display:block">Posts to #${escapeHtml(ch?.name || 'deleted-channel')}</small></div>
+            <div style="display:flex;gap:6px">
+              <button class="b g" style="padding:6px 12px;font-size:12px" onclick="testWebhook(${idx})">Send Test Post</button>
+              <button class="b r" style="padding:6px 12px;font-size:12px" onclick="delWebhook(${idx})">Delete</button>
+            </div>
+          </div>`;
+        }).join('') || '<p class="ts">No webhooks configured yet.</p>'}`;
+    }
+
+    async function addWebhook() {
+      const name = ($('#wh-name').value || '').trim();
+      const channel_id = $('#wh-ch').value;
+      if (!name || !channel_id) return toast('Enter a webhook name and choose a channel.');
+      const m = srvMeta(cur);
+      const webhooks = [...(m.webhooks || []), { id: uuid(), name, channel_id, created_at: new Date().toISOString() }];
+      await saveSrvMeta({ webhooks });
+      logAudit('Webhook Created', name);
+      toast('Webhook created');
+      serverSettings('integrations');
+    }
+
+    async function testWebhook(idx) {
+      const m = srvMeta(cur), w = (m.webhooks || [])[idx];
+      if (!w) return;
+      const { error } = await supabaseClient.from('messages').insert({ channel_id: w.channel_id, user_id: me.id, content: `🤖 **[${w.name}]** Webhook test message delivered!` });
       if (error) return toast(error.message);
-      cur.name = name; renderRail(); renderSide(); toast('Server renamed'); serverSettings('overview');
+      toast('Test message posted to channel!');
     }
 
-    function membersHtml() {
-      return `<h2>Members</h2><p>${members.length} member${members.length === 1 ? '' : 's'}</p>` + members.map(p => {
-        const mine = roles.filter(r => memberRoles.some(m => m.user_id === p.id && m.role_id === r.id)).map(r => `<span class="chip on" style="--c:${safeColor(r.color)}">${escapeHtml(r.name)}</span>`).join(' ');
-        const kick = can('kick_members') && p.id !== cur.owner_id && p.id !== me.id ? `<button class="b g" onclick="kick('${p.id}')">Kick</button>` : '';
-        return `<div class="frow">${avatarHtml(p, 36)}<div><b ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</b>${roleIcon(p.id)}${badgePills(p)}<span class="stx">${mine}</span></div><span style="flex:1"></span>${kick}</div>`;
-      }).join('');
+    async function delWebhook(idx) {
+      const m = srvMeta(cur), w = (m.webhooks || [])[idx];
+      const webhooks = (m.webhooks || []).filter((_, i) => i !== idx);
+      await saveSrvMeta({ webhooks });
+      logAudit('Webhook Deleted', w?.name || '');
+      serverSettings('integrations');
     }
 
-    async function kick(uid) {
-      if (!confirm('Kick this member from the server?')) return;
-      const { error } = await supabaseClient.from('members').delete().eq('server_id', cur.id).eq('user_id', uid);
-      if (error) return toast(error.message);
-      await loadMembers(); renderMembers(); serverSettings('members');
+    function srvAppsHtml() {
+      const m = srvMeta(cur), apps = m.apps;
+      const list = [
+        ['automod', '🛡️ AutoMod Shield', 'Blocks banned keywords and invites automatically using your Safety Setup rules.'],
+        ['greeter', '👋 Welcome Greeter', 'Highlights onboarding channels and greets newcomers in System Messages.'],
+        ['slowmod', '⏱️ Slowmode Enforcer', 'Rate-limits non-admin chat bursts according to your Safety Setup cooldown.'],
+        ['invtrack', '🔗 Invite Tracker', 'Tracks invite slug usage and renders rich proanchat.com server cards.']
+      ];
+      return `<h2>App Directory</h2>
+        <p class="srv-sub">Built-in server helpers and moderation apps installed on ${escapeHtml(cur.name)}.</p>` +
+        list.map(([k, title, desc]) => `<label class="opt"><span><b>${title}</b><small class="ts">${desc}</small></span><input type="checkbox" class="tg" ${apps[k] ? 'checked' : ''} onchange="toggleSrvApp('${k}',this.checked)"></label>`).join('');
+    }
+
+    async function toggleSrvApp(k, on) {
+      const m = srvMeta(cur);
+      const apps = { ...m.apps, [k]: on };
+      await saveSrvMeta({ apps });
+      logAudit('App ' + (on ? 'Enabled' : 'Disabled'), k);
+      toast((on ? 'Enabled ' : 'Disabled ') + k);
+    }
+
+    function srvSafetyHtml() {
+      const m = srvMeta(cur), s = m.safety;
+      return `<h2>Safety Setup</h2>
+        <p class="srv-sub">Protect your server from spam, unwanted invite links, and blocked words. Enforced live in chat for non-administrators.</p>
+        <span class="f2">Blocked Words (comma-separated)</span>
+        <textarea class="t" id="saf-words" rows="3" placeholder="e.g. scam, spamlink, badword">${escapeHtml(s.blocked_words || '')}</textarea>
+        <label class="opt"><span><b>Block External Invite Links</b><small class="ts">Prevents non-admins from posting server invite links in chat.</small></span><input type="checkbox" class="tg" id="saf-inv" ${s.block_invites ? 'checked' : ''}></label>
+        <label class="opt"><span><b>Raid Protection Shield</b><small class="ts">Automatically protects channels during suspicious join spikes.</small></span><input type="checkbox" class="tg" id="saf-raid" ${s.raid_shield ? 'checked' : ''}></label>
+        <span class="f2">Server-wide Chat Slowmode</span>
+        <select class="t" id="saf-slow">
+          ${[[0, 'Off'], [5, '5 seconds'], [10, '10 seconds'], [30, '30 seconds'], [60, '1 minute'], [300, '5 minutes']].map(([v, l]) => `<option value="${v}" ${+s.slowmode === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+        <div class="row" style="justify-content:flex-start;margin-top:16px"><button class="b" onclick="saveSrvSafety()">Save Safety Setup</button></div>`;
+    }
+
+    async function saveSrvSafety() {
+      const safety = {
+        blocked_words: $('#saf-words').value.trim(),
+        block_invites: $('#saf-inv').checked,
+        raid_shield: $('#saf-raid').checked,
+        slowmode: +$('#saf-slow').value || 0
+      };
+      await saveSrvMeta({ safety });
+      logAudit('Safety Setup Updated', safety.slowmode ? `Slowmode ${safety.slowmode}s` : 'Updated');
+      toast('Safety Setup saved');
+      serverSettings('safety');
+    }
+
+    function srvAuditHtml() {
+      const q = (sset.aq || '').toLowerCase();
+      const rows = (srvAudits || []).filter(a => !q || (a.action + ' ' + a.target + ' ' + a.actor_name).toLowerCase().includes(q));
+      return `<h2>Audit Log</h2>
+        <p class="srv-sub">Recent moderation and configuration changes in ${escapeHtml(cur.name)}.</p>
+        <div class="nm2" style="margin-bottom:12px"><span>🔍</span><input placeholder="Filter actions or users..." value="${escapeHtml(sset.aq || '')}" oninput="sset.aq=this.value;serverSettings('audit')"></div>` +
+        (rows.map(a => `<div class="audit-row"><div class="am"><b>${escapeHtml(a.actor_name || 'Moderator')}</b> <span style="color:var(--accent)">${escapeHtml(a.action)}</span> ${a.target ? `<b>${escapeHtml(a.target)}</b>` : ''}<small>${formatDateTime(a.created_at)}</small></div></div>`).join('') || '<p class="ts">No audit log entries yet. Changes you make in Server Settings appear here.</p>');
+    }
+
+    function srvBansHtml() {
+      return `<h2>Bans</h2>
+        <p class="srv-sub">${srvBans.length} banned user${srvBans.length === 1 ? '' : 's'} in ${escapeHtml(cur.name)}.</p>` +
+        (srvBans.map(b => `<div class="frow"><div class="am" style="flex:1"><b>${escapeHtml(b.username || b.user_id)}</b><span class="stx">${b.reason ? 'Reason: ' + escapeHtml(b.reason) : 'No reason provided'}</span></div><button class="b g" onclick="unbanMember('${b.user_id}')">Unban</button></div>`).join('') || '<p class="ts">No banned users. You can ban misbehaving members from the Members tab.</p>');
+    }
+
+    function srvCommunityHtml() {
+      const m = srvMeta(cur), cm = m.community;
+      const tChs = channels.filter(c => ['text', 'rules', 'announcement'].includes(c.kind));
+      const checks = [
+        [!!m.description?.trim(), 'Server Description added in Server Profile'],
+        [!!cm.rules_ch, 'Rules or Guidelines channel selected'],
+        [!!(m.safety?.blocked_words || m.safety?.raid_shield), 'Safety Setup protection configured'],
+        [!!m.icon_url, 'Server Icon set']
+      ];
+      return `<h2>Community Overview</h2>
+        <p class="srv-sub">Turn ${escapeHtml(cur.name)} into a Community server with rules channels, announcements, and insights.</p>
+        <label class="opt"><span><b>Enable Community Features</b><small class="ts">Unlocks Community Updates, Onboarding, and Public Web Page.</small></span><input type="checkbox" class="tg" id="com-en" ${cm.enabled ? 'checked' : ''}></label>
+        <span class="f2">Rules or Guidelines Channel</span>
+        <select class="t" id="com-rules"><option value="">Select a channel...</option>${tChs.map(c => `<option value="${c.id}" ${cm.rules_ch === c.id ? 'selected' : ''}>#${escapeHtml(c.name)}</option>`).join('')}</select>
+        <span class="f2">Community Updates Channel</span>
+        <select class="t" id="com-upd"><option value="">Select a channel...</option>${tChs.map(c => `<option value="${c.id}" ${cm.updates_ch === c.id ? 'selected' : ''}>#${escapeHtml(c.name)}</option>`).join('')}</select>
+        <div class="card2" style="margin-top:16px"><b>Community Readiness Checklist</b>${checks.map(([ok, lbl]) => `<div class="perk"><span>${ok ? '✅' : '⬜'} ${lbl}</span><i>${ok ? 'Ready' : 'Optional'}</i></div>`).join('')}</div>
+        <div class="row" style="justify-content:flex-start"><button class="b" onclick="saveSrvCommunity()">Save Community Settings</button></div>`;
+    }
+
+    async function saveSrvCommunity() {
+      const community = { enabled: $('#com-en').checked, rules_ch: $('#com-rules').value, updates_ch: $('#com-upd').value };
+      await saveSrvMeta({ community });
+      logAudit('Community Updated', community.enabled ? 'Enabled' : 'Disabled');
+      toast('Community settings saved');
+      serverSettings('community');
+    }
+
+    function srvOnboardingHtml() {
+      const m = srvMeta(cur), ob = m.onboarding;
+      const defs = new Set(ob.default_chs || []);
+      return `<h2>Onboarding</h2>
+        <p class="srv-sub">Help new members feel at home with a welcome message and default channels.</p>
+        <span class="f2">Welcome Title</span>
+        <input class="t" id="ob-t" maxlength="60" value="${escapeHtml(ob.title || '')}">
+        <span class="f2">Welcome Message</span>
+        <textarea class="t" id="ob-m" rows="3" maxlength="300">${escapeHtml(ob.message || '')}</textarea>
+        <span class="f2">Default Channels for New Members</span>
+        <div class="card2">${channels.map(c => `<label class="opt" style="padding:6px 0"><span>${ICON[c.kind] || '#'} ${escapeHtml(c.name)}</span><input type="checkbox" class="obchk" value="${c.id}" ${defs.has(c.id) ? 'checked' : ''}></label>`).join('')}</div>
+        <div class="row" style="justify-content:flex-start"><button class="b" onclick="saveSrvOnboarding()">Save Onboarding</button></div>`;
+    }
+
+    async function saveSrvOnboarding() {
+      const onboarding = {
+        title: $('#ob-t').value.trim(),
+        message: $('#ob-m').value.trim(),
+        default_chs: [...document.querySelectorAll('.obchk:checked')].map(x => x.value)
+      };
+      await saveSrvMeta({ onboarding });
+      logAudit('Onboarding Updated', `${onboarding.default_chs.length} default channels`);
+      toast('Onboarding saved');
+      serverSettings('onboarding');
+    }
+
+    function srvInsightsHtml() {
+      const onCount = Math.max(1, members.filter(p => (p.id === me.id ? S.status : online.get(p.id)) && (p.id === me.id ? S.status : online.get(p.id)) !== 'invisible').length);
+      const rate = members.length ? Math.round((onCount / members.length) * 100) : 0;
+      const counts = {};
+      msgs.forEach(m => { counts[m.user_id] = (counts[m.user_id] || 0) + 1; });
+      const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      return `<h2>Server Insights</h2>
+        <p class="srv-sub">Live engagement and activity metrics for ${escapeHtml(cur.name)}.</p>
+        <div class="ins-grid">
+          <div class="ins-card"><small>Total Members</small><b>${members.length}</b></div>
+          <div class="ins-card"><small>Online Now</small><b style="color:#23a559">${onCount}</b></div>
+          <div class="ins-card"><small>Online Rate</small><b>${rate}%</b></div>
+          <div class="ins-card"><small>Channels</small><b>${channels.length}</b></div>
+          <div class="ins-card"><small>Roles</small><b>${roles.length}</b></div>
+          <div class="ins-card"><small>Custom Emojis</small><b>${LIB.emojis.length}</b></div>
+        </div>
+        <div class="card2">
+          <b style="display:block;margin-bottom:8px">Top Active Contributors (Current Channel)</b>
+          ${top.length ? top.map(([uid, n]) => {
+            const u = members.find(x => x.id === uid) || { id: uid, username: 'Member' };
+            return `<div class="perk"><span>${escapeHtml(u.username)}</span><i>${n} message${n === 1 ? '' : 's'}</i></div>`;
+          }).join('') : '<p class="ts">Open a text channel with recent messages to inspect contributor stats.</p>'}
+        </div>`;
+    }
+
+    function srvWebPageHtml() {
+      const m = srvMeta(cur), wp = m.webpage, link = inviteUrl(cur.invite_code);
+      return `<h2>Server Web Page</h2>
+        <p class="srv-sub">Preview how your public server page looks when someone visits <b>${escapeHtml(link)}</b>.</p>
+        <label class="opt"><span><b>Enable Public Server Web Page</b><small class="ts">Show server banner, description, and traits on invite links.</small></span><input type="checkbox" class="tg" id="wp-en" ${wp.enabled ? 'checked' : ''} onchange="saveSrvWebPage()"></label>
+        <div class="srv-split" style="margin-top:16px">
+          <div>
+            <span class="f2">Public Invite URL</span>
+            <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy</button></div>
+            <p class="ts" style="margin-top:10px">Edit your server's icon, banner, traits, and description in <b>Server Profile</b>.</p>
+          </div>
+          <div>${srvCardPreviewHtml(cur.name, m)}</div>
+        </div>`;
+    }
+
+    async function saveSrvWebPage() {
+      const m = srvMeta(cur);
+      await saveSrvMeta({ webpage: { ...m.webpage, enabled: $('#wp-en').checked } });
+      toast('Server Web Page updated');
+    }
+
+    function srvTemplateHtml() {
+      const tpl = JSON.stringify({
+        name: cur.name,
+        categories: catList,
+        channels: channels.map(c => ({ name: c.name, kind: c.kind, category: c.category || 'Text channels', topic: c.topic || '' })),
+        roles: roles.map(r => ({ name: r.name, color: r.color, perms: r.perms || [] }))
+      }, null, 2);
+      const presets = [
+        ['gaming', '🎮 Gaming Community', 'Adds #announcements, #looking-for-group, #clips, and Gaming Voice', [{ name: 'looking-for-group', kind: 'text', cat: 'Text channels' }, { name: 'clips', kind: 'text', cat: 'Text channels' }, { name: 'Squad VC', kind: 'voice', cat: 'Voice channels' }]],
+        ['rp', '🏙️ Roleplay Hub', 'Adds #rules, #character-bios, #in-character, and Radio VC', [{ name: 'rules', kind: 'rules', cat: 'Info' }, { name: 'character-bios', kind: 'text', cat: 'Roleplay' }, { name: 'in-character', kind: 'text', cat: 'Roleplay' }]],
+        ['study', '📚 Study & Hangout', 'Adds #resources, #homework-help, and Quiet Study VC', [{ name: 'resources', kind: 'text', cat: 'Study' }, { name: 'homework-help', kind: 'text', cat: 'Study' }, { name: 'Quiet Study', kind: 'voice', cat: 'Voice' }]]
+      ];
+      return `<h2>Server Template</h2>
+        <p class="srv-sub">Clone this server's channels and roles as JSON or apply a starter preset cleanly.</p>
+        <span class="f2">Current Server Template JSON</span>
+        <textarea class="t mono" id="tpl-json" rows="7" style="font-size:12px" readonly>${escapeHtml(tpl)}</textarea>
+        <div class="row" style="justify-content:flex-start;margin-top:8px"><button class="b" onclick="copyInvite(this,$('#tpl-json').value,'Template JSON copied')">Copy Template JSON</button></div>
+        <span class="f2" style="margin-top:18px">Quick-Apply Starter Templates</span>
+        <div class="tpl-grid">
+          ${presets.map(([id, title, desc]) => `<div class="card2" style="margin:0"><b style="display:block;margin-bottom:4px">${title}</b><p class="ts" style="margin:0 0 10px">${desc}</p><button class="b g" style="width:100%" onclick="applySrvPreset('${id}')">Apply Preset</button></div>`).join('')}
+        </div>`;
+    }
+
+    async function applySrvPreset(id) {
+      const map = {
+        gaming: [{ name: 'looking-for-group', kind: 'text', category: 'Text channels' }, { name: 'clips', kind: 'text', category: 'Text channels' }, { name: 'squad-voice', kind: 'voice', category: 'Voice channels' }],
+        rp: [{ name: 'rules', kind: 'rules', category: 'Info' }, { name: 'character-bios', kind: 'text', category: 'Roleplay' }, { name: 'in-character', kind: 'text', category: 'Roleplay' }],
+        study: [{ name: 'resources', kind: 'text', category: 'Study' }, { name: 'homework-help', kind: 'text', category: 'Study' }, { name: 'quiet-study', kind: 'voice', category: 'Voice' }]
+      };
+      const items = (map[id] || []).filter(c => !channels.some(x => x.name === c.name));
+      if (!items.length) return toast('Those preset channels already exist on this server.');
+      for (const c of items) {
+        const row = { id: uuid(), server_id: cur.id, name: c.name, kind: c.kind, category: c.category, private: false };
+        const { error } = await supabaseClient.from('channels').insert(row);
+        if (!error) channels.push({ ...row, topic: '', created_at: new Date().toISOString() });
+      }
+      logAudit('Template Applied', id);
+      renderSide();
+      toast(`Added ${items.length} preset channels!`);
+      serverSettings('template');
     }
 
     function rolesListHtml() {
@@ -2300,6 +3155,7 @@
       const { data, error } = await supabaseClient.from('roles').insert({ server_id: cur.id, name: 'new role', color: '#99aab5', position: roles.length }).select().single();
       if (error) return toast(error.message + ' (Run update6.sql in Supabase first.)');
       roles.push(data);
+      logAudit('Role Created', data.name);
       editRole(data.id);
     }
 
@@ -2311,6 +3167,7 @@
       if (error) return toast(error.message + ' (Run update7.sql in Supabase first.)');
       Object.assign(roles.find(r => r.id === d.id), u);
       sset.dirty = false; toast('Role saved');
+      logAudit('Role Updated', u.name);
       serverSettings('roles'); renderMembers(); renderChat(true); renderSide();
     }
 
@@ -2953,11 +3810,13 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         const joined = servers.find(s => (s.invite_code || '').toLowerCase() === k || (cache?.id && s.id === cache.id));
         const name = joined?.name || cache?.name || 'Server Invite';
         const mono = name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase() || '🔗';
+        const jm = joined ? srvMeta(joined) : null;
+        const ico = jm?.icon_url && /^https?:\/\//i.test(jm.icon_url) ? `<img src="${escapeHtml(jm.icon_url)}" alt="">` : escapeHtml(mono);
         const sub = cache?.member_count != null ? `${cache.member_count} Member${cache.member_count === 1 ? '' : 's'}` : `Code: ${code}`;
         const btn = joined
           ? `<button class="b g" style="padding:8px 14px;background:#ffffff14" onclick="selectServer('${joined.id}')">Joined</button>`
           : `<button class="b" style="padding:8px 16px;background:var(--green)" onclick="acceptInvite('${escapeHtml(code)}')">Join</button>`;
-        return `<div class="inv-embed" data-invc="${escapeHtml(k)}"><div class="inv-embed-hdr">You've been invited to join a server</div><div class="inv-embed-row"><div class="inv-ico">${escapeHtml(mono)}</div><div class="inv-meta"><b>${escapeHtml(name)}</b><small>${escapeHtml(sub)}</small></div>${btn}</div></div>`;
+        return `<div class="inv-embed" data-invc="${escapeHtml(k)}"><div class="inv-embed-hdr">You've been invited to join a server</div><div class="inv-embed-row"><div class="inv-ico">${ico}</div><div class="inv-meta"><b>${escapeHtml(name)}</b><small>${escapeHtml(sub)}</small></div>${btn}</div></div>`;
       }).join('');
     }
 
@@ -2984,7 +3843,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!box) return;
       $('#app').classList.toggle('nomem', !cur);
       const st = p => { const s = p.id === me.id ? S.status : online.get(p.id); return s && s !== 'invisible' ? s : null; };
-      const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><div class="mn"><span ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${badgePills(p)}</div></div>`;
+      const row = p => `<div class="mm ${st(p) ? '' : 'off'}" onclick="showProfile('${p.id}')"><div class="dot">${avatarHtml(p, 32)}${st(p) ? `<i class="${st(p)}"></i>` : ''}</div><div class="mn"><span ${roleAttr(p.id)} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span>${roleIcon(p.id)}${srvTagPill(p.id)}${badgePills(p)}</div></div>`;
       const on = members.filter(st), off = members.filter(p => !st(p));
       box.innerHTML = cur ? `<div class="lbl">Online — ${on.length}</div>${on.map(row).join('')}<div class="lbl">Offline — ${off.length}</div>${off.map(row).join('')}` : '';
     }
@@ -2994,6 +3853,22 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const inp = $('#inp'), t = inp.value.trim();
       if (!t || (!curCh && !dmWith)) return;
       if (t.length > 4000) return toast('Messages are limited to 4000 characters.');
+      if (cur && curCh && cur.owner_id !== me.id && !can('administrator')) {
+        const sm = srvMeta(cur).safety || {};
+        if (sm.block_invites && extractInviteCodes(t).length) {
+          return toast('External server invite links are blocked in this server.');
+        }
+        if (sm.blocked_words) {
+          const words = sm.blocked_words.split(',').map(w => w.trim().toLowerCase()).filter(Boolean);
+          const low = t.toLowerCase();
+          if (words.some(w => low.includes(w))) return toast('Message blocked by server Safety Setup.');
+        }
+        if (sm.slowmode > 0) {
+          const waitMs = sm.slowmode * 1000 - (Date.now() - (slowLast[curCh.id] || 0));
+          if (waitMs > 0) return toast(`Slowmode active: wait ${Math.ceil(waitMs / 1000)}s before sending.`);
+          slowLast[curCh.id] = Date.now();
+        }
+      }
       inp.value = ''; inp.style.height = 'auto'; $('#cnt').textContent = '';
       if ($('#eauto')) $('#eauto').classList.remove('on');
       const { data, error } = await postMessage({ content: t });
@@ -3152,13 +4027,18 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const row = { name, url, ...(kind === 'sounds' ? { emoji: '🔊' } : {}) };
       const { error } = await supabaseClient.from(TABLES[kind]).insert(row);
       if (error) return toast(error.message.includes('duplicate') ? 'That name is taken, pick another' : error.message);
-      await loadLibrary(); settings(kind === 'sounds' ? 'voice' : 'emojis'); toast('Added');
+      await loadLibrary();
+      if ($('#set')?.dataset.kind === 'server') serverSettings(sset.tab);
+      else settings(kind === 'sounds' ? 'voice' : 'emojis');
+      toast('Added');
     }
 
     async function libDel(kind, id) {
       const { error } = await supabaseClient.from(TABLES[kind]).delete().eq('id', id);
       if (error) return toast(error.message);
-      await loadLibrary(); settings(kind === 'sounds' ? 'voice' : 'emojis');
+      await loadLibrary();
+      if ($('#set')?.dataset.kind === 'server') serverSettings(sset.tab);
+      else settings(kind === 'sounds' ? 'voice' : 'emojis');
     }
 
     const libList = (kind, items) => items.map(i => kind === 'sounds'
@@ -3445,6 +4325,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const rids = [...document.querySelectorAll('.rolechk:checked')].map(i => i.value);
       if (row.private && rids.length) await supabaseClient.from('channel_roles').insert(rids.map(role_id => ({ channel_id: data.id, role_id })));
       channels.push(data);
+      logAudit('Channel Created', '#' + data.name);
       closeM();
       selectChannel(data.id);
     }
@@ -3477,8 +4358,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     async function delChannel(id) {
       if (!confirm('Delete this channel and all its messages?')) return;
+      const old = channels.find(x => x.id === id);
       await supabaseClient.from('channels').delete().eq('id', id);
       channels = channels.filter(x => x.id !== id);
+      logAudit('Channel Deleted', '#' + (old?.name || id));
       closeM();
       if (curCh?.id !== id) return renderSide();
       if (channels.length) return selectChannel(channels[0].id);
