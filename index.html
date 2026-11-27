@@ -1792,6 +1792,95 @@
       supabaseClient.auth.onAuthStateChange((_e, s) => setTimeout(() => start(s), 0));
     }
 
+    async function ensureOfficialServer(session) {
+      try {
+        let { data: srvs } = await supabaseClient.from('servers').select('*').eq('name', 'proanfun server').limit(1);
+        let srv = srvs && srvs[0];
+
+        let proanfunId = null;
+        const { data: profs } = await supabaseClient.from('profiles').select('id,username').eq('username', 'Proanfun').limit(1);
+        if (profs && profs.length) proanfunId = profs[0].id;
+
+        if (!proanfunId && session.user.email === 'proanfunyt@gmail.com') proanfunId = session.user.id;
+
+        if (!srv) {
+          const ownerId = proanfunId || session.user.id;
+          const { data: newSrv } = await supabaseClient.from('servers').insert({
+            name: 'proanfun server',
+            owner_id: ownerId,
+            invite_code: 'proanfun'
+          }).select().single();
+          srv = newSrv;
+          if (!srv) {
+            const { data: newSrv2 } = await supabaseClient.from('servers').insert({
+              name: 'proanfun server',
+              owner_id: ownerId
+            }).select().single();
+            srv = newSrv2;
+          }
+
+          if (srv) {
+            const catWelcome = 'Welcome & Info';
+            const catText = 'Text channels';
+            const catVoice = 'Voice channels';
+
+            await supabaseClient.from('categories').insert([
+              { server_id: srv.id, name: catWelcome },
+              { server_id: srv.id, name: catText },
+              { server_id: srv.id, name: catVoice }
+            ]);
+
+            const chans = [
+              { name: 'rules', kind: 'rules', category: catWelcome },
+              { name: 'announcements', kind: 'announcement', category: catWelcome },
+              { name: 'staff-announcements', kind: 'announcement', category: catWelcome },
+              { name: 'faq', kind: 'announcement', category: catWelcome },
+              { name: 'event-announcements', kind: 'announcement', category: catWelcome },
+              { name: 'general', kind: 'text', category: catText },
+              { name: 'media', kind: 'text', category: catText },
+              { name: 'proanchat-fanart', kind: 'text', category: catText },
+              { name: 'international-chat', kind: 'text', category: catText },
+              { name: 'memes', kind: 'text', category: catText },
+              { name: 'bot', kind: 'text', category: catText },
+              { name: 'gaming', kind: 'text', category: catText },
+              { name: 'promote-your-server', kind: 'text', category: catText },
+              { name: 'pets', kind: 'text', category: catText },
+              { name: 'suggestions-new', kind: 'announcement', category: catText },
+              { name: 'emoji-suggestions', kind: 'text', category: catText },
+              { name: 'sticker-ideas', kind: 'text', category: catText },
+              { name: 'General', kind: 'voice', category: catVoice }
+            ];
+
+            for (const c of chans) {
+              await supabaseClient.from('channels').insert({
+                id: crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, x => { const r = Math.random()*16|0; return (x==='x'?r:(r&3|8)).toString(16); }),
+                server_id: srv.id,
+                name: c.name,
+                kind: c.kind,
+                category: c.category,
+                private: false
+              });
+            }
+          }
+        }
+
+        if (srv) {
+          if (proanfunId && srv.owner_id !== proanfunId) {
+            await supabaseClient.from('servers').update({ owner_id: proanfunId }).eq('id', srv.id);
+          }
+          const { data: memCheck } = await supabaseClient.from('members').select('server_id').eq('server_id', srv.id).eq('user_id', session.user.id).single();
+          if (!memCheck) {
+            await supabaseClient.from('members').insert({
+              server_id: srv.id,
+              user_id: session.user.id
+            });
+          }
+        }
+      } catch (e) {
+        console.error('ensureOfficialServer error:', e);
+      }
+    }
+
     // ---------- After login: build the app shell ----------
     async function start(session) {
       if (!session) {
@@ -1853,6 +1942,7 @@
         sendTyping();
       };
       buildEmoji(); loadLibrary();
+      await ensureOfficialServer(session);
       await loadServers();
       loadFriends();
       watchDMs();
