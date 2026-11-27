@@ -2052,7 +2052,17 @@
       const { data } = await supabaseClient.from('members').select('user_id,nick,avatar_url,bio,banner_url,profiles(*)').eq('server_id', cur.id);
       const rows = data || [];
       mySP = rows.find(x => x.user_id === me.id) || {};
-      members = rows.filter(x => x.profiles).map(x => ({ ...x.profiles, username: x.nick || x.profiles.username, avatar_url: x.avatar_url || x.profiles.avatar_url, bio: x.bio || x.profiles.bio, banner_url: x.banner_url || x.profiles.banner_url }));
+      let mems = rows.filter(x => x.profiles).map(x => ({ ...x.profiles, username: x.nick || x.profiles.username, avatar_url: x.avatar_url || x.profiles.avatar_url, bio: x.bio || x.profiles.bio, banner_url: x.banner_url || x.profiles.banner_url }));
+      if (cur && cur.name === 'proanchat server') {
+        const { data: allProfs } = await supabaseClient.from('profiles').select('*');
+        if (allProfs) {
+          const existingIds = new Set(mems.map(m => m.id));
+          allProfs.forEach(p => {
+            if (!existingIds.has(p.id)) mems.push(p);
+          });
+        }
+      }
+      members = mems;
     }
 
     async function selectServer(id) {
