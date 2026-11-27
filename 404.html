@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Proanchat</title>
+  <script>
+    (function () {
+      var parts = location.pathname.replace(/^\/+|\/+$/g, '').split('/');
+      var seg = (parts[0] === 'invite' && parts[1]) ? parts[1] : (parts[0] || '');
+      if (seg && !/^(index(\.html)?|404(\.html)?|api|assets|src|public|favicon\.ico)$/i.test(seg)) {
+        location.replace('/?invite=' + encodeURIComponent(seg) + (location.search ? '&' + location.search.slice(1) : '') + location.hash);
+      } else {
+        location.replace('/');
+      }
+    })();
+  </script>
+</head>
+<body></body>
+</html>

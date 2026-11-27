@@ -4,10 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Proanchat</title>
+  <meta name="description" content="A Discord-inspired community chat, voice, video, and server management app powered by Supabase.">
+  <meta property="og:title" content="Proanchat">
+  <meta property="og:description" content="A Discord-inspired community chat, voice, video, and server management app powered by Supabase.">
+  <meta property="og:type" content="website">
   <meta name="theme-color" content="#08080a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23d6182a'/%3E%3Cpath d='M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z' fill='%23fff'/%3E%3C/svg%3E">
 
   <!-- Supabase client library -->
@@ -1012,6 +1016,177 @@
     .sfx { display: inline-block; margin: 4px; }
     .libitem { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #ffffff12; }
     .libitem img { height: 36px; max-width: 80px; object-fit: contain; }
+
+    /* ---- Typography & Input/Select Dark Contrast Fix ---- */
+    body { font-family: "Plus Jakarta Sans", "Noto Sans", system-ui, sans-serif; }
+    code, .mc code, .mono { font-family: "JetBrains Mono", Consolas, monospace; font-variant-numeric: tabular-nums; }
+    select, select.t { color: var(--text); background: #0c0c0e; color-scheme: dark; }
+    select.t option { background: #141418; color: #efeded; }
+    .ts, .gt, #cnt { font-variant-numeric: tabular-nums; }
+
+    /* ---- Upgraded Custom Emojis, Picker & Autocomplete ---- */
+    .ce { height: 1.45em; width: auto; max-width: 2.2em; vertical-align: -0.32em; margin: 0 1px; object-fit: contain; cursor: pointer; transition: transform .12s; }
+    .ce:hover { transform: scale(1.12); }
+    .mc.jumbo { font-size: 2.5rem; line-height: 1.2; padding: 2px 0; }
+    .mc.jumbo .ce { height: 48px; max-width: 64px; vertical-align: middle; margin: 2px 4px 2px 0; }
+    #emo { width: 356px; max-height: 410px; padding: 0; display: none; flex-direction: column; overflow: hidden; bottom: 68px; }
+    #emo.on { display: flex; }
+    .emo-top { padding: 10px 10px 8px; border-bottom: 1px solid var(--border); background: #0a0a0d; display: flex; flex-direction: column; gap: 8px; }
+    .emo-tabs { display: flex; gap: 6px; }
+    .emo-tabs button { flex: 1; height: auto; width: auto; font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 8px; color: var(--mute); }
+    .emo-tabs button.on { background: #ffffff18; color: #fff; }
+    .emo-search { width: 100%; background: #16161b; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 13px; color: var(--text); outline: 0; }
+    .emo-search:focus { border-color: var(--accent); }
+    .emo-body { flex: 1; overflow-y: auto; padding: 8px 10px; }
+    .emo-sec { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--mute); margin: 10px 2px 6px; }
+    .emo-sec:first-child { margin-top: 2px; }
+    .emo-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
+    .emo-grid button { width: 100%; height: 38px; font-size: 21px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+    .emo-grid button img { width: 26px; height: 26px; object-fit: contain; }
+    .emo-foot { padding: 8px 12px; border-top: 1px solid var(--border); background: #0a0a0d; display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 13px; }
+    .emo-foot img { width: 28px; height: 28px; object-fit: contain; }
+    .emo-foot .ef-ico { font-size: 24px; line-height: 1; }
+    .emo-foot small { color: var(--mute); display: block; font-size: 11px; }
+    #eauto { position: absolute; left: 16px; right: 16px; bottom: 72px; background: #111216; border: 1px solid var(--border); border-radius: 12px; padding: 6px; box-shadow: 0 12px 32px #000b; z-index: 8; max-height: 240px; overflow-y: auto; display: none; }
+    #eauto.on { display: block; animation: pop .12s; }
+    .ea-item { display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: 0; padding: 7px 10px; border-radius: 8px; text-align: left; color: var(--text); font-size: 14px; }
+    .ea-item:hover, .ea-item.on { background: #ffffff14; }
+    .ea-item img { width: 24px; height: 24px; object-fit: contain; }
+    .ea-item small { margin-left: auto; color: var(--mute); font-size: 11px; }
+    #etip { position: fixed; z-index: 95; background: #111216; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; box-shadow: 0 12px 32px #000c; display: flex; align-items: center; gap: 12px; animation: pop .12s; max-width: 280px; }
+    #etip img { width: 48px; height: 48px; object-fit: contain; }
+    #rxp { max-width: 320px; width: 310px; padding: 10px; }
+    #rxp .rx-grid { display: flex; flex-wrap: wrap; gap: 2px; max-height: 180px; overflow-y: auto; margin-top: 6px; }
+    #rxp .rx-grid button { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; }
+    #rxp .rx-grid button img { width: 22px; height: 22px; object-fit: contain; }
+    .libgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 10px; margin-top: 10px; }
+    .libcard { background: var(--side); border: 1px solid var(--border); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    .libcard img { width: 48px; height: 48px; object-fit: contain; }
+    .libcard code { font-size: 12px; color: var(--mute); word-break: break-all; }
+
+    /* ---- Live VC / Call Device Controls ---- */
+    .vsplit { display: flex; align-items: stretch; flex: 1; min-width: 0; border-radius: 8px; overflow: hidden; background: #ffffff10; }
+    .vsplit .vb { border-radius: 0; background: transparent; flex: 1; }
+    .vsplit .vb:hover { background: #ffffff18; }
+    .vsplit .vb.on { background: #23a55933; }
+    .vsplit .vb.off { background: #f23f4333; }
+    .vchev { width: 18px; border: 0; background: transparent; color: var(--mute); font-size: 10px; padding: 0; display: flex; align-items: center; justify-content: center; border-left: 1px solid #ffffff12; }
+    .vchev:hover { background: #ffffff1c; color: #fff; }
+    .csplit { display: flex; align-items: stretch; border-radius: 11px; overflow: hidden; background: #ffffff10; }
+    .csplit .cbtn { border-radius: 0; background: transparent; width: 44px; }
+    .csplit .cbtn:hover { background: #ffffff1f; transform: none; }
+    .csplit .cbtn.on { background: #23a55933; }
+    .csplit .cbtn.off { background: #f23f4333; }
+    .cchev { width: 22px; border: 0; background: transparent; color: var(--mute); font-size: 11px; display: flex; align-items: center; justify-content: center; border-left: 1px solid #ffffff14; }
+    .cchev:hover { background: #ffffff20; color: #fff; }
+    #vcpop { position: fixed; z-index: 98; width: 310px; background: #111216; border: 1px solid var(--border); border-radius: 14px; padding: 14px; box-shadow: 0 16px 44px #000c; animation: pop .14s; }
+    #vcpop h4 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .4px; color: var(--mute); }
+    #vcpop .f { margin: 10px 0 4px; font-size: 11px; }
+    #vcpop select.t { padding: 7px 10px; font-size: 13px; }
+    .mic-meter { height: 8px; background: #1e1f24; border-radius: 99px; overflow: hidden; margin-top: 8px; }
+    .mic-meter > div { height: 100%; width: 0%; background: linear-gradient(90deg, #23a559, #4ade80, #f0b132); transition: width .07s linear; }
+    .vol-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+    .vol-row input[type=range] { flex: 1; accent-color: var(--accent); }
+    .vol-row span { font-size: 12px; color: var(--mute); min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* ---- 2-Column Discord Profile Customizer (Settings) ---- */
+    #setmain > div.wide { max-width: 960px; }
+    .prof-split { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 28px; align-items: start; margin-top: 12px; }
+    .prof-controls { display: flex; flex-direction: column; gap: 18px; }
+    .prof-sec { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .prof-sec:last-child { border-bottom: 0; }
+    .prof-sec-h { font-size: 13px; font-weight: 700; color: var(--text); margin: 0 0 10px; display: flex; align-items: center; justify-content: space-between; }
+    .prof-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .prof-tile { background: #111216; border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; transition: border-color .15s, background .15s; }
+    .prof-tile:hover { border-color: #ffffff30; background: #181920; }
+    .prof-tile.on { border-color: var(--accent); }
+    .prof-tile small { color: var(--mute); font-size: 12px; }
+    .theme-pair { display: flex; width: 64px; height: 48px; border-radius: 10px; overflow: hidden; border: 2px solid #ffffff22; }
+    .theme-pair span { flex: 1; }
+    .dstyle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .dstyle-btn { background: #111216; border: 2px solid var(--border); border-radius: 10px; padding: 10px 12px; text-align: left; display: flex; flex-direction: column; gap: 2px; transition: border-color .15s; }
+    .dstyle-btn:hover { border-color: #ffffff28; }
+    .dstyle-btn.on { border-color: var(--accent); background: #181922; }
+    .dstyle-btn small { font-size: 11px; color: var(--mute); }
+    .prof-preview-wrap { position: sticky; top: 24px; }
+    .prof-preview-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--mute); margin-bottom: 8px; }
+    @media (max-width: 920px) { .prof-split { grid-template-columns: 1fr; } .prof-preview-wrap { position: static; } }
+
+    /* ---- Display Name Styles, Avatar Decorations & Profile Effects ---- */
+    .dn-neon { color: #ff6b81; text-shadow: 0 0 10px #e11d2e, 0 0 22px #ff475788; }
+    .dn-flame { background: linear-gradient(90deg, #ff512f, #f09819, #ff512f); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: holo 4s linear infinite; }
+    .dn-cyber { background: linear-gradient(90deg, #00f5d4, #00bbf9, #9b5de5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .dn-holo { background: linear-gradient(90deg, #ff9a9e, #fad0c4, #a1c4fd, #c2ffd8, #ff9a9e); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: holo 5s linear infinite; }
+
+    .av-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+    .av-deco { position: absolute; inset: -5px; border-radius: 50%; pointer-events: none; }
+    .deco-crimson { border: 3px solid transparent; background: conic-gradient(#ff2a4b, #ff9f43, #ff2a4b) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spin 6s linear infinite; }
+    .deco-cyber { border: 3px solid transparent; background: conic-gradient(#00f5d4, #9b5de5, #f15bb5, #00f5d4) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spin 5s linear infinite; }
+    .deco-gold { border: 3px solid transparent; background: conic-gradient(#ffd166, #b8860b, #fff3b0, #ffd166) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+    .deco-pulse { border: 2px solid #ff4252; box-shadow: 0 0 14px #ff4252aa, inset 0 0 10px #ff425266; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pcard-fx { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; border-radius: inherit; }
+    .fx-grid { background-image: linear-gradient(#ff2d5518 1px, transparent 1px), linear-gradient(90deg, #9b5de518 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(to bottom, #000 0%, transparent 85%); }
+    .fx-ember { background: radial-gradient(circle at 20% 80%, #ff450033, transparent 45%), radial-gradient(circle at 82% 20%, #ffae0026, transparent 40%); animation: fglow 4s ease-in-out infinite; }
+    .fx-aurora { background: linear-gradient(125deg, #00f5d422 0%, transparent 40%, #9b5de526 75%, transparent 100%); }
+    .fx-scan { background: repeating-linear-gradient(0deg, #ffffff05 0px, #ffffff05 1px, transparent 1px, transparent 4px); }
+
+    /* ---- Discord-Style User Profile Popout (with Interactive Roles) ---- */
+    .mbox.ppop-box { width: 372px; padding: 0; overflow: visible; border-radius: 16px; background: transparent; border: 0; box-shadow: 0 24px 64px #000d; }
+    .ppop { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid #ffffff1c; background: linear-gradient(180deg, var(--p1, #1e1f24) 0%, var(--p2, #111216) 100%); color: #f3f4f6; }
+    .ppop-inner { position: relative; z-index: 2; padding: 0 16px 16px; }
+    .ppop-ban { height: 108px; position: relative; background-size: cover; background-position: center; }
+    .ppop-top-acts { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 3; }
+    .ppop-cbtn { width: 32px; height: 32px; border-radius: 50%; border: 0; background: #0000008c; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; backdrop-filter: blur(6px); transition: background .12s, transform .12s; }
+    .ppop-cbtn:hover { background: #000000c8; transform: scale(1.06); }
+    .ppop-av-row { display: flex; align-items: flex-end; justify-content: space-between; margin-top: -46px; margin-bottom: 10px; position: relative; z-index: 3; }
+    .ppop-av { position: relative; border-radius: 50%; border: 5px solid var(--p1, #18191e); background: var(--p1, #18191e); display: inline-flex; }
+    .ppop-st { position: absolute; right: 2px; bottom: 2px; width: 18px; height: 18px; border-radius: 50%; border: 4px solid var(--p1, #18191e); background: #80848e; }
+    .ppop-st.online { background: #23a559; }
+    .ppop-st.idle { background: #f0b132; }
+    .ppop-st.dnd { background: #f23f43; }
+    .ppop-name { font-size: 20px; font-weight: 800; line-height: 1.2; margin: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .ppop-sub { font-size: 13px; color: #d4d4d8; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+    .ppop-badges { display: inline-flex; align-items: center; gap: 4px; background: #00000048; border: 1px solid #ffffff14; padding: 2px 6px; border-radius: 8px; }
+    .ppop-badges .bdg { margin: 0; }
+    .ppop-mutual { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #d4d4d8; margin-top: 10px; }
+    .ppop-card { background: #00000042; border: 1px solid #ffffff12; border-radius: 10px; padding: 10px 12px; margin-top: 12px; }
+    .ppop-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #cbd5e1; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .ppop-bio { font-size: 13px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; color: #f4f4f5; }
+    .ppop-roles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; position: relative; }
+    .rpill { display: inline-flex; align-items: center; gap: 5px; background: #00000054; border: 1px solid #ffffff1a; border-radius: 6px; padding: 3px 8px; font-size: 12px; font-weight: 600; color: #f4f4f5; }
+    .rpill .rdot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .rpill .rxbtn { background: none; border: 0; color: #a1a1aa; padding: 0 0 0 2px; font-size: 13px; line-height: 1; display: inline-flex; align-items: center; }
+    .rpill .rxbtn:hover { color: #ff5a5f; }
+    .radd { display: inline-flex; align-items: center; justify-content: center; height: 24px; min-width: 24px; padding: 0 7px; border-radius: 6px; background: #00000054; border: 1px solid #ffffff1a; color: #d4d4d8; font-size: 13px; font-weight: 700; }
+    .radd:hover { background: #ffffff20; color: #fff; }
+    .rpop { position: relative; margin-top: 8px; background: #111216; border: 1px solid #ffffff20; border-radius: 10px; padding: 8px; box-shadow: 0 10px 28px #000a; animation: pop .12s; }
+    .rpop input { width: 100%; background: #1b1c22; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 13px; outline: 0; margin-bottom: 6px; }
+    .rpop-list { max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+    .rpop-item { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: 0; padding: 6px 8px; border-radius: 6px; font-size: 13px; text-align: left; color: var(--text); }
+    .rpop-item:hover { background: #ffffff12; }
+    .rpop-item .rdot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .ppop-msg { display: flex; align-items: center; gap: 8px; background: #0000004d; border: 1px solid #ffffff1a; border-radius: 8px; padding: 4px 8px; margin-top: 12px; }
+    .ppop-msg input { flex: 1; background: none; border: 0; outline: 0; font-size: 13px; padding: 6px 4px; color: #fff; }
+    .ppop-msg input::placeholder { color: #a1a1aa; }
+
+    /* ---- Server Invite Links & Rich Invite Embeds ---- */
+    .inv-link-box { display: flex; align-items: center; gap: 8px; background: #0c0c0e; border: 1px solid var(--border); border-radius: 10px; padding: 5px 6px 5px 12px; }
+    .inv-link-box input { flex: 1; background: none; border: 0; outline: 0; font-size: 13px; color: var(--text); font-family: "JetBrains Mono", Consolas, monospace; min-width: 0; }
+    .inv-friends { max-height: 200px; overflow-y: auto; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 10px 0 14px; padding: 4px 0; }
+    .inv-frow { display: flex; align-items: center; gap: 10px; padding: 7px 6px; border-radius: 8px; }
+    .inv-frow:hover { background: #ffffff08; }
+    .inv-embed { background: #111216; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 8px; max-width: 410px; }
+    .inv-embed-hdr { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--mute); margin-bottom: 10px; }
+    .inv-embed-row { display: flex; align-items: center; gap: 12px; }
+    .inv-ico { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), #4a0d16); color: #fff; font-weight: 800; font-size: 17px; display: flex; align-items: center; justify-content: center; flex: none; }
+    .inv-meta { flex: 1; min-width: 0; }
+    .inv-meta b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inv-meta small { color: var(--mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .inv-banner { display: flex; align-items: center; gap: 12px; background: #0c0c10; border: 1px solid #ffffff1c; border-radius: 12px; padding: 12px; margin-bottom: 16px; text-align: left; }
+    .inv-banner b { display: block; font-size: 14px; }
+    .inv-banner small { color: var(--mute); font-size: 12px; }
   </style>
 </head>
 
@@ -1111,9 +1286,53 @@
     let pr = null;           // presence subscription (who is online)
 
     // ---------- Settings (saved in this browser) ----------
-    const DEFAULTS = { theme: 'dark', custom: [], compact: false, fs: 16, sound: true, h24: false, anim: true, status: 'online', accent: null, icon: 'red' };
+    const DEFAULTS = {
+      theme: 'dark', custom: [], compact: false, fs: 16, sound: true, h24: false, anim: true,
+      status: 'online', accent: null, icon: 'red',
+      audioIn: '', audioOut: '', videoIn: '', inVol: 100, outVol: 100,
+      echo: true, noise: true, agc: true, recentEmojis: [], flair: {}
+    };
     let S = { ...DEFAULTS };
     try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem('procord-settings') || '{}') }; } catch (e) {}
+
+    // Profile flair (persisted locally so existing Supabase schemas never error)
+    const NAME_STYLES = [
+      ['default', 'Default', 'Clean bold display name', ''],
+      ['flame', 'Flame', 'Warm animated gradient', 'dn-flame'],
+      ['neon', 'Neon', 'Glowing crimson text', 'dn-neon'],
+      ['cyber', 'Cyber', 'Cool cyan-to-violet', 'dn-cyber'],
+      ['holo', 'Holo', 'Animated prism shimmer', 'dn-holo']
+    ];
+    const AVATAR_DECOS = [
+      ['none', 'None', ''],
+      ['crimson', 'Crimson Spin', 'deco-crimson'],
+      ['cyber', 'Cyber Prism', 'deco-cyber'],
+      ['gold', 'Royal Gold', 'deco-gold'],
+      ['pulse', 'Red Pulse', 'deco-pulse']
+    ];
+    const PROFILE_EFFECTS = [
+      ['none', 'None', ''],
+      ['grid', 'Cyber Grid', 'fx-grid'],
+      ['ember', 'Ember Glow', 'fx-ember'],
+      ['aurora', 'Aurora Mist', 'fx-aurora'],
+      ['scan', 'CRT Scanlines', 'fx-scan']
+    ];
+    const flairKey = (uid, srvId = '') => srvId ? `${uid}:${srvId}` : uid;
+    const getFlair = (uid, srvId = '') => {
+      const f = S.flair || {};
+      return { pronouns: '', nameStyle: 'default', color2: '', deco: 'none', effect: 'none', ...(f[uid] || {}), ...(srvId ? (f[flairKey(uid, srvId)] || {}) : {}) };
+    };
+    const setFlair = (uid, data, srvId = '') => {
+      S.flair = { ...(S.flair || {}), [flairKey(uid, srvId)]: data };
+      saveS();
+    };
+    const nameStyleCls = k => (NAME_STYLES.find(x => x[0] === k) || [])[3] || '';
+    const decoCls = k => (AVATAR_DECOS.find(x => x[0] === k) || [])[2] || '';
+    const effectCls = k => (PROFILE_EFFECTS.find(x => x[0] === k) || [])[2] || '';
+    const avatarDecoHtml = (p, n = 80, deco = 'none') => {
+      const dc = decoCls(deco);
+      return `<div class="av-wrap" style="width:${n}px;height:${n}px">${avatarHtml(p, n)}${dc ? `<div class="av-deco ${dc}"></div>` : ''}</div>`;
+    };
 
     const ICONS = { red: ['#ff4252', '#8f0b19'], black: ['#4a4a55', '#0a0a0a'], gold: ['#ffd166', '#b8860b'], blue: ['#4da3ff', '#1b3a8a'] };
     const ACCENTS = ['#e11d2e', '#ff6a00', '#f0b132', '#23a559', '#9b5de5', '#00a8fc', '#ff4fa3'];
@@ -1157,20 +1376,36 @@
     }
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { closeM(); closeSet(); closeCtx(); }
+      if (e.key === 'Escape') { closeM(); closeSet(); closeCtx(); closeVcPop(); closeEtip(); if ($('#emo')) $('#emo').classList.remove('on'); if ($('#eauto')) $('#eauto').classList.remove('on'); }
       if (e.key === 'Enter' && e.target.closest && e.target.closest('#auth')) $('#auth .b').click();
     });
 
+    // Detects messages containing only 1-8 emojis (custom or unicode) for Discord-style Jumbomojis
+    function isEmojiOnly(text) {
+      const t = (text || '').trim();
+      if (!t) return false;
+      const stripped = t.replace(/:\w{2,32}:/g, m => EM[m.slice(1, -1).toLowerCase()] ? '' : m)
+        .replace(/[\p{Extended_Pictographic}\uFE0F\u200D\s]/gu, '');
+      if (stripped.length > 0) return false;
+      const count = (t.match(/:\w{2,32}:|\p{Extended_Pictographic}/gu) || []).length;
+      return count >= 1 && count <= 8;
+    }
+
     // Turns **bold**, *italic*, ~~strike~~, `code`, links and @mentions into HTML
     function fmtText(text) {
-      return text.split(/(https?:\/\/[^\s<]+)/).map((part, i) => {
-        if (i % 2) return `<a href="${escapeHtml(part)}" target="_blank" rel="noopener noreferrer">${escapeHtml(part)}</a>`;
+      return text.split(/((?:https?:\/\/|proanchat\.com\/)[^\s<]+)/i).map((part, i) => {
+        if (i % 2) {
+          const href = /^https?:\/\//i.test(part) ? part : 'https://' + part;
+          const codes = extractInviteCodes(part);
+          const onClick = codes.length ? ` onclick="event.preventDefault();openPendingInvite('${escapeHtml(codes[0])}')"` : '';
+          return `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"${onClick}>${escapeHtml(part)}</a>`;
+        }
         return escapeHtml(part)
           .replace(/`([^`\n]+)`/g, '<code>$1</code>')
           .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
           .replace(/(^|\s)\*(.+?)\*(?=\s|$)/g, '$1<i>$2</i>')
           .replace(/~~(.+?)~~/g, '<s>$1</s>')
-          .replace(/:(\w{2,32}):/g, (x, n) => EM[n.toLowerCase()] ? emojiHtml(x) : x)
+          .replace(/:(\w{2,32}):/g, (x, n) => EM[n.toLowerCase()] ? emojiHtml(x, true) : x)
           .replace(/@(\w+)/g, (x, n) => members.some(m => (m.username || '').toLowerCase() === n.toLowerCase()) ? `<span class="mention">${x}</span>` : x);
       }).join('');
     }
@@ -1188,9 +1423,9 @@
       rt.send({ type: 'broadcast', event: 'typing', payload: { u: me.username, id: me.id } });
     }
     // ---------- Pop-ups and themes ----------
-    function modal(h) {
+    function modal(h, cls = '') {
       const m = $('#modal');
-      m.innerHTML = `<div class="mbox">${h}</div>`;
+      m.innerHTML = `<div class="mbox ${cls}">${h}</div>`;
       m.classList.add('on');
       m.onmousedown = e => {
         if (e.target === m)
@@ -1204,6 +1439,136 @@
 
     function theme(t) {
       document.documentElement.dataset.theme = t || 'dark';
+    }
+
+    // ---------- Server Invite Links (proanchat.com/example) & Previews ----------
+    const INV_CACHE = {};
+    const INVITE_DOMAIN = 'https://proanchat.com';
+    const RESERVED_SLUGS = new Set(['index', 'index.html', 'api', 'assets', 'src', 'public', 'invite', 'login', 'signup', 'app', 'favicon.ico']);
+    const inviteUrl = code => `${INVITE_DOMAIN}/${encodeURIComponent(code)}`;
+    function parseInviteCode(raw) {
+      const s = String(raw || '').trim();
+      if (!s) return '';
+      const m = /(?:[?#]invite=|\/invite\/)([a-zA-Z0-9_-]{2,40})/i.exec(s);
+      if (m) return m[1];
+      try {
+        const u = new URL(/^https?:\/\//i.test(s) ? s : (s.includes('.') && s.includes('/') ? 'https://' + s : 'http://x/' + s));
+        const seg = u.pathname.replace(/^\/+|\/+$/g, '').split('/')[0];
+        if (seg && !RESERVED_SLUGS.has(seg.toLowerCase())) return seg;
+      } catch (e) {}
+      return s.replace(/^\/+|\/+$/g, '');
+    }
+    function extractInviteCodes(text) {
+      const out = [], seen = new Set();
+      const push = c => {
+        if (!c || RESERVED_SLUGS.has(c.toLowerCase())) return;
+        if (!seen.has(c.toLowerCase())) { seen.add(c.toLowerCase()); out.push(c); }
+      };
+      const hostEsc = location.origin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`(?:https?:\\/\\/(?:www\\.)?proanchat\\.com\\/|\\bproanchat\\.com\\/|(?:${hostEsc})\\/|\\/invite\\/|[?#]invite=)([a-zA-Z0-9_-]{2,40})`, 'gi');
+      let m;
+      while ((m = re.exec(text || ''))) push(m[1]);
+      return out;
+    }
+    function readUrlInvite() {
+      try {
+        const sp = new URLSearchParams(location.search);
+        let code = sp.get('invite');
+        if (!code && location.hash) {
+          const hm = /invite=([a-zA-Z0-9_-]{2,40})/i.exec(location.hash);
+          if (hm) code = hm[1];
+        }
+        if (!code) {
+          const pm = /\/invite\/([a-zA-Z0-9_-]{2,40})\/?$/i.exec(location.pathname);
+          if (pm) code = pm[1];
+        }
+        if (!code) {
+          const rm = /^\/([a-zA-Z0-9_-]{2,40})\/?$/i.exec(location.pathname);
+          if (rm && !RESERVED_SLUGS.has(rm[1].toLowerCase())) code = rm[1];
+        }
+        if (code) {
+          sessionStorage.setItem('procord-invite', code);
+          return code;
+        }
+        return sessionStorage.getItem('procord-invite') || '';
+      } catch (e) { return ''; }
+    }
+    function clearUrlInvite() {
+      pendingInvite = '';
+      try { sessionStorage.removeItem('procord-invite'); } catch (e) {}
+      try {
+        const u = new URL(location.href);
+        let changed = false;
+        if (u.searchParams.has('invite')) { u.searchParams.delete('invite'); changed = true; }
+        if (/invite=/.test(u.hash)) { u.hash = ''; changed = true; }
+        const pm = /^\/(?:invite\/)?([a-zA-Z0-9_-]{2,40})\/?$/i.exec(u.pathname);
+        if (pm && !RESERVED_SLUGS.has(pm[1].toLowerCase())) { u.pathname = '/'; changed = true; }
+        if (changed) history.replaceState(null, '', u.pathname + u.search + u.hash);
+      } catch (e) {}
+    }
+    let pendingInvite = readUrlInvite();
+
+    async function fetchInvitePreview(code) {
+      const k = (code || '').toLowerCase();
+      if (!k) return null;
+      if (k in INV_CACHE) return INV_CACHE[k];
+      const mine = servers.find(s => (s.invite_code || '').toLowerCase() === k);
+      if (mine) {
+        INV_CACHE[k] = { id: mine.id, name: mine.name, member_count: mine.id === cur?.id ? members.length : null };
+        return INV_CACHE[k];
+      }
+      try {
+        const { data, error } = await supabaseClient.rpc('preview_invite', { code });
+        INV_CACHE[k] = !error && data ? data : null;
+      } catch (e) { INV_CACHE[k] = null; }
+      return INV_CACHE[k];
+    }
+
+    async function acceptInvite(code) {
+      const clean = parseInviteCode(code);
+      if (!clean) return;
+      const { data, error } = await supabaseClient.rpc('join_server', { code: clean });
+      if (error) return $('#merr') ? ($('#merr').textContent = error.message) : toast(error.message);
+      clearUrlInvite();
+      closeM();
+      await loadServers(true);
+      selectServer(data);
+      toast('Joined server!');
+    }
+
+    function showInviteModal(code) {
+      const p = INV_CACHE[code.toLowerCase()];
+      const srvName = p?.name || 'Proanchat Server';
+      const mono = srvName.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase() || 'PC';
+      const sub = p?.member_count != null ? `${p.member_count} Member${p.member_count === 1 ? '' : 's'}` : `Invite code: ${code}`;
+      modal(`<button class="ib mx" onclick="clearUrlInvite();closeM()" title="Close">✕</button>
+        <div style="text-align:center;padding:8px 0">
+          <div class="inv-ico" id="invm-ico" style="width:68px;height:68px;font-size:24px;border-radius:20px;margin:0 auto 14px">${escapeHtml(mono)}</div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mute);margin-bottom:6px">You've been invited to join</div>
+          <h2 id="invm-name" style="margin:0 0 6px">${escapeHtml(srvName)}</h2>
+          <p id="invm-sub" style="margin:0 0 18px">${escapeHtml(sub)}</p>
+          <div class="err" id="merr" style="text-align:center"></div>
+          <button class="b" style="width:100%;padding:12px;background:var(--green);font-size:15px" onclick="acceptInvite('${escapeHtml(code)}')">Accept Invite</button>
+          <button class="b g" style="width:100%;margin-top:8px" onclick="clearUrlInvite();closeM()">No Thanks</button>
+        </div>`);
+      fetchInvitePreview(code).then(info => {
+        if (!info || !$('#invm-name')) return;
+        $('#invm-name').textContent = info.name;
+        $('#invm-ico').textContent = info.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
+        if (info.member_count != null) $('#invm-sub').textContent = `${info.member_count} Member${info.member_count === 1 ? '' : 's'}`;
+      });
+    }
+
+    function openPendingInvite(code) {
+      const clean = parseInviteCode(code);
+      if (!clean) return clearUrlInvite();
+      const existing = servers.find(s => (s.invite_code || '').toLowerCase() === clean.toLowerCase());
+      if (existing) {
+        clearUrlInvite();
+        selectServer(existing.id);
+        return toast('Opened ' + existing.name);
+      }
+      showInviteModal(clean);
     }
 
     // ---------- Startup: show setup help, or connect to Supabase ----------
@@ -1245,12 +1610,13 @@
          <div id="call"></div>
           <div id="msgs"></div>
          <div id="comp">
+          <div id="eauto"></div>
           <div id="emo"></div>
           <div id="cbox">
            <button class="ib" onclick="$('#file').click()" title="Upload a file">📎</button>
               <input type="file" id="file" hidden onchange="attach(this)">
               <textarea id="inp" rows="1" placeholder="Message"></textarea>
-           <button class="ib" onclick="$('#emo').classList.toggle('on')" title="Emoji">😀</button>
+           <button class="ib" id="emo-btn" onclick="toggleEmojiPicker(event)" title="Emoji &amp; Stickers">😀</button>
           </div>
           <div id="typ"></div>
           <div id="cnt"></div>
@@ -1260,6 +1626,7 @@
        </div>`;
       const inp = $('#inp');
       inp.onkeydown = e => {
+        if (handleAutoKey(e)) return;
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           send();
@@ -1270,20 +1637,34 @@
         inp.style.height = inp.scrollHeight + 'px';
         const n = inp.value.length;
         $('#cnt').textContent = n > 3800 ? `${n}/4000` : '';
+        updateEmojiAuto();
         sendTyping();
       };
       buildEmoji(); loadLibrary();
       await loadServers();
       loadFriends();
       watchDMs();
+      if (pendingInvite) {
+        const inv = pendingInvite;
+        openPendingInvite(inv);
+      }
     }
 
     // ---------- Login and sign-up ----------
     function authView(mode = 'in') {
-      $('#root').innerHTML = `<div id="auth"><div class="card"><svg class="logo" width="64" height="64"><use href="#logo"/></svg><h1>${mode === 'in' ? 'Welcome back!' : 'Create an account'}</h1><div class="sub">${mode === 'in' ? "We're so excited to see you again!" : 'Join a community in seconds.'}</div>
+      const invHtml = pendingInvite ? `<div class="inv-banner"><div class="inv-ico" id="auth-inv-ico">🔗</div><div><b id="auth-inv-title">You've been invited to join a server</b><small id="auth-inv-sub">${mode === 'in' ? 'Log in' : 'Create an account'} to accept invite (${escapeHtml(pendingInvite)})</small></div></div>` : '';
+      $('#root').innerHTML = `<div id="auth"><div class="card"><svg class="logo" width="64" height="64"><use href="#logo"/></svg><h1>${mode === 'in' ? 'Welcome back!' : 'Create an account'}</h1><div class="sub">${mode === 'in' ? "We're so excited to see you again!" : 'Join a community in seconds.'}</div>${invHtml}
      ${mode === 'up' ? `<label class="f">Username</label><input class="t" id="au">` : ''}<label class="f">Email</label><input class="t" id="ae" type="email"><label class="f">Password</label><input class="t" id="ap" type="password">
      <div class="err" id="aerr"></div><button class="b" style="width:100%;padding:12px" onclick="doAuth('${mode}')">${mode === 'in' ? 'Log in' : 'Continue'}</button>
      <p style="margin:16px 0 0;color:var(--mute)">${mode === 'in' ? 'Need an account?' : 'Already registered?'} <a href="#" style="color:#ff6b78" onclick="authView('${mode === 'in' ? 'up' : 'in'}');return false">${mode === 'in' ? 'Register' : 'Log in'}</a></p></div></div>`;
+      if (pendingInvite && supabaseClient) {
+        fetchInvitePreview(pendingInvite).then(info => {
+          if (!info || !$('#auth-inv-title')) return;
+          $('#auth-inv-title').textContent = `Invite to ${info.name}`;
+          $('#auth-inv-ico').textContent = info.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
+          if (info.member_count != null) $('#auth-inv-sub').textContent = `${info.member_count} Member${info.member_count === 1 ? '' : 's'} · ${mode === 'in' ? 'Log in' : 'Sign up'} to join`;
+        });
+      }
     }
 
     async function doAuth(mode) {
@@ -1717,9 +2098,96 @@
       ctxMenu({ preventDefault() {}, clientX: r.left + 8, clientY: r.bottom + 6 }, items);
     }
 
+    function copyInvite(btn, text, msg = 'Invite link copied') {
+      navigator.clipboard.writeText(text).catch(() => {});
+      toast(msg);
+      if (btn) {
+        const old = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { if (btn) btn.textContent = old; }, 1600);
+      }
+    }
+
+    async function sendInviteDM(uid, btn) {
+      if (!cur) return;
+      btn.disabled = true;
+      const { error } = await supabaseClient.from('dm_messages').insert({ recipient: uid, content: inviteUrl(cur.invite_code) });
+      if (error) { btn.disabled = false; return toast(error.message); }
+      btn.textContent = 'Sent ✓';
+      btn.classList.add('g');
+      toast('Invite sent!');
+    }
+
+    function filterInvFriends(q) {
+      const ql = q.toLowerCase();
+      document.querySelectorAll('.inv-frow[data-n]').forEach(r => { r.style.display = r.dataset.n.includes(ql) ? '' : 'none'; });
+    }
+
+    async function regenerateInvite() {
+      if (!cur) return;
+      if (!confirm('Generate a new invite link? Existing invite links for this server will stop working.')) return;
+      let newCode = null;
+      const r = await supabaseClient.rpc('regenerate_invite', { srv_id: cur.id });
+      if (!r.error && r.data) newCode = r.data;
+      else if (cur.owner_id === me.id) {
+        const bytes = new Uint8Array(4);
+        crypto.getRandomValues(bytes);
+        const gen = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+        const { error } = await supabaseClient.from('servers').update({ invite_code: gen }).eq('id', cur.id);
+        if (error) return toast(error.message);
+        newCode = gen;
+      } else {
+        return toast(r.error?.message || 'Run invite-links.sql in Supabase first.');
+      }
+      cur.invite_code = newCode;
+      const s = servers.find(x => x.id === cur.id);
+      if (s) s.invite_code = newCode;
+      toast('New invite link generated');
+      if ($('#set')?.dataset.kind === 'server') serverSettings('overview');
+      else if ($('#modal')?.classList.contains('on')) serverMenu();
+    }
+
+    async function saveCustomInvite() {
+      if (!cur) return;
+      const slug = ($('#cslug')?.value || '').trim().toLowerCase();
+      if (!/^[a-z0-9_-]{2,32}$/.test(slug)) return toast('Use 2–32 letters, numbers, hyphens (-), or underscores (_).');
+      if (RESERVED_SLUGS.has(slug)) return toast('That invite link name is reserved.');
+      let saved = null;
+      const r = await supabaseClient.rpc('set_invite_code', { srv_id: cur.id, new_code: slug });
+      if (!r.error && r.data) saved = r.data;
+      else if (cur.owner_id === me.id && (!r.error || /could not find|does not exist|PGRST202/i.test(r.error.message || ''))) {
+        const { error } = await supabaseClient.from('servers').update({ invite_code: slug }).eq('id', cur.id);
+        if (error) return toast(error.message.includes('duplicate') ? 'That invite link is already taken.' : error.message);
+        saved = slug;
+      } else {
+        return toast(r.error?.message || 'Could not update invite link.');
+      }
+      cur.invite_code = saved;
+      const s = servers.find(x => x.id === cur.id);
+      if (s) s.invite_code = saved;
+      toast('Invite link updated to proanchat.com/' + saved);
+      serverSettings('overview');
+    }
+
     function serverMenu() {
-      modal(`<button class="ib mx" onclick="closeM()" title="Close">✕</button><h2>Invite friends to ${escapeHtml(cur.name)}</h2><p>Share this invite code. They can paste it under Join a server.</p><input class="t" readonly value="${cur.invite_code}" onfocus="this.select()">
-        <div class="row"><button class="b g" onclick="closeM()">Close</button><button class="b" onclick="navigator.clipboard.writeText('${cur.invite_code}');toast('Invite code copied')">Copy code</button></div>`);
+      if (!cur) return;
+      const link = inviteUrl(cur.invite_code);
+      const friends = myFriends();
+      const canRegen = cur.owner_id === me.id || can('manage_channels');
+      const fHtml = friends.length
+        ? `<input class="t" style="padding:8px 10px;font-size:13px" placeholder="Search friends to invite…" oninput="filterInvFriends(this.value)">
+           <div class="inv-friends">${friends.map(f => `<div class="inv-frow" data-n="${escapeHtml(f.username.toLowerCase())}"><div class="dot">${avatarHtml(f, 32)}<i class="${friendStatus(f) || 'off'}"></i></div><span style="flex:1;font-weight:600;font-size:14px">${escapeHtml(f.username)}</span><button class="b" style="padding:5px 12px;font-size:12px" onclick="sendInviteDM('${f.id}',this)">Invite</button></div>`).join('')}</div>`
+        : '';
+      modal(`<button class="ib mx" onclick="closeM()" title="Close">✕</button>
+        <h2>Invite friends to ${escapeHtml(cur.name)}</h2>
+        <p style="margin-bottom:10px">Share your server link — anyone opening it can join.</p>
+        ${fHtml}
+        <label class="f" style="margin-top:4px">Server invite link</label>
+        <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy</button></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px;flex-wrap:wrap">
+          <small style="color:var(--mute)">Code: <code class="mono" style="color:var(--text);cursor:pointer" title="Click to copy code" onclick="copyInvite(null,'${escapeHtml(cur.invite_code)}','Invite code copied')">${escapeHtml(cur.invite_code)}</code></small>
+          <div style="display:flex;gap:6px">${canRegen ? `<button class="b g" style="padding:4px 10px;font-size:12px" onclick="closeM();serverSettings('overview')">Customize URL</button><button class="b g" style="padding:4px 10px;font-size:12px" onclick="regenerateInvite()">New link</button>` : ''}</div>
+        </div>`);
     }
 
     // ---------- Server settings page: Overview, Roles, Members ----------
@@ -1739,9 +2207,19 @@
 
     function overviewHtml() {
       const own = cur.owner_id === me.id;
+      const canRegen = own || can('manage_channels');
+      const link = inviteUrl(cur.invite_code);
       return `<h2>Server Overview</h2><span class="f2">Server name</span><div class="nm2"><input id="sname" value="${escapeHtml(cur.name)}" maxlength="50" ${own ? '' : 'disabled'}></div>
         ${own ? `<div class="row" style="justify-content:flex-start"><button class="b" onclick="renameServer()">Save changes</button></div>` : '<p class="ts">Only the server owner can rename the server.</p>'}
-        <span class="f2">Invite code</span><div class="nm2"><input readonly value="${cur.invite_code}" onfocus="this.select()"></div>`;
+        <span class="f2">Server Invite Link</span>
+        <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy Link</button></div>
+        ${canRegen ? `<span class="f2">Custom Invite URL</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="nm2" style="flex:1"><span style="font-size:14px;margin-right:2px">proanchat.com/</span><input id="cslug" value="${escapeHtml(cur.invite_code)}" maxlength="32" placeholder="example" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_-]/g,'')"></div>
+          <button class="b" onclick="saveCustomInvite()">Save URL</button>
+          <button class="b g" onclick="regenerateInvite()">Random</button>
+        </div>
+        <p class="ts">Anyone visiting <b>proanchat.com/${escapeHtml(cur.invite_code)}</b> can join your server.</p>` : `<p class="ts" style="margin-top:8px">Code: <code class="mono">${escapeHtml(cur.invite_code)}</code></p>`}`;
     }
 
     async function renameServer() {
@@ -1954,14 +2432,40 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     };
     const icon = (n, off, s = 22) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor"><path d="${IC[n]}"/>${off ? '<path d="M3.5 3.5l17 17" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/>' : ''}</svg>`;
 
+    function audioConstraints() {
+      return {
+        ...(S.audioIn ? { deviceId: { exact: S.audioIn } } : {}),
+        echoCancellation: S.echo !== false,
+        noiseSuppression: S.noise !== false,
+        autoGainControl: S.agc !== false
+      };
+    }
+
+    function applyOutPrefs(audio) {
+      if (!audio) return;
+      audio.volume = Math.max(0, Math.min(1, (S.outVol ?? 100) / 100));
+      if (typeof audio.setSinkId === 'function') audio.setSinkId(S.audioOut || '').catch(() => {});
+    }
+
     async function joinVoice(room, label) {
       if (vc) await leaveVoice();
       label = label || (channels.find(c => c.id === room)?.name ? '#' + channels.find(c => c.id === room).name : dmWith ? 'Call with ' + dmWith.username : 'Call');
-      let stream;
-      try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); }
-      catch (e) { toast('Allow microphone access to join voice.'); return false; }
+      let rawStream;
+      try { rawStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints() }); }
+      catch (e) {
+        try { rawStream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+        catch (e2) { toast('Allow microphone access to join voice.'); return false; }
+      }
+      const actx = new (window.AudioContext || window.webkitAudioContext)();
+      const gain = actx.createGain();
+      gain.gain.value = (S.inVol ?? 100) / 100;
+      const dest = actx.createMediaStreamDestination();
+      const micSrc = actx.createMediaStreamSource(rawStream);
+      micSrc.connect(gain);
+      gain.connect(dest);
+      const stream = dest.stream;
       const sig = supabaseClient.channel('voice-' + room, { config: { presence: { key: me.id } } });
-      vc = { room, label, stream, sig, peers: {}, muted: false, deaf: false, cam: null, screen: null, vels: {}, meters: {}, speaking: new Set() };
+      vc = { room, label, rawStream, stream, actx, gain, dest, micSrc, sig, peers: {}, muted: false, deaf: false, cam: null, screen: null, vels: {}, meters: {}, speaking: new Set() };
       sig.on('presence', { event: 'sync' }, voiceSync)
         .on('broadcast', { event: 'rtc' }, ({ payload }) => onSignal(payload))
         .on('broadcast', { event: 'sfx' }, ({ payload }) => playSfx(payload))
@@ -1982,12 +2486,13 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     function makePeer(id) {
       const pc = new RTCPeerConnection(ICE), audio = new Audio();
       audio.autoplay = true; audio.muted = vc.deaf;
+      applyOutPrefs(audio);
       const peer = { pc, audio, q: [], videos: {}, labels: {}, senders: {}, making: false, ignore: false, polite: me.id > id };
       vc.peers[id] = peer;
       vc.stream.getTracks().forEach(t => pc.addTrack(t, vc.stream));
       pc.ontrack = e => {
         const s = e.streams[0];
-        if (e.track.kind === 'audio') { audio.srcObject = s; meter(id, s); return; }
+        if (e.track.kind === 'audio') { audio.srcObject = s; applyOutPrefs(audio); meter(id, s); return; }
         const kind = peer.labels[s.id] || 'cam';
         const on = () => { peer.videos[kind] = s; renderChat(true); };
         const off = () => { delete peer.videos[kind]; renderChat(true); };
@@ -2033,13 +2538,14 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     async function leaveVoice() {
       if (!vc) return;
+      closeVcPop();
       const v = vc;
       clearInterval(v.timer);
       const l = vlobby[v.room];
       if (l) l.ch.untrack();
       vc = null;
       Object.values(v.peers).forEach(p => { p.pc.close(); p.audio.srcObject = null; });
-      [v.stream, v.cam, v.screen].forEach(s => { if (s) s.getTracks().forEach(t => t.stop()); });
+      [v.rawStream, v.stream, v.cam, v.screen].forEach(s => { if (s) s.getTracks().forEach(t => t.stop()); });
       try { v.actx.close(); } catch (e) {}
       await supabaseClient.removeChannel(v.sig);
       renderMe(); renderSide(); renderChat(true);
@@ -2049,10 +2555,103 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!vc) return;
       vc[kind] = !vc[kind];
       if (kind === 'deaf') vc.muted = vc.deaf; // deafening also mutes your mic
+      if (vc.rawStream) vc.rawStream.getAudioTracks().forEach(t => { t.enabled = !vc.muted; });
       vc.stream.getAudioTracks().forEach(t => { t.enabled = !vc.muted; });
       Object.values(vc.peers).forEach(p => { p.audio.muted = vc.deaf; });
       vc.sig.track(meta()); lobbyTrack();
       renderMe(); renderChat(true);
+    }
+
+    // Live device switching while in a call or VC
+    async function refreshMicStream() {
+      if (!vc) return;
+      try {
+        const next = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints() });
+        next.getAudioTracks().forEach(t => { t.enabled = !vc.muted; });
+        try { vc.micSrc.disconnect(); } catch (e) {}
+        if (vc.rawStream) vc.rawStream.getTracks().forEach(t => t.stop());
+        vc.rawStream = next;
+        vc.micSrc = vc.actx.createMediaStreamSource(next);
+        vc.micSrc.connect(vc.gain);
+        if (vc.actx.state === 'suspended') vc.actx.resume();
+        toast('Microphone updated');
+      } catch (e) { toast('Could not switch microphone: ' + e.message); }
+    }
+
+    async function switchAudioIn(id) { S.audioIn = id; saveS(); await refreshMicStream(); }
+    function switchAudioOut(id) { S.audioOut = id; saveS(); if (vc) Object.values(vc.peers).forEach(p => applyOutPrefs(p.audio)); toast('Output device updated'); }
+    function setInVol(val) { S.inVol = +val; saveS(); if (vc?.gain) vc.gain.gain.value = S.inVol / 100; }
+    function setOutVol(val) { S.outVol = +val; saveS(); if (vc) Object.values(vc.peers).forEach(p => applyOutPrefs(p.audio)); }
+    async function toggleAudioOpt(k, on) { S[k] = on; saveS(); await refreshMicStream(); }
+
+    async function switchVideoIn(id) {
+      S.videoIn = id; saveS();
+      if (!vc || !vc.cam) return;
+      try {
+        const next = await navigator.mediaDevices.getUserMedia({ video: { ...vqc(), ...(id ? { deviceId: { exact: id } } : {}) } });
+        const newTrack = next.getVideoTracks()[0];
+        const oldStream = vc.cam;
+        vc.cam = next;
+        await Promise.all(Object.values(vc.peers).map(async p => {
+          const sender = (p.senders.cam || []).find(s => s.track && s.track.kind === 'video');
+          if (sender) await sender.replaceTrack(newTrack);
+        }));
+        oldStream.getTracks().forEach(t => t.stop());
+        delete vc.vels[me.id + ':cam'];
+        renderChat(true);
+        toast('Camera switched');
+      } catch (e) { toast('Could not switch camera: ' + e.message); }
+    }
+
+    function closeVcPop() { const p = $('#vcpop'); if (p) p.remove(); }
+    document.addEventListener('mousedown', e => { const p = $('#vcpop'); if (p && !p.contains(e.target) && !e.target.closest('.vchev,.cchev')) closeVcPop(); });
+
+    async function openVcPop(ev, mode) {
+      ev.stopPropagation();
+      const existing = $('#vcpop');
+      if (existing && existing.dataset.mode === mode) return closeVcPop();
+      const btn = ev.currentTarget || ev.target?.closest?.('button');
+      const r = btn ? btn.getBoundingClientRect() : { left: ev.clientX || 20, top: ev.clientY || 20, bottom: (ev.clientY || 20) + 20 };
+      closeVcPop();
+      let devs = [];
+      try { if (navigator.mediaDevices?.enumerateDevices) devs = await navigator.mediaDevices.enumerateDevices(); } catch (e) {}
+      const mics = devs.filter(d => d.kind === 'audioinput');
+      const spks = devs.filter(d => d.kind === 'audiooutput');
+      const cams = devs.filter(d => d.kind === 'videoinput');
+      const opts = (list, curId, fallback) => `<option value="" ${!curId ? 'selected' : ''}>System Default (${fallback})</option>`
+        + list.map((d, i) => `<option value="${escapeHtml(d.deviceId)}" ${d.deviceId === curId ? 'selected' : ''}>${escapeHtml(d.label || `${fallback} ${i + 1}`)}</option>`).join('');
+      const pop = document.createElement('div');
+      pop.id = 'vcpop';
+      pop.dataset.mode = mode;
+      if (mode === 'mic') {
+        pop.innerHTML = `<h4>Input Device &amp; Audio</h4>
+          <label class="f" style="margin-top:0">Microphone</label>
+          <select class="t" onchange="switchAudioIn(this.value)">${opts(mics, S.audioIn, 'Microphone')}</select>
+          <label class="f">Input Volume</label>
+          <div class="vol-row"><input type="range" min="0" max="200" value="${S.inVol ?? 100}" oninput="this.nextElementSibling.textContent=this.value+'%';setInVol(this.value)"><span>${S.inVol ?? 100}%</span></div>
+          <div class="mic-meter"><div id="vc-lvl"></div></div>
+          <label class="opt" style="padding:8px 0"><span>Noise Suppression</span><input type="checkbox" ${S.noise !== false ? 'checked' : ''} onchange="toggleAudioOpt('noise',this.checked)"></label>
+          <label class="opt" style="padding:8px 0"><span>Echo Cancellation</span><input type="checkbox" ${S.echo !== false ? 'checked' : ''} onchange="toggleAudioOpt('echo',this.checked)"></label>
+          <label class="opt" style="padding:8px 0;border:0"><span>Auto Gain Control</span><input type="checkbox" ${S.agc !== false ? 'checked' : ''} onchange="toggleAudioOpt('agc',this.checked)"></label>`;
+      } else if (mode === 'spk') {
+        pop.innerHTML = `<h4>Output Device</h4>
+          <label class="f" style="margin-top:0">Speaker / Headphones</label>
+          <select class="t" onchange="switchAudioOut(this.value)">${opts(spks, S.audioOut, 'Speaker')}</select>
+          <label class="f">Output Volume</label>
+          <div class="vol-row"><input type="range" min="0" max="100" value="${S.outVol ?? 100}" oninput="this.nextElementSibling.textContent=this.value+'%';setOutVol(this.value)"><span>${S.outVol ?? 100}%</span></div>
+          <div class="row" style="margin-top:12px"><button class="b g" onclick="closeVcPop();settings('voice')">Voice &amp; Video Settings</button></div>`;
+      } else {
+        pop.innerHTML = `<h4>Camera &amp; Stream Quality</h4>
+          <label class="f" style="margin-top:0">Camera</label>
+          <select class="t" onchange="switchVideoIn(this.value)">${opts(cams, S.videoIn, 'Camera')}</select>
+          <label class="f">Stream Quality</label>
+          <select class="t" onchange="S.vq=this.value;saveS();boostVideo()">${[['720p30', '720p · 30 fps'], ['1080p60', '1080p · 60 fps (HD)'], ['4k60', '4K · 60 fps']].map(([v, l]) => `<option value="${v}" ${(S.vq || '720p30') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+      }
+      closeVcPop();
+      document.body.append(pop);
+      const pr = pop.getBoundingClientRect();
+      pop.style.left = Math.max(8, Math.min(r.left, innerWidth - pr.width - 8)) + 'px';
+      pop.style.top = (r.top - pr.height - 10 > 8 ? r.top - pr.height - 10 : r.bottom + 8) + 'px';
     }
 
     // Camera and screen share are extra tracks added to every connection
@@ -2080,8 +2679,11 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     async function toggleCam() {
       if (!vc) return;
       if (vc.cam) return stopVideo('cam');
-      try { vc.cam = await navigator.mediaDevices.getUserMedia({ video: vqc() }); }
-      catch (e) { return toast('Allow camera access to turn on video.'); }
+      try { vc.cam = await navigator.mediaDevices.getUserMedia({ video: { ...vqc(), ...(S.videoIn ? { deviceId: { exact: S.videoIn } } : {}) } }); }
+      catch (e) {
+        try { vc.cam = await navigator.mediaDevices.getUserMedia({ video: vqc() }); }
+        catch (e2) { return toast('Allow camera access to turn on video.'); }
+      }
       addVideo('cam', vc.cam); setTimeout(boostVideo, 800);
     }
 
@@ -2094,7 +2696,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       addVideo('screen', vc.screen); setTimeout(boostVideo, 800);
     }
 
-    // Green ring around whoever is talking
+    // Green ring around whoever is talking + live mic meter
     function meter(id, stream) {
       try {
         const an = vc.actx.createAnalyser();
@@ -2105,19 +2707,22 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     function startMeters() {
-      vc.actx = new (window.AudioContext || window.webkitAudioContext)();
       meter(me.id, vc.stream);
       vc.timer = setInterval(() => {
         if (!vc) return;
         const buf = new Uint8Array(512), now = new Set();
+        let myPct = 0;
         Object.entries(vc.meters).forEach(([id, an]) => {
           an.getByteTimeDomainData(buf);
           let max = 0; buf.forEach(v => { max = Math.max(max, Math.abs(v - 128)); });
+          if (id === me.id) myPct = vc.muted ? 0 : Math.min(100, Math.round(max * 2.2));
           if (max > 12 && !(id === me.id && vc.muted)) now.add(id);
         });
+        const lvl = $('#vc-lvl');
+        if (lvl) lvl.style.width = myPct + '%';
         vc.speaking = now;
         document.querySelectorAll('[data-vt]').forEach(el => el.classList.toggle('speaking', now.has(el.dataset.vt)));
-      }, 120);
+      }, 100);
     }
 
     // Keep playing <video> elements alive when the screen is redrawn
@@ -2163,8 +2768,9 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     // ---------- Voice and call screens ----------
     function ctlHtml() {
       const b = (cls, title, code, svg) => `<button class="cbtn ${cls}" title="${title}" onclick="${code}">${svg}</button>`;
-      return `<div class="vctl"><div class="cgroup">${b(vc.muted ? 'off' : '', vc.muted ? 'Unmute' : 'Mute', "voiceToggle('muted')", icon('mic', vc.muted))}${b(vc.cam ? 'on' : '', vc.cam ? 'Turn off camera' : 'Turn on camera', 'toggleCam()', icon('cam', !vc.cam))}</div>`
-        + `<div class="cgroup">${b(vc.screen ? 'on' : '', vc.screen ? 'Stop sharing' : 'Share your screen', 'toggleScreen()', icon('screen'))}${b(vc.deaf ? 'off' : '', vc.deaf ? 'Undeafen' : 'Deafen', "voiceToggle('deaf')", icon('head', vc.deaf))}</div>`
+      const sp = (cls, title, code, svg, mode) => `<div class="csplit"><button class="cbtn ${cls}" title="${title}" onclick="${code}">${svg}</button><button class="cchev" title="Choose device" onclick="openVcPop(event,'${mode}')">▾</button></div>`;
+      return `<div class="vctl"><div class="cgroup">${sp(vc.muted ? 'off' : '', vc.muted ? 'Unmute' : 'Mute', "voiceToggle('muted')", icon('mic', vc.muted), 'mic')}${sp(vc.cam ? 'on' : '', vc.cam ? 'Turn off camera' : 'Turn on camera', 'toggleCam()', icon('cam', !vc.cam), 'cam')}</div>`
+        + `<div class="cgroup">${b(vc.screen ? 'on' : '', vc.screen ? 'Stop sharing' : 'Share your screen', 'toggleScreen()', icon('screen'))}${sp(vc.deaf ? 'off' : '', vc.deaf ? 'Undeafen' : 'Deafen', "voiceToggle('deaf')", icon('head', vc.deaf), 'spk')}</div>`
         + `<div class="cgroup">${b('', 'Soundboard', 'soundboard()', '🔊')}</div>`
         + `${b('end', 'Disconnect', 'leaveVoice()', icon('end'))}</div>`;
     }
@@ -2201,8 +2807,9 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     function renderMe() {
       const labels = { online: 'Online', idle: 'Idle', dnd: 'Do not disturb', invisible: 'Invisible' };
+      const sp = (cls, title, code, svg, mode) => `<div class="vsplit"><button class="vb ${cls}" title="${title}" onclick="${code}">${svg}</button><button class="vchev" title="Device settings" onclick="openVcPop(event,'${mode}')">▾</button></div>`;
       if ($('#vbar')) $('#vbar').innerHTML = vc ? `<div class="vtop"><div style="flex:1;min-width:0"><b style="color:var(--green);font-size:13px">Voice Connected</b><small>${escapeHtml(vc.label)}</small></div><button class="ib" title="Disconnect" onclick="leaveVoice()">${icon('end', false, 20)}</button></div>
-        <div class="vbtns"><button class="vb ${vc.cam ? 'on' : ''}" title="Camera" onclick="toggleCam()">${icon('cam', !vc.cam, 18)}</button><button class="vb ${vc.screen ? 'on' : ''}" title="Share your screen" onclick="toggleScreen()">${icon('screen', false, 18)}</button><button class="vb ${vc.muted ? 'off' : ''}" title="Mute" onclick="voiceToggle('muted')">${icon('mic', vc.muted, 18)}</button><button class="vb ${vc.deaf ? 'off' : ''}" title="Deafen" onclick="voiceToggle('deaf')">${icon('head', vc.deaf, 18)}</button></div>` : '';
+        <div class="vbtns">${sp(vc.cam ? 'on' : '', 'Camera', 'toggleCam()', icon('cam', !vc.cam, 18), 'cam')}<button class="vb ${vc.screen ? 'on' : ''}" title="Share your screen" onclick="toggleScreen()">${icon('screen', false, 18)}</button>${sp(vc.muted ? 'off' : '', 'Mute', "voiceToggle('muted')", icon('mic', vc.muted, 18), 'mic')}${sp(vc.deaf ? 'off' : '', 'Deafen', "voiceToggle('deaf')", icon('head', vc.deaf, 18), 'spk')}</div>` : '';
       $('#me').innerHTML = `<div class="dot">${avatarHtml(me, 32)}<i class="${S.status === 'invisible' ? 'off' : S.status}"></i></div><div class="nm"><span ${isFounder(me) ? 'data-f' : ''}>${escapeHtml(me.username)}</span><small>${labels[S.status]}</small></div><button class="ib" title="User settings" onclick="settings()">⚙</button>`;
     }
     // ---------- Custom icon set: Proanchat's own icons replace the stock emoji in the interface ----------
@@ -2250,7 +2857,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     // role icons and form fields are left alone so people's own emoji stay as they typed them.
     function iconize(root) {
       if (!root || (root.nodeType !== 1 && root.nodeType !== 3)) return;
-      const skip = 'input, textarea, select, option, script, style, #emo, .mc, .ricon, [data-noico]';
+      const skip = 'input, textarea, select, option, script, style, #emo, #eauto, #rxp, #etip, .mc, .ricon, [data-noico]';
       const nodes = [];
       if (root.nodeType === 3) nodes.push(root);
       else { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) nodes.push(n); }
@@ -2324,14 +2931,52 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         const left = grouped ? `<span class="gt">${formatTime(m.created_at)}</span>` : `<div>${avatarHtml(p, 40)}</div>`;
         const head = grouped ? '' : `<div class="mh">${nameHtml(p)} <span class="ts">${formatDateTime(m.created_at)}</span></div>`;
         const acts = (m.user_id === me.id || (!m.dm && can('manage_messages'))) && m.content !== '[call]' ? `<div class="acts">${m.user_id === me.id ? `<button class="ib" onclick="editMsg(${m.id})" title="Edit">✏️</button>` : ''}<button class="ib" onclick="delMsg(${m.id})" title="Delete">🗑</button></div>` : '';
+        const jumbo = !(m.dm && m.content === '[call]') && !m.attachment_url && isEmojiOnly(m.content);
+        const embeds = m.content === '[call]' ? '' : inviteEmbedsHtml(m.content);
         const body = m.dm && m.content === '[call]'
           ? `<button class="b" onclick="joinVoice('${dmRoom(m.user_id === me.id ? m.recipient : m.user_id)}','Call with ${escapeHtml(dmWith?.username || 'friend')}')">📞 ${m.user_id === me.id ? 'You started a call' : escapeHtml(p.username) + ' started a call'} · Join</button>`
-          : `${fmtText(m.content || '')}${attHtml(m)}${m.edited ? ' <span class="ed">(edited)</span>' : ''}${rxHtml(m)}`;
-        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}">${left}<div class="mb">${head}<div class="mc">${body}</div></div>${acts}<div class="racts"><button class="ib" onclick="rxPick(event,${m.id},${m.dm ? 1 : 0})" title="Add reaction">😀</button></div></div>`;
+          : `${fmtText(m.content || '')}${attHtml(m)}${embeds}${m.edited ? ' <span class="ed">(edited)</span>' : ''}${rxHtml(m)}`;
+        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}">${left}<div class="mb">${head}<div class="mc ${jumbo ? 'jumbo' : ''}">${body}</div></div>${acts}<div class="racts"><button class="ib" onclick="rxPick(event,${m.id},${m.dm ? 1 : 0})" title="Add reaction">😀</button></div></div>`;
       });
       animateLast = false;
       el.innerHTML = html || `<div class="empty"><h2>${isDM ? 'This is the start of your chat with ' + escapeHtml(dmWith.username) : 'Welcome to #' + escapeHtml(curCh?.name || '')}</h2><p>Say something!</p></div>`;
+      hydrateInviteEmbeds();
       if (bottom) el.scrollTop = el.scrollHeight;
+    }
+
+    function inviteEmbedsHtml(text) {
+      const codes = extractInviteCodes(text);
+      if (!codes.length) return '';
+      return codes.map(code => {
+        const k = code.toLowerCase();
+        const cache = INV_CACHE[k];
+        const joined = servers.find(s => (s.invite_code || '').toLowerCase() === k || (cache?.id && s.id === cache.id));
+        const name = joined?.name || cache?.name || 'Server Invite';
+        const mono = name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase() || '🔗';
+        const sub = cache?.member_count != null ? `${cache.member_count} Member${cache.member_count === 1 ? '' : 's'}` : `Code: ${code}`;
+        const btn = joined
+          ? `<button class="b g" style="padding:8px 14px;background:#ffffff14" onclick="selectServer('${joined.id}')">Joined</button>`
+          : `<button class="b" style="padding:8px 16px;background:var(--green)" onclick="acceptInvite('${escapeHtml(code)}')">Join</button>`;
+        return `<div class="inv-embed" data-invc="${escapeHtml(k)}"><div class="inv-embed-hdr">You've been invited to join a server</div><div class="inv-embed-row"><div class="inv-ico">${escapeHtml(mono)}</div><div class="inv-meta"><b>${escapeHtml(name)}</b><small>${escapeHtml(sub)}</small></div>${btn}</div></div>`;
+      }).join('');
+    }
+
+    function hydrateInviteEmbeds() {
+      const nodes = document.querySelectorAll('.inv-embed[data-invc]');
+      const seen = new Set();
+      nodes.forEach(n => {
+        const k = n.dataset.invc;
+        if (!k || k in INV_CACHE || seen.has(k)) return;
+        seen.add(k);
+        fetchInvitePreview(k).then(info => {
+          if (!info) return;
+          document.querySelectorAll(`.inv-embed[data-invc="${k}"]`).forEach(card => {
+            card.querySelector('.inv-meta b').textContent = info.name;
+            card.querySelector('.inv-ico').textContent = info.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase();
+            if (info.member_count != null) card.querySelector('.inv-meta small').textContent = `${info.member_count} Member${info.member_count === 1 ? '' : 's'}`;
+          });
+        });
+      });
     }
 
     function renderMembers() {
@@ -2350,6 +2995,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!t || (!curCh && !dmWith)) return;
       if (t.length > 4000) return toast('Messages are limited to 4000 characters.');
       inp.value = ''; inp.style.height = 'auto'; $('#cnt').textContent = '';
+      if ($('#eauto')) $('#eauto').classList.remove('on');
       const { data, error } = await postMessage({ content: t });
       if (error) { inp.value = t; return toast(error.message); }
       addMsg(data);
@@ -2380,6 +3026,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     // ---------- Custom emojis, stickers, reactions, soundboard ----------
     let EM = {};                                        // every custom emoji: name -> image url
+    let ALL_EMOJIS = [];                                // all custom emoji rows (mine + community)
     let LIB = { emojis: [], stickers: [], sounds: [] }; // my own library (works in every server and DM)
     let rx = [];                                        // reactions on the messages on screen
     const QUICK = ['👍', '❤️', '😂', '🔥', '🎉', '😮', '😢', '👀'];
@@ -2388,9 +3035,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     async function loadLibrary() {
       const q = t => supabaseClient.from(t).select('*').limit(1000);
       const [a, b, c] = await Promise.all([q('custom_emojis'), q('stickers').eq('owner_id', me.id), q('sounds').eq('owner_id', me.id)]);
+      ALL_EMOJIS = a.data || [];
       EM = {};
-      (a.data || []).forEach(e => { EM[e.name.toLowerCase()] = e.url; });
-      LIB = { emojis: (a.data || []).filter(e => e.owner_id === me.id), stickers: b.data || [], sounds: c.data || [] };
+      ALL_EMOJIS.forEach(e => { EM[e.name.toLowerCase()] = e.url; });
+      LIB = { emojis: ALL_EMOJIS.filter(e => e.owner_id === me.id), stickers: b.data || [], sounds: c.data || [] };
       buildEmoji();
       if (!window.rxWatch) {
         window.rxWatch = supabaseClient.channel('rx-watch').on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, () => loadReactions()).subscribe();
@@ -2405,9 +3053,41 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       renderChat(true);
     }
 
-    function emojiHtml(e) {
+    function emojiHtml(e, clickable = false) {
       const m = /^:(\w+):$/.exec(e);
-      return m && EM[m[1].toLowerCase()] ? `<img class="ce" src="${escapeHtml(EM[m[1].toLowerCase()])}" alt="${escapeHtml(e)}" title="${escapeHtml(e)}">` : escapeHtml(e);
+      if (!m) return escapeHtml(e);
+      const n = m[1].toLowerCase(), url = EM[n];
+      if (!url) return escapeHtml(e);
+      return `<img class="ce" src="${escapeHtml(url)}" alt="${escapeHtml(e)}" title="${escapeHtml(e)}"${clickable ? ` onclick="showEmojiTip(event,'${n}')"` : ''}>`;
+    }
+
+    function closeEtip() { const t = $('#etip'); if (t) t.remove(); }
+
+    function showEmojiTip(ev, name) {
+      ev.stopPropagation();
+      closeEtip();
+      const url = EM[name];
+      if (!url) return;
+      const owned = LIB.emojis.some(e => e.name.toLowerCase() === name);
+      const tip = document.createElement('div');
+      tip.id = 'etip';
+      tip.innerHTML = `<img src="${escapeHtml(url)}" alt=":${escapeHtml(name)}:"><div><b style="display:block;font-size:14px">:${escapeHtml(name)}:</b><small style="color:var(--mute);display:block;margin:2px 0 8px">${owned ? 'In your custom emoji library' : 'Community custom emoji'}</small><div style="display:flex;gap:6px"><button class="b g" style="padding:5px 9px;font-size:12px" onclick="navigator.clipboard.writeText(':${escapeHtml(name)}:');toast('Copied :${escapeHtml(name)}:');closeEtip()">Copy</button>${owned ? '' : `<button class="b" style="padding:5px 9px;font-size:12px" onclick="cloneEmoji('${escapeHtml(name)}')">Save to mine</button>`}</div></div>`;
+      document.body.append(tip);
+      const r = tip.getBoundingClientRect();
+      tip.style.left = Math.max(8, Math.min(ev.clientX, innerWidth - r.width - 8)) + 'px';
+      tip.style.top = Math.max(8, Math.min(ev.clientY + 12, innerHeight - r.height - 8)) + 'px';
+      setTimeout(() => document.addEventListener('mousedown', function f(e) { if (!tip.contains(e.target)) { tip.remove(); document.removeEventListener('mousedown', f); } }), 0);
+    }
+
+    async function cloneEmoji(name) {
+      const url = EM[name];
+      if (!url) return;
+      const tryName = LIB.emojis.some(e => e.name.toLowerCase() === name) ? name + '_' + (Math.random() * 90 + 10 | 0) : name;
+      const { error } = await supabaseClient.from('custom_emojis').insert({ name: tryName, url });
+      closeEtip();
+      if (error) return toast(error.message.includes('duplicate') ? 'That shortcode is already taken' : error.message);
+      await loadLibrary();
+      toast('Saved :' + tryName + ': to your library');
     }
 
     function rxHtml(m) {
@@ -2434,13 +3114,21 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const old = $('#rxp'); if (old) old.remove();
       const d = document.createElement('div');
       d.id = 'rxp';
-      d.style.left = Math.min(ev.clientX, innerWidth - 300) + 'px';
-      d.style.top = Math.max(10, ev.clientY - 150) + 'px';
-      const all = [...QUICK, ...LIB.emojis.slice(0, 16).map(e => ':' + e.name + ':')];
-      d.innerHTML = all.map(e => `<button data-e="${escapeHtml(e)}">${emojiHtml(e)}</button>`).join('') + '<label><input type="checkbox" id="rxs"> ⚡ Super reaction (glows)</label>';
+      d.style.left = Math.min(ev.clientX, innerWidth - 330) + 'px';
+      d.style.top = Math.max(10, Math.min(ev.clientY - 140, innerHeight - 300)) + 'px';
+      const customSeen = new Set();
+      const customList = ALL_EMOJIS.filter(e => { const k = e.name.toLowerCase(); if (customSeen.has(k)) return false; customSeen.add(k); return true; });
+      const all = [...QUICK, ...EMO, ...customList.map(e => ':' + e.name + ':')];
+      const renderGrid = q => {
+        const ql = (q || '').trim().toLowerCase();
+        const filtered = all.filter(e => !ql || e.toLowerCase().includes(ql) || (EMO_NAMES[e] || '').includes(ql));
+        return filtered.slice(0, 64).map(e => `<button data-e="${escapeHtml(e)}" title="${escapeHtml(EMO_NAMES[e] ? ':' + EMO_NAMES[e] + ':' : e)}">${emojiHtml(e)}</button>`).join('') || '<small style="color:var(--mute);padding:8px">No matching emojis</small>';
+      };
+      d.innerHTML = `<input class="emo-search" id="rxq" placeholder="Search reaction…"><div class="rx-grid">${renderGrid('')}</div><label><input type="checkbox" id="rxs"> ⚡ Super reaction (glows)</label>`;
+      d.querySelector('#rxq').oninput = e => { d.querySelector('.rx-grid').innerHTML = renderGrid(e.target.value); };
       d.onclick = e => { const b = e.target.closest('button'); if (!b) return; rxToggle(id, dm, b.dataset.e, $('#rxs').checked); d.remove(); };
       document.body.append(d);
-      setTimeout(() => document.addEventListener('mousedown', function f(e) { if (!d.contains(e.target)) { d.remove(); document.removeEventListener('mousedown', f); } }), 0);
+      setTimeout(() => { const q = d.querySelector('#rxq'); if (q) q.focus(); document.addEventListener('mousedown', function f(e) { if (!d.contains(e.target)) { d.remove(); document.removeEventListener('mousedown', f); } }); }, 0);
     }
 
     async function sendSticker(i) {
@@ -2473,7 +3161,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       await loadLibrary(); settings(kind === 'sounds' ? 'voice' : 'emojis');
     }
 
-    const libList = (kind, items) => items.map(i => `<div class="libitem">${kind === 'sounds' ? '🔊' : `<img src="${escapeHtml(i.url)}" alt="">`}<span style="flex:1">${kind === 'emojis' ? ':' + escapeHtml(i.name) + ':' : escapeHtml(i.name)}</span><button class="b r" onclick="libDel('${kind}',${i.id})">Delete</button></div>`).join('') || '<p>Nothing here yet.</p>';
+    const libList = (kind, items) => items.map(i => kind === 'sounds'
+      ? `<div class="libitem">🔊<span style="flex:1">${escapeHtml(i.name)}</span><button class="b r" onclick="libDel('${kind}',${i.id})">Delete</button></div>`
+      : `<div class="libcard"><img src="${escapeHtml(i.url)}" alt=""><code>${kind === 'emojis' ? ':' + escapeHtml(i.name) + ':' : escapeHtml(i.name)}</code><button class="b r" style="padding:5px 10px;font-size:12px;width:100%" onclick="libDel('${kind}',${i.id})">Remove</button></div>`
+    ).join('') || '<p class="ts">Nothing here yet.</p>';
     const libForm = (kind, accept) => `<div class="card2"><label class="f" style="margin-top:0">Name</label><input class="t" id="ln" maxlength="32" placeholder="e.g. pepe_dance"><label class="f">File</label><input type="file" id="lf" accept="${accept}" class="t"><div class="row" style="margin-top:8px"><button class="b" onclick="libAdd('${kind}')">Add</button></div></div>`;
 
     // Soundboard: plays for everyone in your voice call
@@ -2511,32 +3202,164 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       }));
     }
 
-    // ---------- Emoji picker ----------
-    const EMO = ['😀', '😂', '🥹', '😍', '😎', '🤔', '😭', '😡', '👍', '👎', '🙏', '🔥', '🎉', '💀', '❤️', '✨', '👀', '🚀'];
-    const EMO_P = ['🪩', '🦄', '🐉', '🛸', '🧿', '🌈', '🍕', '🎮', '🎧', '🏆', '💎', '👑', '🧠', '🫡', '🥳', '🤩', '😈', '🦊'];
+    // ---------- Emoji & Sticker Picker + :shortcode: Autocomplete ----------
+    const EMO_CATS = [
+      ['Smileys', [['😀', 'grin'], ['😂', 'joy'], ['🥹', 'holding_back_tears'], ['😍', 'heart_eyes'], ['😎', 'sunglasses'], ['🤔', 'thinking'], ['😭', 'sob'], ['😡', 'rage'], ['🥳', 'party'], ['🤩', 'star_struck'], ['😈', 'smiling_imp'], ['💀', 'skull'], ['🫡', 'salute'], ['🤯', 'exploding_head'], ['😴', 'sleeping'], ['🫠', 'melting']]],
+      ['Gestures & People', [['👍', 'thumbsup'], ['👎', 'thumbsdown'], ['🙏', 'pray'], ['👏', 'clap'], ['🙌', 'raised_hands'], ['🤝', 'handshake'], ['✌️', 'peace'], ['🫶', 'heart_hands'], ['👀', 'eyes'], ['🧠', 'brain'], ['💪', 'muscle'], ['👋', 'wave']]],
+      ['Fun & Gaming', [['🔥', 'fire'], ['🎉', 'tada'], ['✨', 'sparkles'], ['🚀', 'rocket'], ['🎮', 'video_game'], ['🎧', 'headphones'], ['🏆', 'trophy'], ['💎', 'gem'], ['👑', 'crown'], ['🪩', 'mirror_ball'], ['🦄', 'unicorn'], ['🐉', 'dragon'], ['🛸', 'ufo'], ['🍕', 'pizza'], ['🦊', 'fox'], ['🌈', 'rainbow']]],
+      ['Hearts & Symbols', [['❤️', 'heart'], ['🧡', 'orange_heart'], ['💛', 'yellow_heart'], ['💚', 'green_heart'], ['💙', 'blue_heart'], ['💜', 'purple_heart'], ['🖤', 'black_heart'], ['💯', '100'], ['⚡', 'zap'], ['⭐', 'star'], ['✅', 'check'], ['❌', 'x']]]
+    ];
+    const EMO = EMO_CATS[0][1].map(x => x[0]);
+    const EMO_NAMES = Object.fromEntries(EMO_CATS.flatMap(([, items]) => items));
+    let emoTab = 'emoji';
+    let eaList = [], eaIdx = 0, eaRange = null;
+
+    function previewEmo(val, label) {
+      const f = $('#emo-foot');
+      if (!f) return;
+      if (!val) { f.innerHTML = `<span class="ef-ico">✨</span><div><b>Pick an emoji</b><small>Type :name: in chat for quick autocomplete</small></div>`; return; }
+      const m = /^:(\w+):$/.exec(val);
+      f.innerHTML = m && EM[m[1].toLowerCase()]
+        ? `<img src="${escapeHtml(EM[m[1].toLowerCase()])}" alt=""><div><b>${escapeHtml(val)}</b><small>Custom emoji</small></div>`
+        : `<span class="ef-ico">${escapeHtml(val)}</span><div><b>:${escapeHtml(label || 'emoji')}:</b><small>Standard emoji</small></div>`;
+    }
+
+    function renderEmoBody() {
+      const body = $('#emo-body');
+      if (!body) return;
+      const q = ($('#emo-q')?.value || '').trim().toLowerCase();
+      if (emoTab === 'stickers') {
+        const stks = LIB.stickers.filter(s => !q || s.name.toLowerCase().includes(q));
+        body.innerHTML = stks.length
+          ? `<div class="emo-sec">Your Stickers (${stks.length})</div><div class="stkgrid">${stks.map((s, idx) => `<img src="${escapeHtml(s.url)}" title="${escapeHtml(s.name)}" onclick="sendSticker(${LIB.stickers.indexOf(s)})">`).join('')}</div>`
+          : `<p class="ts" style="padding:12px 4px">No stickers${q ? ' matching "' + escapeHtml(q) + '"' : ''}. Add stickers in Settings &gt; Emojis &amp; Stickers.</p>`;
+        return;
+      }
+      let out = '';
+      const recents = (S.recentEmojis || []).filter(e => !q || e.toLowerCase().includes(q) || (EMO_NAMES[e] || '').includes(q));
+      if (recents.length && !q) {
+        out += `<div class="emo-sec">Recently Used</div><div class="emo-grid">${recents.slice(0, 16).map(e => {
+          const m = /^:(\w+):$/.exec(e);
+          if (m && EM[m[1].toLowerCase()]) return `<button data-v="${escapeHtml(e)}" data-l="${escapeHtml(m[1])}" onclick="ins('${escapeHtml(e)}')" onmouseenter="previewEmo('${escapeHtml(e)}')"><img src="${escapeHtml(EM[m[1].toLowerCase()])}" alt=""></button>`;
+          const lbl = EMO_NAMES[e] || 'emoji';
+          return `<button data-v="${escapeHtml(e)}" data-l="${escapeHtml(lbl)}" onclick="ins('${escapeHtml(e)}')" onmouseenter="previewEmo('${escapeHtml(e)}','${escapeHtml(lbl)}')">${e}</button>`;
+        }).join('')}</div>`;
+      }
+      const seen = new Set();
+      const customUnique = [...LIB.emojis, ...ALL_EMOJIS].filter(e => {
+        const k = e.name.toLowerCase();
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return !q || k.includes(q);
+      });
+      if (customUnique.length) {
+        out += `<div class="emo-sec">Custom Emojis (${customUnique.length})</div><div class="emo-grid">${customUnique.map(e => `<button onclick="ins(':${escapeHtml(e.name)}:')" onmouseenter="previewEmo(':${escapeHtml(e.name)}:')" title=":${escapeHtml(e.name)}:"><img src="${escapeHtml(e.url)}" alt=""></button>`).join('')}</div>`;
+      } else if (!q) {
+        out += `<div class="emo-sec">Custom Emojis</div><p class="ts" style="margin:4px 2px">Add custom or animated GIF emojis in Settings &gt; Emojis &amp; Stickers.</p>`;
+      }
+      EMO_CATS.forEach(([cat, items]) => {
+        const list = items.filter(([e, n]) => !q || n.includes(q) || e.includes(q));
+        if (list.length) out += `<div class="emo-sec">${cat}</div><div class="emo-grid">${list.map(([e, n]) => `<button onclick="ins('${e}')" onmouseenter="previewEmo('${e}','${n}')" title=":${n}:">${e}</button>`).join('')}</div>`;
+      });
+      body.innerHTML = out || `<p class="ts" style="padding:12px 4px">No emojis match "${escapeHtml(q)}".</p>`;
+    }
 
     function buildEmoji() {
-      const std = [...EMO, ...EMO_P].map(e => `<button onclick="ins('${e}')">${e}</button>`).join('');
-      const cus = LIB.emojis.map(e => `<button onclick="ins(':${e.name}:')" title=":${e.name}:"><img class="ce" style="height:28px" src="${escapeHtml(e.url)}" alt=""></button>`).join('');
-      const stk = LIB.stickers.map((s, i) => `<img src="${escapeHtml(s.url)}" title="${escapeHtml(s.name)}" onclick="sendSticker(${i})">`).join('');
-      $('#emo').innerHTML = std
-        + (cus ? '<div class="emo-h">Your custom emojis (work everywhere)</div>' + cus : '')
-        + (stk ? '<div class="emo-h">Stickers</div><div class="stkgrid">' + stk + '</div>' : '')
-        + (!cus && !stk ? '<div class="emo-h">Add emojis and stickers in Settings, Emojis &amp; Stickers</div>' : '');
+      const box = $('#emo');
+      if (!box) return;
+      box.innerHTML = `<div class="emo-top"><div class="emo-tabs"><button class="${emoTab === 'emoji' ? 'on' : ''}" onclick="emoTab='emoji';buildEmoji()">😀 Emoji</button><button class="${emoTab === 'stickers' ? 'on' : ''}" onclick="emoTab='stickers';buildEmoji()">✨ Stickers (${LIB.stickers.length})</button></div><input class="emo-search" id="emo-q" placeholder="Search ${emoTab === 'emoji' ? 'emojis or :shortcodes:' : 'stickers'}…" oninput="renderEmoBody()"></div><div class="emo-body" id="emo-body"></div><div class="emo-foot" id="emo-foot"></div>`;
+      renderEmoBody();
+      previewEmo();
+    }
+
+    function toggleEmojiPicker(ev) {
+      ev.stopPropagation();
+      const box = $('#emo');
+      if (!box) return;
+      const on = box.classList.toggle('on');
+      if (on) {
+        buildEmoji();
+        setTimeout(() => {
+          const q = $('#emo-q'); if (q) q.focus();
+          document.addEventListener('mousedown', function f(e) {
+            if (!box.contains(e.target) && !e.target.closest('#emo-btn')) { box.classList.remove('on'); document.removeEventListener('mousedown', f); }
+          });
+        }, 0);
+      }
     }
 
     function ins(e) {
       const i = $('#inp');
-      i.value += e;
+      const s = i.selectionStart ?? i.value.length, end = i.selectionEnd ?? i.value.length;
+      i.value = i.value.slice(0, s) + e + i.value.slice(end);
+      i.selectionStart = i.selectionEnd = s + e.length;
+      i.style.height = 'auto'; i.style.height = i.scrollHeight + 'px';
+      const n = i.value.length; $('#cnt').textContent = n > 3800 ? `${n}/4000` : '';
+      S.recentEmojis = [e, ...(S.recentEmojis || []).filter(x => x !== e)].slice(0, 16);
+      saveS();
       i.focus();
       $('#emo').classList.remove('on');
+    }
+
+    function updateEmojiAuto() {
+      const inp = $('#inp'), box = $('#eauto');
+      if (!inp || !box) return;
+      const pos = inp.selectionStart ?? inp.value.length;
+      const before = inp.value.slice(0, pos);
+      const m = /(?:^|\s)(:[a-zA-Z0-9_]{1,32})$/.exec(before);
+      if (!m) { box.classList.remove('on'); eaList = []; return; }
+      const q = m[1].slice(1).toLowerCase();
+      eaRange = [pos - m[1].length, pos];
+      const seen = new Set();
+      const customHits = ALL_EMOJIS.filter(e => {
+        const k = e.name.toLowerCase();
+        if (!k.includes(q) || seen.has(k)) return false;
+        seen.add(k); return true;
+      }).map(e => ({ label: ':' + e.name + ':', val: ':' + e.name + ':', url: e.url, kind: 'Custom' }));
+      const stdHits = Object.entries(EMO_NAMES).filter(([, n]) => n.includes(q)).map(([emo, n]) => ({ label: ':' + n + ':', val: emo, emo, kind: 'Emoji' }));
+      eaList = [...customHits, ...stdHits].slice(0, 8);
+      if (!eaList.length) { box.classList.remove('on'); return; }
+      eaIdx = 0;
+      renderEmojiAuto();
+    }
+
+    function renderEmojiAuto() {
+      const box = $('#eauto');
+      if (!box) return;
+      box.classList.add('on');
+      box.innerHTML = eaList.map((it, idx) => `<button class="ea-item ${idx === eaIdx ? 'on' : ''}" onmousedown="event.preventDefault();pickAuto(${idx})">${it.url ? `<img src="${escapeHtml(it.url)}" alt="">` : `<span style="font-size:20px;width:24px;text-align:center">${it.emo}</span>`}<b>${escapeHtml(it.label)}</b><small>${it.kind}</small></button>`).join('');
+    }
+
+    function pickAuto(idx) {
+      const it = eaList[idx], inp = $('#inp'), box = $('#eauto');
+      if (!it || !inp || !eaRange) return;
+      const [a, b] = eaRange;
+      const add = it.val + ' ';
+      inp.value = inp.value.slice(0, a) + add + inp.value.slice(b);
+      inp.selectionStart = inp.selectionEnd = a + add.length;
+      inp.style.height = 'auto'; inp.style.height = inp.scrollHeight + 'px';
+      S.recentEmojis = [it.val, ...(S.recentEmojis || []).filter(x => x !== it.val)].slice(0, 16);
+      saveS();
+      box.classList.remove('on');
+      eaList = [];
+      inp.focus();
+    }
+
+    function handleAutoKey(e) {
+      const box = $('#eauto');
+      if (!box || !box.classList.contains('on') || !eaList.length) return false;
+      if (e.key === 'ArrowDown') { e.preventDefault(); eaIdx = (eaIdx + 1) % eaList.length; renderEmojiAuto(); return true; }
+      if (e.key === 'ArrowUp') { e.preventDefault(); eaIdx = (eaIdx - 1 + eaList.length) % eaList.length; renderEmojiAuto(); return true; }
+      if (e.key === 'Tab' || e.key === 'Enter') { e.preventDefault(); pickAuto(eaIdx); return true; }
+      if (e.key === 'Escape') { e.preventDefault(); box.classList.remove('on'); return true; }
+      return false;
     }
 
     // ---------- Servers and channels ----------
     function serverModal() {
       modal(`<h2>Create or join a server</h2><p>Your server is where you and your friends hang out.</p>
     <label class="f">Server name</label><input class="t" id="sn" placeholder="${escapeHtml(me.username)}'s server"><div class="row"><button class="b" onclick="createServer()">Create</button></div>
-    <label class="f">Have an invite code?</label><input class="t" id="ic" placeholder="e.g. a1b2c3d4"><div class="err" id="merr"></div><div class="row"><button class="b g" onclick="closeM()">Cancel</button><button class="b" onclick="joinServer()">Join server</button></div>`);
+    <label class="f">Have an invite link or code?</label><input class="t" id="ic" placeholder="proanchat.com/example or a1b2c3d4"><div class="err" id="merr"></div><div class="row"><button class="b g" onclick="closeM()">Cancel</button><button class="b" onclick="joinServer()">Join server</button></div>`);
     }
 
     async function createServer() {
@@ -2550,9 +3373,12 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     async function joinServer() {
-      const { data, error } = await supabaseClient.rpc('join_server', { code: $('#ic').value.trim() });
+      const code = parseInviteCode($('#ic').value);
+      if (!code) return $('#merr').textContent = 'Paste an invite link or invite code.';
+      const { data, error } = await supabaseClient.rpc('join_server', { code });
       if (error)
         return $('#merr').textContent = error.message;
+      clearUrlInvite();
       closeM();
       await loadServers(true);
       selectServer(data);
@@ -2718,20 +3544,205 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       loadServers();
     }
 
-    // ---------- Profiles and settings ----------
-    const profileCardHtml = p => `<div class="ban" style="background:${p.banner_url ? `url('${escapeHtml(p.banner_url)}') center/cover` : `linear-gradient(135deg,${escapeHtml(p.banner_color || '#e11d2e')},#000)`}"></div><div class="pop">${avatarHtml(p, 80)}</div><h2 style="margin:8px 0 0"><span ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span> <span class="badge">PLUS</span>${badgePills(p, true)}</h2><p style="margin:4px 0 0">${escapeHtml(p.bio || '')}</p>`;
+    // ---------- Profiles, Role Assignment Popouts, and Settings ----------
+    let micTest = null;
+    function stopMicTest() {
+      if (!micTest) return;
+      clearInterval(micTest.timer);
+      if (micTest.stream) micTest.stream.getTracks().forEach(t => t.stop());
+      try { micTest.actx.close(); } catch (e) {}
+      micTest = null;
+    }
 
-    function showProfile(id) {
-      const p = members.find(x => x.id === id) || msgs.find(m => m.user_id === id)?.profiles || (id === me.id ? me : null);
+    async function toggleMicTest() {
+      const btn = $('#mictest-btn'), lvl = $('#test-lvl');
+      if (micTest) {
+        stopMicTest();
+        if (btn) btn.textContent = "Let's Check";
+        if (lvl) lvl.style.width = '0%';
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints() });
+        const actx = new (window.AudioContext || window.webkitAudioContext)();
+        const an = actx.createAnalyser();
+        an.fftSize = 512;
+        actx.createMediaStreamSource(stream).connect(an);
+        const buf = new Uint8Array(512);
+        if (btn) btn.textContent = 'Stop Test';
+        micTest = {
+          stream, actx,
+          timer: setInterval(() => {
+            if (!$('#test-lvl')) return stopMicTest();
+            an.getByteTimeDomainData(buf);
+            let max = 0; buf.forEach(v => { max = Math.max(max, Math.abs(v - 128)); });
+            $('#test-lvl').style.width = Math.min(100, Math.round(max * 2.4)) + '%';
+          }, 75)
+        };
+      } catch (e) { toast('Allow microphone access to test your mic.'); }
+    }
+
+    async function populateVoiceDevices() {
+      const mi = $('#v-in'), mo = $('#v-out'), mv = $('#v-cam');
+      if (!mi && !mo && !mv) return;
+      let devs = [];
+      try { devs = await navigator.mediaDevices.enumerateDevices(); } catch (e) {}
+      const fill = (el, kind, curVal, label) => {
+        if (!el) return;
+        const list = devs.filter(d => d.kind === kind);
+        el.innerHTML = list.length
+          ? `<option value="">System Default</option>` + list.map((d, i) => `<option value="${escapeHtml(d.deviceId)}" ${d.deviceId === curVal ? 'selected' : ''}>${escapeHtml(d.label || `${label} ${i + 1}`)}</option>`).join('')
+          : `<option value="">Default ${label}</option>`;
+      };
+      fill(mi, 'audioinput', S.audioIn, 'Microphone');
+      fill(mo, 'audiooutput', S.audioOut, 'Speaker');
+      fill(mv, 'videoinput', S.videoIn, 'Camera');
+    }
+
+    function profileCardHtml(p, opts = {}) {
+      const fl = opts.flair || getFlair(p.id, opts.serverId || '');
+      const c1 = safeColor(p.banner_color || '#e11d2e');
+      const c2 = fl.color2 ? safeColor(fl.color2) : `color-mix(in srgb, ${c1} 28%, #0e0f13)`;
+      const banBg = p.banner_url
+        ? `url('${escapeHtml(p.banner_url)}') center/cover`
+        : `linear-gradient(135deg, ${c1}, ${c2})`;
+      const st = p.id === me.id ? S.status : (cur ? online.get(p.id) : onlineAll.get(p.id)) || 'offline';
+      const stCls = st && st !== 'invisible' && st !== 'offline' ? st : '';
+      const fx = effectCls(fl.effect);
+      const ns = nameStyleCls(fl.nameStyle);
+      const rCls = (!ns && cur) ? roleAttr(p.id) : (ns ? `class="${ns}"` : '');
+      const handle = opts.rawUsername || p.username || 'user';
+      const uRoles = cur && !opts.preview ? userRoles(p.id) : [];
+      const canManage = !!cur && !opts.preview && can('manage_roles');
+      const isFriend = myFriends().some(f => f.id === p.id);
+      const topActs = opts.preview ? '' : `<div class="ppop-top-acts">
+        ${p.id === me.id ? `<button class="ppop-cbtn" title="Edit Profile" onclick="closeM();settings('${cur ? 'server' : 'profile'}')">✎</button>`
+        : `${isFriend
+          ? `<button class="ppop-cbtn" title="Open DM" onclick="closeM();openDM('${p.id}')">💬</button>`
+          : `<button class="ppop-cbtn" title="Add Friend" onclick="quickAdd('${p.id}')">👤+</button>`}
+          ${cur && can('kick_members') && p.id !== cur.owner_id ? `<button class="ppop-cbtn" title="Kick Member" onclick="quickKickFromPop('${p.id}')">🥾</button>` : ''}`}
+        <button class="ppop-cbtn" title="Close" onclick="closeM()">✕</button>
+      </div>`;
+      const badges = badgePills(p, false);
+      const rolesSec = (cur && !opts.preview) ? `<div class="ppop-card">
+        <div class="ppop-lbl"><span>${uRoles.length ? `Roles (${uRoles.length})` : 'Roles'}</span>${canManage ? '<span style="font-weight:500;color:#94a3b8">Manageable</span>' : ''}</div>
+        <div class="ppop-roles" id="ppop-roles">
+          ${uRoles.map(r => `<span class="rpill"><i class="rdot" style="background:${safeColor(r.color)}"></i>${iconHtml(r)}<span>${escapeHtml(r.name)}</span>${canManage ? `<button class="rxbtn" title="Remove role" onclick="toggleProfileRole('${p.id}','${r.id}')">×</button>` : ''}</span>`).join('') || (!canManage ? '<span class="ts" style="font-size:12px">No roles assigned</span>' : '')}
+          ${canManage ? `<button class="radd" title="Assign role" onclick="openRolePop('${p.id}')">+</button>` : ''}
+        </div>
+        <div id="rpop-slot"></div>
+      </div>` : '';
+      const msgBar = (!opts.preview && p.id !== me.id) ? `<div class="ppop-msg"><input id="ppop-dm" placeholder="Message @${escapeHtml(p.username)}" onkeydown="if(event.key==='Enter')quickDMFromPop('${p.id}')"><button class="ib" style="color:#d4d4d8" title="Send message" onclick="quickDMFromPop('${p.id}')">➤</button></div>` : '';
+      return `<div class="ppop" style="--p1:${c1};--p2:${c2}">
+        ${fx ? `<div class="pcard-fx ${fx}"></div>` : ''}
+        <div class="ppop-ban" style="background:${banBg}">${topActs}</div>
+        <div class="ppop-inner">
+          <div class="ppop-av-row">
+            <div class="ppop-av">${avatarDecoHtml(p, 80, fl.deco)}<i class="ppop-st ${stCls}"></i></div>
+          </div>
+          <h2 class="ppop-name"><span ${rCls} ${isFounder(p) ? 'data-f' : ''}>${escapeHtml(p.username)}</span></h2>
+          <div class="ppop-sub">
+            <span>@${escapeHtml(handle.toLowerCase().replace(/\s+/g, ''))}</span>
+            ${fl.pronouns ? `<span>• ${escapeHtml(fl.pronouns)}</span>` : ''}
+            ${badges ? `<span class="ppop-badges">${badges}</span>` : ''}
+          </div>
+          ${!opts.preview ? `<div class="ppop-mutual" id="ppop-mut">🛡️ ${cur ? 'Member of ' + escapeHtml(cur.name) : `${servers.length} Mutual Server${servers.length === 1 ? '' : 's'}`}</div>` : ''}
+          ${(p.bio || opts.preview) ? `<div class="ppop-card"><div class="ppop-lbl">About Me</div><div class="ppop-bio">${escapeHtml(p.bio || 'Tell everyone a bit about yourself…')}</div></div>` : ''}
+          ${rolesSec}
+          ${msgBar}
+        </div>
+      </div>`;
+    }
+
+    function showProfile(id, keepRolePop = false) {
+      const mProf = members.find(x => x.id === id);
+      const p = mProf || msgs.find(m => m.user_id === id)?.profiles || (id === me.id ? me : null);
       if (!p) return;
-      const acts = id === me.id ? '' : myFriends().some(f => f.id === id) ? `<button class="b" onclick="closeM();openDM('${id}')">Message</button>` : `<button class="b" onclick="quickAdd('${id}')">Add Friend</button>`;
-      modal(profileCardHtml(p) + `<div class="row"><button class="b g" onclick="closeM()">Close</button>${acts}</div>`);
+      modal(profileCardHtml(p, { serverId: cur?.id || '' }), 'ppop-box');
+      if (keepRolePop) openRolePop(id);
+      if (cur && p.id !== me.id) {
+        supabaseClient.from('members').select('server_id').eq('user_id', p.id).then(({ data }) => {
+          const el = $('#ppop-mut');
+          if (el && data) el.textContent = `🛡️ ${data.length} Mutual Server${data.length === 1 ? '' : 's'}`;
+        }).catch(() => {});
+      }
+    }
+
+    function openRolePop(uid) {
+      const slot = $('#rpop-slot');
+      if (!slot || !cur || !can('manage_roles')) return;
+      if (slot.innerHTML) { slot.innerHTML = ''; return; }
+      slot.innerHTML = `<div class="rpop"><input id="rpop-q" placeholder="Search roles to add or remove…" oninput="filterRolePop('${uid}',this.value)"><div class="rpop-list" id="rpop-list"></div></div>`;
+      filterRolePop(uid, '');
+      setTimeout(() => { const q = $('#rpop-q'); if (q) q.focus(); }, 0);
+    }
+
+    function filterRolePop(uid, q) {
+      const list = $('#rpop-list');
+      if (!list) return;
+      const ql = (q || '').trim().toLowerCase();
+      const filtered = roles.filter(r => !ql || r.name.toLowerCase().includes(ql));
+      list.innerHTML = filtered.map(r => {
+        const has = memberRoles.some(m => m.user_id === uid && m.role_id === r.id);
+        return `<button class="rpop-item" onclick="toggleProfileRole('${uid}','${r.id}',true)"><i class="rdot" style="background:${safeColor(r.color)}"></i>${iconHtml(r)}<span style="flex:1">${escapeHtml(r.name)}</span><span style="font-weight:700;color:${has ? 'var(--green)' : 'var(--mute)'}">${has ? '✓' : '+'}</span></button>`;
+      }).join('') || '<small class="ts" style="padding:6px">No roles yet — create one in Server Settings &gt; Roles.</small>';
+    }
+
+    async function toggleProfileRole(uid, rid, keepOpen = false) {
+      if (!cur || !can('manage_roles')) return toast('You do not have Manage Roles permission.');
+      const has = memberRoles.some(m => m.user_id === uid && m.role_id === rid);
+      const { error } = has
+        ? await supabaseClient.from('member_roles').delete().eq('user_id', uid).eq('role_id', rid)
+        : await supabaseClient.from('member_roles').insert({ server_id: cur.id, user_id: uid, role_id: rid });
+      if (error) return toast(error.message);
+      memberRoles = has ? memberRoles.filter(m => !(m.user_id === uid && m.role_id === rid)) : [...memberRoles, { server_id: cur.id, user_id: uid, role_id: rid }];
+      renderMembers(); renderChat(true);
+      showProfile(uid, keepOpen);
+    }
+
+    async function quickDMFromPop(id) {
+      const inp = $('#ppop-dm'), t = inp ? inp.value.trim() : '';
+      if (!t) {
+        if (myFriends().some(f => f.id === id)) { closeM(); return openDM(id); }
+        return toast('Type a message or add them as a friend first.');
+      }
+      const { data, error } = await supabaseClient.from('dm_messages').insert({ recipient: id, content: t }).select('*').single();
+      if (error) return toast(error.message.includes('policy') || error.code === '42501' ? 'Add this user as a friend first to send a DM.' : error.message);
+      inp.value = '';
+      if (myFriends().some(f => f.id === id)) { closeM(); await openDM(id); addMsg(dmRow(data)); }
+      else toast('Direct message sent!');
+    }
+
+    async function quickKickFromPop(id) {
+      if (!cur || !can('kick_members')) return;
+      if (!confirm('Kick this member from the server?')) return;
+      const { error } = await supabaseClient.from('members').delete().eq('server_id', cur.id).eq('user_id', id);
+      if (error) return toast(error.message);
+      closeM();
+      await loadMembers(); renderMembers();
+      toast('Member kicked');
     }
 
     function closeSet() {
+      stopMicTest();
       if (tdraft) { tdraft = null; applyS(); }
       const e = $('#set');
       if (e) e.remove();
+    }
+
+    async function logout() {
+      closeSet();
+      closeM();
+      await leaveVoice();
+      if (rt) { supabaseClient.removeChannel(rt); rt = null; }
+      if (pr) { supabaseClient.removeChannel(pr); pr = null; }
+      if (sl) { supabaseClient.removeChannel(sl); sl = null; }
+      if (gp) { supabaseClient.removeChannel(gp); gp = null; }
+      watchers.forEach(w => supabaseClient.removeChannel(w));
+      watchers = [];
+      me = null; cur = null; curCh = null; dmWith = null;
+      await supabaseClient.auth.signOut({ scope: 'local' });
+      authView('in');
     }
 
     async function revealEmail() {
@@ -2740,35 +3751,213 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       $('#rev').remove();
     }
 
+    // Profile Customizer interactive pickers
+    function pv() {
+      const box = $('#pv');
+      if (!box) return;
+      const isSrv = $('#pv').dataset.srv === '1';
+      const u = isSrv
+        ? {
+            id: me.id,
+            username: ($('#sn')?.value || '').trim() || me.username,
+            avatar_url: ($('#sav')?.value || '').trim() || me.avatar_url,
+            banner_url: ($('#sbn2')?.value || '').trim() || me.banner_url,
+            banner_color: $('#sbc2')?.value || me.banner_color || '#e11d2e',
+            bio: $('#sbi')?.value ?? me.bio,
+            badges: me.badges
+          }
+        : {
+            id: me.id,
+            username: ($('#su')?.value || '').trim() || me.username,
+            avatar_url: ($('#sa')?.value || '').trim() || me.avatar_url,
+            banner_url: ($('#sbn')?.value || '').trim(),
+            banner_color: $('#sbc')?.value || '#e11d2e',
+            bio: $('#sbio')?.value || '',
+            badges: me.badges
+          };
+      const fl = {
+        pronouns: ($('#spn')?.value || '').trim(),
+        nameStyle: $('#snst')?.value || 'default',
+        color2: $('#sbc_2')?.value || '',
+        deco: $('#sdeco')?.value || 'none',
+        effect: $('#sfx')?.value || 'none'
+      };
+      box.innerHTML = profileCardHtml(u, { preview: true, flair: fl, rawUsername: me.username, serverId: isSrv ? cur?.id : '' });
+    }
+
+    function setPField(id, val, groupSel, btn) {
+      const el = $('#' + id);
+      if (el) el.value = val;
+      if (groupSel && btn) {
+        document.querySelectorAll(groupSel).forEach(x => x.classList.remove('on'));
+        btn.classList.add('on');
+      }
+      pv();
+    }
+
     function settings(tab = 'account') {
+      if (tab !== 'voice') stopMicTest();
       const NAV = [['User settings'], ['account', 'My account'], ['profile', 'Profiles'], ['server', 'Server profile'], ['App settings'], ['appearance', 'Theme'], ['look', 'App Icon & Text'], ['access', 'Accessibility'], ['notifications', 'Notifications'], ['emojis', 'Emojis & Stickers'], ['voice', 'Voice & Video'], ['perks', 'Perks']];
       const chk = (k, label) => `<label class="opt"><span>${label}</span><input type="checkbox" ${S[k] ? 'checked' : ''} onchange="S.${k}=this.checked;saveS();renderChat(true)"></label>`;
       const field = (id, label, val, ev = '') => `<label class="f">${label}</label><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}>`;
       const upl = (id, label, val, ev = '') => `<label class="f">${label}</label><div style="display:flex;gap:8px"><input class="t" id="${id}" value="${escapeHtml(val || '')}" ${ev}><button class="b g" onclick="pickImage('${id}')">Upload</button></div>`;
       const perk = (a, b) => `<div class="perk"><span>${a}</span><i>${b}</i></div>`;
+
+      const fl = getFlair(me.id);
+      const sfl = cur ? getFlair(me.id, cur.id) : fl;
+      const curNamePreview = escapeHtml(me.username || 'User');
+
+      const profileEditorHtml = () => {
+        const c1 = safeColor(me.banner_color || '#e11d2e');
+        const c2 = fl.color2 ? safeColor(fl.color2) : '#111216';
+        return `<div class="tabs" style="margin-top:0"><button class="tab on" onclick="settings('profile')">Main Profile</button>${cur ? `<button class="tab" onclick="settings('server')">Per-Server (${escapeHtml(cur.name)})</button>` : ''}</div>
+          <div class="prof-split">
+            <div class="prof-controls">
+              <div class="prof-sec">
+                <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:12px">
+                  <div><label class="f" style="margin-top:0">Display Name</label><input class="t" id="su" maxlength="32" value="${escapeHtml(me.username)}" oninput="pv()"></div>
+                  <div><label class="f" style="margin-top:0">Pronouns</label><input class="t" id="spn" maxlength="24" placeholder="e.g. they/them" value="${escapeHtml(fl.pronouns)}" oninput="pv()"></div>
+                </div>
+              </div>
+              <div class="prof-sec">
+                <div class="prof-sec-h"><span>Avatar &amp; Decoration</span></div>
+                <div class="prof-tiles">
+                  <div class="prof-tile" onclick="pickImage('sa')">${avatarHtml(me, 48)}<small>Upload Avatar / GIF</small></div>
+                  <div class="prof-tile">${avatarDecoHtml(me, 48, fl.deco)}<small>Avatar Frame</small></div>
+                </div>
+                <input type="hidden" id="sdeco" value="${escapeHtml(fl.deco)}">
+                <div class="tabs" style="margin-top:10px">${AVATAR_DECOS.map(([k, l]) => `<button class="tab dec-opt ${fl.deco === k ? 'on' : ''}" onclick="setPField('sdeco','${k}','.dec-opt',this)">${l}</button>`).join('')}</div>
+                ${upl('sa', 'Avatar URL (GIFs animate)', me.avatar_url, 'oninput="pv()"')}
+              </div>
+              <div class="prof-sec">
+                <div class="prof-sec-h"><span>Display Name Style</span></div>
+                <input type="hidden" id="snst" value="${escapeHtml(fl.nameStyle)}">
+                <div class="dstyle-grid">${NAME_STYLES.map(([k, l, d, cls]) => `<button class="dstyle-btn nst-opt ${fl.nameStyle === k ? 'on' : ''}" onclick="setPField('snst','${k}','.nst-opt',this)"><b class="${cls}" style="font-size:15px">${curNamePreview}</b><small>${l} · ${d}</small></button>`).join('')}</div>
+              </div>
+              <div class="prof-sec">
+                <div class="prof-sec-h"><span>Theme &amp; Banner</span></div>
+                <div class="prof-tiles">
+                  <div class="prof-tile">
+                    <div class="theme-pair"><span id="tp1" style="background:${c1}"></span><span id="tp2" style="background:${c2}"></span></div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input type="color" id="sbc" value="${c1}" title="Primary colour" oninput="$('#tp1').style.background=this.value;pv()">
+                      <input type="color" id="sbc_2" value="${c2}" title="Secondary colour" oninput="$('#tp2').style.background=this.value;pv()">
+                    </div>
+                    <small>Primary &amp; Gradient</small>
+                  </div>
+                  <div class="prof-tile" onclick="pickImage('sbn')">
+                    <div style="width:72px;height:48px;border-radius:8px;border:1px solid var(--border);background:${me.banner_url ? `url('${escapeHtml(me.banner_url)}') center/cover` : `linear-gradient(135deg,${c1},${c2})`}"></div>
+                    <small>Upload Banner / GIF</small>
+                  </div>
+                </div>
+                ${upl('sbn', 'Banner Image URL', me.banner_url, 'oninput="pv()"')}
+              </div>
+              <div class="prof-sec">
+                <div class="prof-sec-h"><span>Profile Effect</span></div>
+                <input type="hidden" id="sfx" value="${escapeHtml(fl.effect)}">
+                <div class="tabs" style="margin-top:0">${PROFILE_EFFECTS.map(([k, l]) => `<button class="tab fx-opt ${fl.effect === k ? 'on' : ''}" onclick="setPField('sfx','${k}','.fx-opt',this)">${l}</button>`).join('')}</div>
+              </div>
+              <div class="prof-sec">
+                <label class="f" style="margin-top:0">About Me</label>
+                <textarea class="t" id="sbio" rows="3" maxlength="190" placeholder="Write something about yourself…" oninput="pv()">${escapeHtml(me.bio || '')}</textarea>
+                <label class="f">Online Status</label>
+                <select class="t" id="sst">${[['online', 'Online'], ['idle', 'Idle'], ['dnd', 'Do not disturb'], ['invisible', 'Invisible']].map(([v, l]) => `<option value="${v}" ${S.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+                <div class="err" id="serr"></div>
+                <div class="row" style="justify-content:flex-start"><button class="b" onclick="saveProfile()">Save Changes</button></div>
+              </div>
+            </div>
+            <div class="prof-preview-wrap">
+              <div class="prof-preview-lbl">Preview</div>
+              <div id="pv" data-srv="0"></div>
+            </div>
+          </div>`;
+      };
+
+      const serverProfileHtml = () => {
+        if (!cur) return '<p>Open a server first, then come back here to customize how you look in that server.</p>';
+        return `<div class="tabs" style="margin-top:0"><button class="tab" onclick="settings('profile')">Main Profile</button><button class="tab on" onclick="settings('server')">Per-Server (${escapeHtml(cur.name)})</button></div>
+          <div class="prof-split">
+            <div class="prof-controls">
+              <p style="margin:0;color:var(--mute);font-size:13px">Customize your nickname, avatar, banner and flair only inside <b>${escapeHtml(cur.name)}</b>. Leave fields blank to fall back to your main profile.</p>
+              <div class="prof-sec">
+                <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:12px">
+                  <div><label class="f" style="margin-top:0">Server Nickname</label><input class="t" id="sn" maxlength="32" placeholder="${escapeHtml(me.username)}" value="${escapeHtml(mySP.nick || '')}" oninput="pv()"></div>
+                  <div><label class="f" style="margin-top:0">Pronouns</label><input class="t" id="spn" maxlength="24" placeholder="${escapeHtml(fl.pronouns || 'e.g. they/them')}" value="${escapeHtml(sfl.pronouns)}" oninput="pv()"></div>
+                </div>
+              </div>
+              <div class="prof-sec">
+                ${upl('sav', 'Server Avatar URL', mySP.avatar_url, 'oninput="pv()"')}
+                ${upl('sbn2', 'Server Banner URL', mySP.banner_url, 'oninput="pv()"')}
+                <input type="hidden" id="sdeco" value="${escapeHtml(sfl.deco)}">
+                <label class="f">Server Avatar Frame</label>
+                <div class="tabs" style="margin-top:4px">${AVATAR_DECOS.map(([k, l]) => `<button class="tab dec-opt ${sfl.deco === k ? 'on' : ''}" onclick="setPField('sdeco','${k}','.dec-opt',this)">${l}</button>`).join('')}</div>
+                <input type="hidden" id="snst" value="${escapeHtml(sfl.nameStyle)}">
+                <label class="f">Display Name Style</label>
+                <div class="tabs" style="margin-top:4px">${NAME_STYLES.map(([k, l]) => `<button class="tab nst-opt ${sfl.nameStyle === k ? 'on' : ''}" onclick="setPField('snst','${k}','.nst-opt',this)">${l}</button>`).join('')}</div>
+                <input type="hidden" id="sfx" value="${escapeHtml(sfl.effect)}">
+                <label class="f">Profile Effect</label>
+                <div class="tabs" style="margin-top:4px">${PROFILE_EFFECTS.map(([k, l]) => `<button class="tab fx-opt ${sfl.effect === k ? 'on' : ''}" onclick="setPField('sfx','${k}','.fx-opt',this)">${l}</button>`).join('')}</div>
+              </div>
+              <div class="prof-sec">
+                <label class="f" style="margin-top:0">Server Bio</label>
+                <textarea class="t" id="sbi" rows="3" maxlength="190" placeholder="${escapeHtml(me.bio || '')}" oninput="pv()">${escapeHtml(mySP.bio || '')}</textarea>
+                <div class="err" id="serr"></div>
+                <div class="row" style="justify-content:flex-start"><button class="b" onclick="saveServerProfile()">Save Server Profile</button></div>
+              </div>
+            </div>
+            <div class="prof-preview-wrap">
+              <div class="prof-preview-lbl">Server Preview</div>
+              <div id="pv" data-srv="1"></div>
+            </div>
+          </div>`;
+      };
+
       const pages = {
         account: ['My account', `<div class="card2"><div class="srow"><div><b>Username</b>${escapeHtml(me.username)}</div><button class="b g" onclick="settings('profile')">Edit</button></div>
           <div class="srow"><div><b>Email</b><span id="em2">••••••••••</span> <a href="#" id="rev" style="color:#ff6b78" onclick="revealEmail();return false">Reveal</a></div></div></div>
           <h3>Password and security</h3><div class="card2"><label class="f" style="margin-top:0">New password</label><input class="t" id="np" type="password" placeholder="At least 6 characters"><div class="err" id="serr"></div><div class="row" style="margin-top:8px"><button class="b" onclick="changePw()">Change password</button></div></div>
           <h3>Account removal</h3><p>Deleting your account permanently removes your profile, your messages and every server you own.</p><button class="b r" onclick="deleteModal()">Delete account</button>`],
-        profile: ['Profiles', `<div class="card2 pc" id="pv"></div>${field('su', 'Username', me.username, 'maxlength="32" oninput="pv()"')}
-          ${upl('sa', 'Avatar (URL or upload; GIFs animate)', me.avatar_url, 'oninput="pv()"')}${upl('sbn', 'Profile banner image', me.banner_url, 'oninput="pv()"')}
-          <label class="f">Profile theme colour</label><input type="color" id="sbc" value="${me.banner_color || '#e11d2e'}" oninput="pv()">
-          <label class="f">About me</label><textarea class="t" id="sbio" rows="3" maxlength="190" oninput="pv()">${escapeHtml(me.bio || '')}</textarea>
-          <label class="f">Status</label><select class="t" id="sst">${[['online', 'Online'], ['idle', 'Idle'], ['dnd', 'Do not disturb'], ['invisible', 'Invisible']].map(([v, l]) => `<option value="${v}" ${S.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
-          <div class="err" id="serr"></div><div class="row"><button class="b" onclick="saveProfile()">Save changes</button></div>`],
-        server: ['Server profile', cur ? `<p>A different name, avatar, banner and bio, shown only in <b>${escapeHtml(cur.name)}</b>. Leave a field empty to use your main profile.</p>
-          ${field('sn', 'Server nickname', mySP.nick, 'maxlength="32"')}${upl('sav', 'Server avatar', mySP.avatar_url)}${upl('sbn2', 'Server banner', mySP.banner_url)}${field('sbi', 'Server bio', mySP.bio, 'maxlength="190"')}
-          <div class="err" id="serr"></div><div class="row"><button class="b" onclick="saveServerProfile()">Save server profile</button></div>` : '<p>Open a server first, then come back here.</p>'],
+        profile: ['Profiles', profileEditorHtml()],
+        server: ['Server profile', serverProfileHtml()],
         appearance: ['Theme', themePageHtml()],
-    look: ['App Icon & Text', `<label class="f">Accent colour (overrides the theme's accent)</label><div style="display:flex;align-items:center">${ACCENTS.map(c => `<span class="sw" style="background:${c};${S.accent === c ? 'border-color:#fff' : ''}" onclick="S.accent='${c}';saveS();settings('look')"></span>`).join('')}<input type="color" value="${safeColor(S.accent || currentTheme().accent)}" oninput="S.accent=this.value;saveS()"><button class="b g" style="margin-left:8px" onclick="S.accent=null;saveS();settings('look')">Reset</button></div>
-      <label class="f">App icon</label><div>${Object.keys(ICONS).map(k => `<button class="b ${S.icon === k ? '' : 'g'}" onclick="S.icon='${k}';saveS();settings('look')">${k}</button>`).join(' ')}</div>
-      <label class="f">Chat font size: <span id="fsv">${S.fs}</span>px</label><input type="range" min="12" max="20" value="${S.fs}" style="width:100%;accent-color:var(--accent)" oninput="S.fs=+this.value;$('#fsv').textContent=this.value;saveS()">
-      ${chk('compact', 'Compact message spacing')}`],
-    access: ['Accessibility', `${chk('anim', 'Animations')}${chk('h24', '24-hour clock')}`],
+        look: ['App Icon & Text', `<label class="f">Accent colour (overrides the theme's accent)</label><div style="display:flex;align-items:center">${ACCENTS.map(c => `<span class="sw" style="background:${c};${S.accent === c ? 'border-color:#fff' : ''}" onclick="S.accent='${c}';saveS();settings('look')"></span>`).join('')}<input type="color" value="${safeColor(S.accent || currentTheme().accent)}" oninput="S.accent=this.value;saveS()"><button class="b g" style="margin-left:8px" onclick="S.accent=null;saveS();settings('look')">Reset</button></div>
+          <label class="f">App icon</label><div>${Object.keys(ICONS).map(k => `<button class="b ${S.icon === k ? '' : 'g'}" onclick="S.icon='${k}';saveS();settings('look')">${k}</button>`).join(' ')}</div>
+          <label class="f">Chat font size: <span id="fsv">${S.fs}</span>px</label><input type="range" min="12" max="20" value="${S.fs}" style="width:100%;accent-color:var(--accent)" oninput="S.fs=+this.value;$('#fsv').textContent=this.value;saveS()">
+          ${chk('compact', 'Compact message spacing')}`],
+        access: ['Accessibility', `${chk('anim', 'Animations')}${chk('h24', '24-hour clock')}`],
         notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages')}<div class="row"><button class="b g" onclick="beep()">Test sound</button></div>`],
-        emojis: ['Emojis & Stickers', `<p>Emojis you add here work in every server and DM. Type <b>:name:</b> in a message. GIF and WebP files animate. Max 2 MB each.</p><h3>Add a custom emoji</h3>${libForm('emojis', 'image/*')}<h3>Your emojis (${LIB.emojis.length})</h3>${libList('emojis', LIB.emojis)}<h3>Add a sticker</h3>${libForm('stickers', 'image/*')}<h3>Your stickers (${LIB.stickers.length})</h3>${libList('stickers', LIB.stickers)}`],
-        voice: ['Voice & Video', `<label class="f" style="margin-top:0">Camera and screen share quality</label><select class="t" onchange="S.vq=this.value;saveS();boostVideo()">${[['720p30', '720p, 30 fps (default)'], ['1080p60', '1080p, 60 fps (HD)'], ['4k60', '4K, 60 fps (needs a 4K camera and a fast connection)']].map(([v, l]) => `<option value="${v}" ${(S.vq || '720p30') === v ? 'selected' : ''}>${l}</option>`).join('')}</select><p>Applies the next time you turn your camera or screen share on. Your device and internet decide what you actually get.</p><h3>Soundboard sounds</h3><p>Use them from the 🔊 button in a voice call. Max 1 MB each.</p>${libForm('sounds', 'audio/*')}${libList('sounds', LIB.sounds)}`],
+        emojis: ['Emojis & Stickers', `<p>Custom emojis work across every server and DM. Type <b>:name:</b> in chat for autocomplete, or click any custom emoji in chat to save or copy it. Animated GIF &amp; WebP files supported (max 2 MB).</p>
+          <h3>Add a custom emoji</h3>${libForm('emojis', 'image/*')}
+          <h3>Your emojis (${LIB.emojis.length})</h3><div class="libgrid">${libList('emojis', LIB.emojis)}</div>
+          <h3 style="margin-top:28px">Add a sticker</h3>${libForm('stickers', 'image/*')}
+          <h3>Your stickers (${LIB.stickers.length})</h3><div class="libgrid">${libList('stickers', LIB.stickers)}</div>`],
+        voice: ['Voice & Video', `<div class="card2">
+            <h3 style="margin-top:0">Voice Settings</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div><label class="f" style="margin-top:0">Input Device</label><select class="t" id="v-in" onchange="switchAudioIn(this.value)"><option>Loading devices…</option></select></div>
+              <div><label class="f" style="margin-top:0">Output Device</label><select class="t" id="v-out" onchange="switchAudioOut(this.value)"><option>Loading devices…</option></select></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px">
+              <div><label class="f">Input Volume</label><div class="vol-row"><input type="range" min="0" max="200" value="${S.inVol ?? 100}" oninput="this.nextElementSibling.textContent=this.value+'%';setInVol(this.value)"><span>${S.inVol ?? 100}%</span></div></div>
+              <div><label class="f">Output Volume</label><div class="vol-row"><input type="range" min="0" max="100" value="${S.outVol ?? 100}" oninput="this.nextElementSibling.textContent=this.value+'%';setOutVol(this.value)"><span>${S.outVol ?? 100}%</span></div></div>
+            </div>
+            <div style="margin-top:14px;display:flex;align-items:center;gap:12px">
+              <button class="b" id="mictest-btn" onclick="toggleMicTest()">Let's Check</button>
+              <div class="mic-meter" style="flex:1;margin:0"><div id="test-lvl"></div></div>
+            </div>
+            <div style="margin-top:10px">
+              <label class="opt"><span>Noise Suppression</span><input type="checkbox" ${S.noise !== false ? 'checked' : ''} onchange="toggleAudioOpt('noise',this.checked)"></label>
+              <label class="opt"><span>Echo Cancellation</span><input type="checkbox" ${S.echo !== false ? 'checked' : ''} onchange="toggleAudioOpt('echo',this.checked)"></label>
+              <label class="opt" style="border:0"><span>Automatic Gain Control</span><input type="checkbox" ${S.agc !== false ? 'checked' : ''} onchange="toggleAudioOpt('agc',this.checked)"></label>
+            </div>
+          </div>
+          <div class="card2">
+            <h3 style="margin-top:0">Video Settings</h3>
+            <label class="f" style="margin-top:0">Camera</label><select class="t" id="v-cam" onchange="switchVideoIn(this.value)"><option>Loading devices…</option></select>
+            <label class="f">Camera and screen share quality</label>
+            <select class="t" onchange="S.vq=this.value;saveS();boostVideo()">${[['720p30', '720p, 30 fps (default)'], ['1080p60', '1080p, 60 fps (HD)'], ['4k60', '4K, 60 fps (needs a 4K camera and a fast connection)']].map(([v, l]) => `<option value="${v}" ${(S.vq || '720p30') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+          </div>
+          <h3>Soundboard sounds</h3><p>Use them from the 🔊 button in a voice call. Max 1 MB each.</p>${libForm('sounds', 'audio/*')}${libList('sounds', LIB.sounds)}`],
         perks: ['Perks', `<p>Every Nitro-style perk that can run on a website is unlocked for everyone, free.</p>
           ${perk('4,000-character messages', 'Unlocked')}${perk('File uploads up to 1 GB', 'Unlocked (limited by your Supabase plan)')}${perk('Animated avatars', 'Unlocked')}${perk('Profile banners', 'Unlocked')}${perk('Custom profile themes', 'Unlocked')}${perk('Server-specific profiles', 'Unlocked')}${perk('Custom app icons', 'Unlocked')}${perk('Custom app colour themes', 'Unlocked')}${perk('Join any number of servers', 'Unlocked')}${perk('Profile badge', 'Unlocked')}
           ${perk('Custom emojis and animated emojis anywhere', 'Unlocked')}${perk('Custom stickers anywhere', 'Unlocked')}${perk('Reactions and Super Reactions', 'Unlocked')}${perk('Global soundboard', 'Unlocked')}${perk('HD streaming up to 4K 60 fps', 'Unlocked (depends on your device and connection)')}<h3>Not available</h3>${perk('Custom video backgrounds', 'Not built yet')}${perk('Server boosts', 'Not applicable, there are no payments')}`]
@@ -2778,8 +3967,11 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const mob = `<div class="tabs mob">${NAV.filter(n => n.length > 1).map(n => `<button class="tab ${n[0] === tab ? 'on' : ''}" onclick="settings('${n[0]}')">${n[1]}</button>`).join('')}</div>`;
       let el = $('#set');
       if (!el) { el = document.createElement('div'); el.id = 'set'; document.body.append(el); }
-      el.innerHTML = `<div id="setnav"><div>${nav}<div class="sg"></div><button class="sn" style="color:#ff6b78" onclick="logout()">Log out</button></div></div><div id="setmain"><div>${mob}<h2>${title}</h2>${body}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button>`;
-      if (tab === 'profile') pv();
+      delete el.dataset.kind;
+      const isWide = tab === 'profile' || tab === 'server';
+      el.innerHTML = `<div id="setnav"><div>${nav}<div class="sg"></div><button class="sn" style="color:#ff6b78" onclick="logout()">Log out</button></div></div><div id="setmain"><div class="${isWide ? 'wide' : ''}">${mob}<h2>${title}</h2>${body}</div></div><button id="setx" title="Close (Esc)" onclick="closeSet()">✕</button>`;
+      if (tab === 'profile' || tab === 'server') pv();
+      if (tab === 'voice') populateVoiceDevices();
     }
 
     async function changePw() {
@@ -2791,7 +3983,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     function deleteModal() {
-      modal(`<h2>Delete account</h2><p>This cannot be undone. Type your username <b>${escapeHtml(me.username)}</b> to confirm.</p><input class="t" id="dc"><div class="err" id="serr"></div><div class="row"><button class="b g" onclick="settings('security')">Cancel</button><button class="b r" onclick="deleteAccount()">Delete my account</button></div>`);
+      modal(`<h2>Delete account</h2><p>This cannot be undone. Type your username <b>${escapeHtml(me.username)}</b> to confirm.</p><input class="t" id="dc"><div class="err" id="serr"></div><div class="row"><button class="b g" onclick="closeM()">Cancel</button><button class="b r" onclick="deleteAccount()">Delete my account</button></div>`);
     }
 
     async function deleteAccount() {
@@ -2803,13 +3995,19 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       toast('Your account was deleted');
     }
 
-
     async function saveProfile() {
-      const v = id => $('#' + id).value.trim() || null;
-      const u = { username: $('#su').value.trim() || me.username, avatar_url: v('sa'), banner_url: v('sbn'), banner_color: $('#sbc').value, bio: $('#sbio').value };
-      S.status = $('#sst').value; saveS();
+      const v = id => ($('#' + id)?.value || '').trim() || null;
+      const u = { username: ($('#su')?.value || '').trim() || me.username, avatar_url: v('sa'), banner_url: v('sbn'), banner_color: $('#sbc')?.value || '#e11d2e', bio: $('#sbio')?.value || '' };
+      S.status = $('#sst')?.value || 'online';
+      setFlair(me.id, {
+        pronouns: ($('#spn')?.value || '').trim(),
+        nameStyle: $('#snst')?.value || 'default',
+        color2: $('#sbc_2')?.value || '',
+        deco: $('#sdeco')?.value || 'none',
+        effect: $('#sfx')?.value || 'none'
+      });
       if (pr) pr.track({ status: S.status });
-  if (gp) gp.track({ status: S.status });
+      if (gp) gp.track({ status: S.status });
       const { error } = await supabaseClient.from('profiles').update(u).eq('id', me.id);
       if (error) return $('#serr').textContent = error.message + ' (Run update2.sql in Supabase first.)';
       Object.assign(me, u);
@@ -2820,8 +4018,16 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     async function saveServerProfile() {
-      const v = id => $('#' + id).value.trim() || null;
-      const u = { nick: v('sn'), avatar_url: v('sav'), banner_url: v('sbn2'), bio: v('sbi') };
+      if (!cur) return;
+      const v = id => ($('#' + id)?.value || '').trim() || null;
+      const u = { nick: v('sn'), avatar_url: v('sav'), banner_url: v('sbn2'), bio: $('#sbi')?.value.trim() || null };
+      setFlair(me.id, {
+        ...getFlair(me.id),
+        pronouns: ($('#spn')?.value || '').trim(),
+        nameStyle: $('#snst')?.value || 'default',
+        deco: $('#sdeco')?.value || 'none',
+        effect: $('#sfx')?.value || 'none'
+      }, cur.id);
       const { error } = await supabaseClient.from('members').update(u).eq('server_id', cur.id).eq('user_id', me.id);
       if (error) return $('#serr').textContent = error.message + ' (Run update2.sql in Supabase first.)';
       await loadMembers();
