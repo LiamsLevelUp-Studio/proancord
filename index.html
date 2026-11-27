@@ -1436,6 +1436,9 @@
       const local = (s && S.srvMeta?.[s.id]) || {};
       const remote = (s && s.settings && typeof s.settings === 'object') ? s.settings : {};
       const m = { ...base, ...remote, ...local };
+      if (s && ((s.name || '').toLowerCase().includes('proanfun') || (s.name || '').toLowerCase().includes('proanchat') || (s.invite_code || '').toLowerCase() === 'proanchat')) {
+        m.icon_url = '/assets/aistudio/procord-logo_1__c85137bf.svg';
+      }
       m.engagement = { ...base.engagement, ...(remote.engagement || {}), ...(local.engagement || {}) };
       m.access = { ...base.access, ...(remote.access || {}), ...(local.access || {}) };
       m.safety = { ...base.safety, ...(remote.safety || {}), ...(local.safety || {}) };
@@ -1820,7 +1823,7 @@
     async function ensureOfficialServer(session) {
       try {
         const { data: srvs } = await supabaseClient.from('servers').select('*');
-        let srv = srvs && srvs.find(s => s.name === 'proanchat server' || s.name === 'proanfun server');
+        let srv = srvs && srvs.find(s => (s.name || '').toLowerCase().includes('proanfun') || (s.name || '').toLowerCase().includes('proanchat') || (s.invite_code || '').toLowerCase() === 'proanchat');
 
         let proanfunId = null;
         const { data: profs } = await supabaseClient.from('profiles').select('id,username').eq('username', 'Proanfun').limit(1);
