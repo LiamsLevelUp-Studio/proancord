@@ -1,6 +1,6 @@
 {
   "name": "proanchat-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Proanchat Desktop App for Windows with automatic updates",
   "main": "main.js",
   "scripts": {

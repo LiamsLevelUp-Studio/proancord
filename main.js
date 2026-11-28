@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray, desktopCapturer, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, Tray, desktopCapturer, session, shell, dialog } = require('electron');
 const path = require('path');
 
 let autoUpdater = null;
@@ -92,6 +92,22 @@ function createWindow() {
 
   mainWindow.loadURL(APP_URL);
 
+  mainWindow.webContents.on('dom-ready', () => {
+    mainWindow.webContents.executeJavaScript(`
+      window.proanchatDesktop = { version: '${app.getVersion()}', platform: '${process.platform}' };
+    `).catch(() => {});
+  });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (url.includes('action=restart_update')) {
+      event.preventDefault();
+      if (autoUpdater) {
+        isQuitting = true;
+        autoUpdater.quitAndInstall(false, true);
+      }
+    }
+  });
+
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith(APP_URL)) return { action: 'allow' };
     if (/^https?:\/\//i.test(url)) shell.openExternal(url);
@@ -118,16 +134,60 @@ function createWindow() {
   });
 }
 
+function notifyRendererUpdater(data) {
+  if (!mainWindow || !mainWindow.webContents) return;
+  mainWindow.webContents.executeJavaScript(`
+    if (typeof window.__handleDesktopUpdater === 'function') {
+      window.__handleDesktopUpdater(${JSON.stringify(data)});
+    }
+  `).catch(() => {});
+}
+
 function initAutoUpdater() {
   if (!app.isPackaged || !autoUpdater) return;
   try {
     autoUpdater.autoDownload = true;
-    autoUpdater.autoInstallOnAppQuit = true;
-    autoUpdater.on('error', () => {});
+    autoUpdater.autoInstallOnAppQuit = false;
+
+    autoUpdater.on('checking-for-update', () => {
+      notifyRendererUpdater({ status: 'checking' });
+    });
+
+    autoUpdater.on('update-available', (info) => {
+      notifyRendererUpdater({ status: 'available', version: info.version });
+    });
+
+    autoUpdater.on('download-progress', (progressObj) => {
+      notifyRendererUpdater({ status: 'downloading', percent: Math.round(progressObj.percent) });
+    });
+
+    autoUpdater.on('update-downloaded', (info) => {
+      notifyRendererUpdater({ status: 'ready', version: info.version });
+      if (mainWindow) {
+        dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'Update Ready — Proanchat',
+          message: `Proanchat v${info.version} has finished downloading!`,
+          detail: 'Would you like to restart Proanchat now to apply the update automatically?',
+          buttons: ['Restart and Update Now', 'Later'],
+          defaultId: 0
+        }).then(({ response }) => {
+          if (response === 0) {
+            isQuitting = true;
+            autoUpdater.quitAndInstall(false, true);
+          }
+        }).catch(() => {});
+      }
+    });
+
+    autoUpdater.on('error', (err) => {
+      notifyRendererUpdater({ status: 'error', error: err?.message || 'Update check failed' });
+    });
+
     autoUpdater.checkForUpdatesAndNotify().catch(() => {});
     setInterval(() => {
       autoUpdater.checkForUpdatesAndNotify().catch(() => {});
-    }, 4 * 60 * 60 * 1000);
+    }, 2 * 60 * 60 * 1000);
   } catch (_) {}
 }
 
