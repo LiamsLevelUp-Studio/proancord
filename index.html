@@ -1975,7 +1975,7 @@
     // ====== 1. PASTE YOUR SUPABASE KEYS (Project Settings > API) ======
     const SB_URL = "https://tfxnizwovbqamlzqeigm.supabase.co", SB_KEY = "sb_publishable_bUpHpK1CFRKxOXWYnPcirg_kqq0YZCr";
     // Direct URL to your built Windows installer (.exe). Update to a GitHub Release URL if hosted externally:
-    const DESKTOP_EXE_URL = "https://github.com/LiamsLevelUp-Studio/proanchat/releases/download/v1.0.1/Proanchat-Setup.exe";
+    const DESKTOP_EXE_URL = "https://github.com/LiamsLevelUp-Studio/proanchat/releases/download/v1.0.0/Proanchat-Setup.exe";
     const DESKTOP_EXE_NAME = "Proanchat-Setup.exe";
     // ==================================================================
 
@@ -6098,6 +6098,44 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!inp || !box) return;
       const pos = inp.selectionStart ?? inp.value.length;
       const before = inp.value.slice(0, pos);
+
+      // Check for @mention autocomplete (@username or @role)
+      const mat = /(?:^|\s)(@([a-zA-Z0-9_\s]{0,30}))$/.exec(before);
+      if (mat) {
+        const q = mat[2].trim().toLowerCase();
+        eaRange = [pos - mat[1].trim().length - 1, pos];
+        const hits = [];
+        // Add roles (@Administrator, @Moderator, etc.)
+        if (roles && roles.length) {
+          roles.forEach(r => {
+            if (!q || r.name.toLowerCase().includes(q)) {
+              hits.push({ label: '@' + r.name, val: '@' + r.name, kind: 'Role', color: r.color || '#99aab5' });
+            }
+          });
+        }
+        // Add users
+        if (members && members.length) {
+          members.forEach(u => {
+            if (!q || u.username.toLowerCase().includes(q)) {
+              hits.push({ label: '@' + u.username, val: '@' + u.username, kind: 'User', avatar: u.avatar_url, username: u.username });
+            }
+          });
+        }
+        // Add special mentions
+        ['everyone', 'here', 'game', 'time'].forEach(sp => {
+          if (!q || sp.includes(q)) {
+            hits.push({ label: '@' + sp, val: '@' + sp, kind: 'Mention' });
+          }
+        });
+
+        eaList = hits.slice(0, 8);
+        if (!eaList.length) { box.classList.remove('on'); return; }
+        eaIdx = 0;
+        box.classList.add('on');
+        box.innerHTML = eaList.map((it, idx) => `<button class="ea-item ${idx === eaIdx ? 'on' : ''}" onmousedown="event.preventDefault();pickAuto(${idx})">${it.avatar ? `<img src="${escapeHtml(it.avatar)}" alt="" style="border-radius:50%">` : it.color ? `<span style="width:12px;height:12px;border-radius:50%;background:${escapeHtml(it.color)};display:inline-block"></span>` : '<span style="font-size:16px">@</span>'}<b>${escapeHtml(it.label)}</b><small>${it.kind}</small></button>`).join('');
+        return;
+      }
+
       const m = /(?:^|\s)(:[a-zA-Z0-9_]{1,32})$/.exec(before);
       if (!m) { box.classList.remove('on'); eaList = []; return; }
       const q = m[1].slice(1).toLowerCase();
