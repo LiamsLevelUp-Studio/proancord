@@ -93,6 +93,14 @@ function createWindow() {
     return { action: 'deny' };
   });
 
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.type === 'keyDown' && input.key === 'F11') {
+      const isFs = mainWindow.isFullScreen();
+      mainWindow.setFullScreen(!isFs);
+      event.preventDefault();
+    }
+  });
+
   mainWindow.on('close', (event) => {
     if (!isQuitting && tray) {
       event.preventDefault();
