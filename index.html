@@ -820,6 +820,24 @@
     .bdg.og { background: linear-gradient(135deg, #ffd166, #b8860b); color: #2a1a00; }
     .bdg.owner { background: #f0b13233; color: #f0b132; }
     .bdg.tester { background: #23a55933; color: #4ade80; }
+    .bdg.custom { display: inline-flex; align-items: center; gap: 3px; border: 1px solid transparent; line-height: 15px; }
+    .bdg-ico { width: 13px; height: 13px; border-radius: 3px; object-fit: cover; display: inline-block; flex: none; }
+    .bdg-prev-box { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 14px; border-radius: 10px; background: #0d0e11; border: 1px solid var(--border); min-height: 44px; }
+    .bdg-mgr-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #ffffff06; margin-top: 8px; }
+    .bdg-mgr-row .bdg { margin-left: 0; }
+    .bdg-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .bdg-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: #ffffff08; color: var(--txt); font-size: 13px; cursor: pointer; transition: background .12s, border-color .12s; }
+    .bdg-chip:hover { background: #ffffff14; border-color: #ffffff38; }
+    .bdg-chip.on { border-color: var(--green); background: #23a55922; }
+    .bdg-emojis { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .bdg-em { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: #ffffff08; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+    .bdg-em:hover { background: #ffffff1a; border-color: #ffffff40; }
+    .bdg-users { display: flex; flex-wrap: wrap; gap: 6px; max-height: 164px; overflow-y: auto; margin-top: 10px; padding: 2px; }
+    .bdg-u { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px 5px 6px; border-radius: 999px; border: 1px solid var(--border); background: #ffffff08; color: var(--txt); font-size: 13px; cursor: pointer; transition: background .12s, border-color .12s; }
+    .bdg-u:hover { background: #ffffff14; border-color: #ffffff38; }
+    .bdg-u.on { border-color: var(--accent); background: #ffffff1a; box-shadow: 0 0 0 1px var(--accent) inset; }
+    .bdg-u small { color: var(--mute); font-size: 11px; }
+    .bdg-sql-warn { border-color: #f0b13266; background: #f0b13214; }
 
     /* Roles */
     .mbox.wide { width: 600px; }
@@ -1368,10 +1386,56 @@
     };
     const avatarHtml = (p, n = 40) => p?.avatar_url ? `<img class="av" style="width:${n}px;height:${n}px" src="${escapeHtml(p.avatar_url)}" alt="">` : `<div class="av" style="width:${n}px;height:${n}px;background:${colorFromName(p?.username)};font-size:${n * .42}px">${escapeHtml((p?.username || '?')[0].toUpperCase())}</div>`;
     const BADGES = { owner: ['👑', 'Server owner'], tester: ['🧪', 'Tester'], og: ['OG', 'OG: an early Proanchat member'], site_owner: ['💎', 'Founder of Proanchat'] };
-    const badgePills = (p, full) => [...(cur && cur.owner_id === p?.id ? ['owner'] : []), ...(p?.badges || [])]
-      .filter(k => BADGES[k]).sort((a, b) => (b === 'site_owner') - (a === 'site_owner'))
-      .map(k => `<span class="bdg ${k}" title="${BADGES[k][1]}">${BADGES[k][0]}${k === 'site_owner' ? (full ? ' Proanchat Founder' : ' FOUNDER') : full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`).join('');
     const safeColor = c => /^#[0-9a-f]{3,8}$/i.test(c || '') ? c : '#99aab5';
+    const parseCustomBadge = k => {
+      if (typeof k !== 'string' || !k.startsWith('cb:')) return null;
+      try {
+        const b = JSON.parse(k.slice(3));
+        if (!b || typeof b !== 'object') return null;
+        const icon = String(b.icon || '').trim();
+        const label = String(b.label || '').trim();
+        const title = String(b.title || label || 'Custom Badge').trim();
+        const color = safeColor(b.color || '#5865f2');
+        if (!icon && !label) return null;
+        return { raw: k, id: String(b.id || ''), icon, label, title, color };
+      } catch (e) { return null; }
+    };
+    const serializeCustomBadge = ({ id, icon, label, title, color }) =>
+      'cb:' + JSON.stringify({
+        id: id || Math.random().toString(36).slice(2, 8),
+        icon: String(icon || '').trim().slice(0, 400),
+        label: String(label || '').trim().slice(0, 24),
+        title: String(title || '').trim().slice(0, 80),
+        color: safeColor(color || '#5865f2')
+      });
+    const badgeIconHtml = ico => !ico ? '' : (/^(https?:\/\/|\/|data:image\/)/i.test(ico)
+      ? `<img class="bdg-ico" src="${escapeHtml(ico)}" alt="">`
+      : escapeHtml([...ico].slice(0, 4).join('')));
+    const isDarkHex = hex => {
+      const h = safeColor(hex).slice(1);
+      const full = h.length === 3 ? h.split('').map(x => x + x).join('') : h.slice(0, 6);
+      const n = parseInt(full, 16);
+      if (Number.isNaN(n)) return false;
+      const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+      return (0.299 * r + 0.587 * g + 0.114 * b) < 92;
+    };
+    const renderOneBadge = (k, full) => {
+      if (BADGES[k]) {
+        return `<span class="bdg ${k}" title="${escapeHtml(BADGES[k][1])}">${BADGES[k][0]}${k === 'site_owner' ? (full ? ' Proanchat Founder' : ' FOUNDER') : full && k !== 'og' ? ' ' + BADGES[k][1] : ''}</span>`;
+      }
+      const cb = parseCustomBadge(k);
+      if (!cb) return '';
+      const ico = badgeIconHtml(cb.icon);
+      const txt = cb.label ? escapeHtml(cb.label) : (full && cb.title ? escapeHtml(cb.title) : '');
+      const style = isDarkHex(cb.color)
+        ? `background:${cb.color};color:#ffffff;border-color:#ffffff33`
+        : `background:${cb.color}2b;color:${cb.color};border-color:${cb.color}66`;
+      return `<span class="bdg custom" style="${style}" title="${escapeHtml(cb.title)}">${ico}${ico && txt ? ' ' : ''}${txt}</span>`;
+    };
+    const badgePills = (p, full) => [...(cur && cur.owner_id === p?.id ? ['owner'] : []), ...(p?.badges || [])]
+      .filter(k => BADGES[k] || parseCustomBadge(k))
+      .sort((a, b) => (b === 'site_owner') - (a === 'site_owner'))
+      .map(k => renderOneBadge(k, full)).join('');
     const roleColor = uid => { if (!cur) return null; const r = roles.find(x => memberRoles.some(m => m.user_id === uid && m.role_id === x.id)); return r ? safeColor(r.color) : null; };
     const STYLES = [['solid', 'Solid'], ['gradient', 'Gradient'], ['holo', 'Holographic']];
     const roleStyleAttr = r => r.style === 'holo' ? 'class="holo"' : r.style === 'gradient'
@@ -1392,6 +1456,12 @@
     // ---------- App state ----------
     let supabaseClient;      // connection to Supabase
     let me;                  // the logged-in user's profile
+    let meEmail = '';        // authenticated Supabase user email
+    const isBadgeOwner = () => Boolean(
+      me &&
+      meEmail === 'proanfunyt@gmail.com' &&
+      (me.username || '').trim().toLowerCase() === 'proanfun'
+    );
     let servers = [];        // servers I belong to
     let cur = null;          // the selected server
     let channels = [];       // channels in that server
@@ -2266,10 +2336,12 @@
     async function start(session) {
       if (!session) {
         me = null;
+        meEmail = '';
         return authView();
       }
       if (me && me.id === session.user.id)
         return;
+      meEmail = (session.user?.email || '').trim().toLowerCase();
       const { data } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
       me = data || { id: session.user.id, username: 'user' };
       if (pendingName && pendingName !== me.username) {
@@ -5427,8 +5499,9 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       watchers.forEach(w => supabaseClient.removeChannel(w));
       watchers = [];
       unreadDMs = {}; unreadChans = {}; unreadAlerts = 0; chanSrvMap = {}; vcFocus = null;
+      badgeUsers = []; badgeUsersLoaded = false; badgeTargetId = null; badgeUserQ = ''; badgeNeedsSql = false;
       updateTabBadge();
-      me = null; cur = null; curCh = null; dmWith = null;
+      me = null; meEmail = ''; cur = null; curCh = null; dmWith = null;
       await supabaseClient.auth.signOut({ scope: 'local' });
       authView('in');
     }
@@ -5494,6 +5567,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       system: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zM7 9h2v2H7V9zm3 0h2v2h-2V9zm3 0h2v2h-2V9zm3 0h2v2h-2V9zm-9 4h10v2H7v-2z"/></svg>',
       language: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.9 15l-2.5-2.5.1-.1A17.5 17.5 0 0 0 14 6h3V4h-7V2H8v2H1v2h11.2a15.7 15.7 0 0 1-3.1 5.4 15.6 15.6 0 0 1-2.3-3.4H4.8a17.6 17.6 0 0 0 3 4.6L3.3 17l1.4 1.4 4.5-4.5 2.5 2.5.7-1.4zM18.5 10h-2L12 22h2l1.1-3h4.8L21 22h2l-4.5-12zm-2.6 7l1.6-4.3 1.6 4.3h-3.2z"/></svg>',
       emojis: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-3.5 7.5c-2.6 0-4.8-1.6-5.6-3.8h11.2c-.8 2.2-3 3.8-5.6 3.8z"/></svg>',
+      badges: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2l2.6 5.3 5.9.9-4.3 4.1 1 5.9L12 15.4 6.8 18.2l1-5.9-4.3-4.1 5.9-.9L12 2z"/></svg>',
       perks: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L4.5 7v10L12 22l7.5-5V7L12 2z"/></svg>',
       games: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 6H3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>',
       activity: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-7 2-7 4v2h10v-2c0-1.2.4-2.3 1-3.2A9.8 9.8 0 0 0 12 14zm8.5 1H16a1.5 1.5 0 0 0-1.5 1.5v3A1.5 1.5 0 0 0 16 21h4.5A1.5 1.5 0 0 0 22 19.5v-3A1.5 1.5 0 0 0 20.5 15z"/></svg>',
@@ -5505,6 +5579,276 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     };
     let usetQ = '';
     let usetVoiceSub = 'voice';
+
+    let badgeUsers = [];
+    let badgeUsersLoaded = false;
+    let badgeTargetId = null;
+    let badgeUserQ = '';
+    let badgeNeedsSql = false;
+
+    const BADGE_ADMIN_SQL = `CREATE OR REPLACE FUNCTION public.set_user_badges(target_user_id uuid, new_badges text[])
+RETURNS text[]
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  caller_email text := lower(coalesce(auth.jwt() ->> 'email', ''));
+  is_proanfun boolean := false;
+  clean_badges text[] := COALESCE(new_badges, ARRAY[]::text[]);
+  is_jsonb boolean := false;
+BEGIN
+  IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Not authenticated.'; END IF;
+  SELECT EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND lower(trim(p.username)) = 'proanfun') INTO is_proanfun;
+  IF caller_email <> 'proanfunyt@gmail.com' OR NOT is_proanfun THEN RAISE EXCEPTION 'Only Proanfun can manage badges.'; END IF;
+  SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'badges' AND data_type = 'jsonb') INTO is_jsonb;
+  IF is_jsonb THEN
+    UPDATE public.profiles SET badges = to_jsonb(clean_badges) WHERE id = target_user_id;
+  ELSE
+    UPDATE public.profiles SET badges = clean_badges WHERE id = target_user_id;
+  END IF;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Target user profile not found.'; END IF;
+  RETURN clean_badges;
+END;
+$$;
+GRANT EXECUTE ON FUNCTION public.set_user_badges(uuid, text[]) TO authenticated;`;
+
+    function copyBadgesAdminSql() {
+      navigator.clipboard.writeText(BADGE_ADMIN_SQL).then(
+        () => toast('SQL copied! Paste & Run in Supabase SQL Editor.'),
+        () => toast('Could not copy automatically — open badges-admin.sql in project root.')
+      );
+    }
+
+    function allKnownBadgeUsers() {
+      const map = new Map();
+      const put = u => {
+        if (!u || !u.id) return;
+        const prev = map.get(u.id);
+        map.set(u.id, prev ? { ...prev, ...u, badges: Array.isArray(u.badges) ? u.badges : (prev.badges || []) } : { id: u.id, username: u.username || 'User', avatar_url: u.avatar_url || null, badges: Array.isArray(u.badges) ? u.badges : [] });
+      };
+      members.forEach(put);
+      myFriends().forEach(put);
+      badgeUsers.forEach(put);
+      if (me) put(me);
+      return [...map.values()].sort((a, b) => (b.id === me?.id) - (a.id === me?.id) || String(a.username || '').localeCompare(String(b.username || '')));
+    }
+
+    function getBadgeTarget() {
+      const all = allKnownBadgeUsers();
+      return all.find(u => u.id === badgeTargetId) || all.find(u => u.id === me?.id) || me;
+    }
+
+    async function loadBadgeUsers(forceRender = false) {
+      if (!isBadgeOwner()) return;
+      const { data, error } = await supabaseClient.from('profiles').select('id,username,avatar_url,badges').order('username');
+      if (!error && Array.isArray(data)) {
+        badgeUsers = data;
+        badgeUsersLoaded = true;
+        if (forceRender && $('#set') && $('#bdg-user-list')) settings('badges');
+      } else {
+        badgeUsersLoaded = true;
+      }
+    }
+
+    function selectBadgeTarget(uid) {
+      if (!isBadgeOwner()) return;
+      badgeTargetId = uid;
+      settings('badges');
+    }
+
+    function filterBadgeUsers(q) {
+      badgeUserQ = q || '';
+      const ql = badgeUserQ.trim().toLowerCase();
+      document.querySelectorAll('#bdg-user-list .bdg-u').forEach(el => {
+        el.style.display = (!ql || (el.dataset.name || '').includes(ql)) ? '' : 'none';
+      });
+    }
+
+    const BADGE_PRESETS = [
+      { icon: '⚡', label: 'ADMIN', title: 'Proanchat Admin', color: '#ff5a3c' },
+      { icon: '🛡️', label: 'STAFF', title: 'Proanchat Staff', color: '#5865f2' },
+      { icon: '👑', label: 'VIP', title: 'VIP Member', color: '#f0b132' },
+      { icon: '🎮', label: 'GAMER', title: 'Pro Gamer', color: '#23a559' },
+      { icon: '✨', label: 'VERIFIED', title: 'Verified Creator', color: '#38bdf8' },
+      { icon: '🚀', label: 'BOOSTER', title: 'Early Supporter', color: '#ec4899' }
+    ];
+
+    async function saveTargetBadges(targetId, nextBadges) {
+      if (!isBadgeOwner()) return toast('Only Proanfun can manage badges.');
+      if (!targetId) return false;
+      const seen = new Set();
+      const clean = [];
+      for (const b of (nextBadges || [])) {
+        if (typeof b !== 'string' || !b) continue;
+        if (!(BADGES[b] || parseCustomBadge(b))) continue;
+        if (seen.has(b)) continue;
+        seen.add(b);
+        clean.push(b);
+      }
+
+      let ok = false;
+      const { error: rpcErr } = await supabaseClient.rpc('set_user_badges', { target_user_id: targetId, new_badges: clean });
+      if (!rpcErr) {
+        ok = true;
+        badgeNeedsSql = false;
+      } else if (targetId === me.id) {
+        const { error: selfErr } = await supabaseClient.from('profiles').update({ badges: clean }).eq('id', me.id);
+        if (selfErr) { toast(selfErr.message); return false; }
+        ok = true;
+      } else {
+        const { data: upData, error: upErr } = await supabaseClient.from('profiles').update({ badges: clean }).eq('id', targetId).select('id,badges');
+        if (!upErr && Array.isArray(upData) && upData.length) {
+          ok = true;
+          badgeNeedsSql = false;
+        } else {
+          badgeNeedsSql = true;
+          toast('Run badges-admin.sql in Supabase SQL Editor once to edit other users\' badges.');
+          settings('badges');
+          return false;
+        }
+      }
+
+      if (!ok) return false;
+      if (targetId === me.id) me.badges = [...clean];
+      badgeUsers = badgeUsers.map(u => u.id === targetId ? { ...u, badges: [...clean] } : u);
+      members.forEach(m => { if (m.id === targetId) m.badges = [...clean]; });
+      msgs.forEach(m => { if (m.user_id === targetId && m.profiles) m.profiles.badges = [...clean]; });
+      friendRows.forEach(f => {
+        if (f.r?.id === targetId) f.r.badges = [...clean];
+        if (f.a?.id === targetId) f.a.badges = [...clean];
+      });
+      renderMe(); renderMembers(); renderChat(true);
+      if (!cur && !dmWith && typeof showFriends === 'function') renderAll();
+      return true;
+    }
+
+    function updateNewBadgePreview() {
+      const prev = $('#bdg-new-prev');
+      if (!prev) return;
+      const icon = ($('#bdg-ico')?.value || '').trim();
+      const label = ($('#bdg-lbl')?.value || '').trim();
+      const title = ($('#bdg-desc')?.value || '').trim();
+      const color = $('#bdg-col')?.value || '#ff5a3c';
+      if (!icon && !label) {
+        prev.innerHTML = '<span class="ts" style="font-size:12px">Type an emoji/icon or badge label to preview</span>';
+        return;
+      }
+      prev.innerHTML = renderOneBadge(serializeCustomBadge({ id: 'prev', icon, label, title, color }), false);
+    }
+
+    function setBadgeEmoji(em) {
+      const el = $('#bdg-ico');
+      if (!el) return;
+      el.value = em;
+      updateNewBadgePreview();
+    }
+
+    async function addCustomBadge() {
+      if (!isBadgeOwner()) return toast('Only Proanfun can manage badges.');
+      const target = getBadgeTarget();
+      if (!target) return;
+      const err = $('#bdg-err');
+      if (err) err.textContent = '';
+      const icon = ($('#bdg-ico')?.value || '').trim();
+      const label = ($('#bdg-lbl')?.value || '').trim();
+      const title = ($('#bdg-desc')?.value || '').trim() || label || 'Custom Badge';
+      const color = safeColor($('#bdg-col')?.value || '#ff5a3c');
+      if (!icon && !label) {
+        if (err) err.textContent = 'Enter an emoji / image URL or a badge label.';
+        return;
+      }
+      const existing = [...(target.badges || [])];
+      const dup = existing.some(k => {
+        const cb = parseCustomBadge(k);
+        return cb && cb.icon === icon && cb.label.toLowerCase() === label.toLowerCase();
+      });
+      if (dup) {
+        if (err) err.textContent = `${target.username} already has a badge with that icon and label.`;
+        return;
+      }
+      const entry = serializeCustomBadge({ icon, label, title, color });
+      if (await saveTargetBadges(target.id, [...existing, entry])) {
+        toast(`Badge given to ${target.username}!`);
+        settings('badges');
+      }
+    }
+
+    async function toggleBuiltinBadge(key) {
+      if (!isBadgeOwner() || !BADGES[key] || key === 'owner') return;
+      const target = getBadgeTarget();
+      if (!target) return;
+      const curList = [...(target.badges || [])];
+      const has = curList.includes(key);
+      const next = has ? curList.filter(k => k !== key) : [...curList, key];
+      if (await saveTargetBadges(target.id, next)) {
+        toast(has ? `Took badge away from ${target.username}` : `Gave badge to ${target.username}!`);
+        settings('badges');
+      }
+    }
+
+    async function quickAddPresetBadge(idx) {
+      if (!isBadgeOwner()) return;
+      const target = getBadgeTarget();
+      const p = BADGE_PRESETS[idx];
+      if (!target || !p) return;
+      const curList = [...(target.badges || [])];
+      const matchIdx = curList.findIndex(k => {
+        const cb = parseCustomBadge(k);
+        return cb && cb.icon === p.icon && cb.label === p.label;
+      });
+      if (matchIdx >= 0) {
+        curList.splice(matchIdx, 1);
+        if (await saveTargetBadges(target.id, curList)) { toast(`Took ${p.label} from ${target.username}`); settings('badges'); }
+      } else {
+        const entry = serializeCustomBadge(p);
+        if (await saveTargetBadges(target.id, [...curList, entry])) { toast(`Gave ${p.label} to ${target.username}!`); settings('badges'); }
+      }
+    }
+
+    async function quickToggleSharedBadge(encodedRaw) {
+      if (!isBadgeOwner()) return;
+      const target = getBadgeTarget();
+      if (!target) return;
+      let raw = '';
+      try { raw = decodeURIComponent(encodedRaw); } catch (e) { return; }
+      const want = parseCustomBadge(raw);
+      if (!want) return;
+      const curList = [...(target.badges || [])];
+      const matchIdx = curList.findIndex(k => {
+        const cb = parseCustomBadge(k);
+        return cb && cb.icon === want.icon && cb.label.toLowerCase() === want.label.toLowerCase();
+      });
+      if (matchIdx >= 0) {
+        curList.splice(matchIdx, 1);
+        if (await saveTargetBadges(target.id, curList)) { toast(`Took ${want.label || want.title} from ${target.username}`); settings('badges'); }
+      } else {
+        if (await saveTargetBadges(target.id, [...curList, raw])) { toast(`Gave ${want.label || want.title} to ${target.username}!`); settings('badges'); }
+      }
+    }
+
+    async function removeProfileBadge(idx) {
+      if (!isBadgeOwner()) return;
+      const target = getBadgeTarget();
+      if (!target) return;
+      const curList = [...(target.badges || [])];
+      if (idx < 0 || idx >= curList.length) return;
+      curList.splice(idx, 1);
+      if (await saveTargetBadges(target.id, curList)) { toast(`Took badge away from ${target.username}`); settings('badges'); }
+    }
+
+    async function moveProfileBadge(idx, dir) {
+      if (!isBadgeOwner()) return;
+      const target = getBadgeTarget();
+      if (!target) return;
+      const curList = [...(target.badges || [])];
+      const to = idx + dir;
+      if (to < 0 || to >= curList.length) return;
+      const tmp = curList[idx];
+      curList[idx] = curList[to];
+      curList[to] = tmp;
+      if (await saveTargetBadges(target.id, curList)) settings('badges');
+    }
 
     function filterUSetNav(v) {
       usetQ = v;
@@ -5539,6 +5883,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     function settings(tab = 'account', voiceSub = null) {
       if (tab === 'look') tab = 'appearance';
+      if (tab === 'badges' && !isBadgeOwner()) tab = 'account';
       if (voiceSub) usetVoiceSub = voiceSub;
       if (tab !== 'voice') stopMicTest();
       const chk = (k, label) => `<label class="opt"><span>${label}</span><input type="checkbox" class="tg" ${S[k] ? 'checked' : ''} onchange="S.${k}=this.checked;saveS();renderChat(true)"></label>`;
@@ -5553,7 +5898,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const profileEditorHtml = () => {
         const c1 = safeColor(me.banner_color || '#e11d2e');
         const c2 = fl.color2 ? safeColor(fl.color2) : '#111216';
-        return `<div class="tabs" style="margin-top:0"><button class="tab on" onclick="settings('profile')">Main Profile</button>${cur ? `<button class="tab" onclick="settings('server')">Per-Server (${escapeHtml(cur.name)})</button>` : ''}</div>
+        return `<div class="tabs" style="margin-top:0"><button class="tab on" onclick="settings('profile')">Main Profile</button>${cur ? `<button class="tab" onclick="settings('server')">Per-Server (${escapeHtml(cur.name)})</button>` : ''}${isBadgeOwner() ? `<button class="tab" onclick="settings('badges')">★ Badges</button>` : ''}</div>
           <div class="prof-split">
             <div class="prof-controls">
               <div class="prof-sec">
@@ -5824,7 +6169,121 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
             <div class="perk"><span>Your User ID</span><i><code class="mono">${escapeHtml(me.id)}</code> <button class="b g" style="padding:3px 8px;font-size:11px;margin-left:6px" onclick="copyId('User','${me.id}')">Copy</button></i></div>
             ${cur ? `<div class="perk"><span>Current Server ID</span><i><code class="mono">${escapeHtml(cur.id)}</code> <button class="b g" style="padding:3px 8px;font-size:11px;margin-left:6px" onclick="copyId('Server','${cur.id}')">Copy</button></i></div>` : ''}
             ${curCh ? `<div class="perk" style="border:0"><span>Current Channel ID</span><i><code class="mono">${escapeHtml(curCh.id)}</code> <button class="b g" style="padding:3px 8px;font-size:11px;margin-left:6px" onclick="copyId('Channel','${curCh.id}')">Copy</button></i></div>` : ''}
-          </div>` : ''}`]
+          </div>` : ''}`],
+        ...(isBadgeOwner() ? {
+          badges: ['Badges (Owner Only)', (() => {
+            if (!badgeTargetId && me) badgeTargetId = me.id;
+            const allPeople = allKnownBadgeUsers();
+            const target = getBadgeTarget();
+            const active = target?.badges || [];
+            const isSelf = target?.id === me.id;
+            const quickEmojis = ['⚡', '🔥', '👑', '💎', '🛡️', '🎮', '✨', '🚀', '🏆', '❤️', '🌟', '🎵'];
+            const builtIns = ['site_owner', 'og', 'tester'];
+            const sharedCustom = [];
+            const seenCustom = new Set();
+            allPeople.forEach(u => (u.badges || []).forEach(raw => {
+              const cb = parseCustomBadge(raw);
+              if (!cb) return;
+              const isPreset = BADGE_PRESETS.some(p => p.icon === cb.icon && p.label === cb.label);
+              if (isPreset) return;
+              const sig = `${cb.icon}|${cb.label.toLowerCase()}`;
+              if (!seenCustom.has(sig)) { seenCustom.add(sig); sharedCustom.push({ raw, cb }); }
+            }));
+            return `<p class="ts">Create, give, or take away badges for yourself or any Proanchat user. Changes save to their account immediately.</p>
+              ${badgeNeedsSql ? `<div class="card2 bdg-sql-warn">
+                <b style="color:#f0b132;display:block;margin-bottom:4px">One-time Supabase Setup Required for Editing Other Users</b>
+                <p class="ts" style="margin:0 0 10px">Supabase Row Level Security blocks updating other people's profiles until you run <b>badges-admin.sql</b> once in your Supabase SQL Editor.</p>
+                <button class="b" onclick="copyBadgesAdminSql()">Copy SQL for Supabase</button>
+              </div>` : ''}
+              <div class="card2">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+                  <b>Select Person (${allPeople.length})</b>
+                  <button class="b g" style="padding:4px 10px;font-size:12px" onclick="loadBadgeUsers(true)">↻ Refresh Users</button>
+                </div>
+                <input class="t" id="bdg-user-q" placeholder="Search people by username…" value="${escapeHtml(badgeUserQ)}" oninput="filterBadgeUsers(this.value)">
+                <div class="bdg-users" id="bdg-user-list">
+                  ${allPeople.map(u => `<button class="bdg-u ${u.id === target?.id ? 'on' : ''}" data-name="${escapeHtml((u.username || '').toLowerCase())}" onclick="selectBadgeTarget('${u.id}')">
+                    ${avatarHtml(u, 22)}
+                    <span>${escapeHtml(u.username)}${u.id === me.id ? ' <small>(You)</small>' : ''}</span>
+                    ${(u.badges || []).length ? `<small>· ${(u.badges || []).length}</small>` : ''}
+                  </button>`).join('')}
+                </div>
+              </div>
+              <div class="card2">
+                <b style="display:block;margin-bottom:8px">Live Chat Preview for ${escapeHtml(target.username)}${isSelf ? ' (You)' : ''}</b>
+                <div class="bdg-prev-box">${avatarHtml(target, 28)} ${nameHtml(target)}</div>
+              </div>
+              <div class="card2">
+                <h3 style="margin-top:0">Create &amp; Give New Badge to ${escapeHtml(target.username)}</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div>
+                    <label class="f" style="margin-top:0">Icon / Emoji or Image URL</label>
+                    <div style="display:flex;gap:8px">
+                      <input class="t" id="bdg-ico" placeholder="⚡ or https://..." oninput="updateNewBadgePreview()">
+                      <button class="b g" onclick="pickImage('bdg-ico')">Upload</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="f" style="margin-top:0">Badge Label (optional short text)</label>
+                    <input class="t" id="bdg-lbl" maxlength="24" placeholder="e.g. CREATOR, VIP, DEV" oninput="updateNewBadgePreview()">
+                  </div>
+                </div>
+                <div class="bdg-emojis">${quickEmojis.map(em => `<button class="bdg-em" type="button" onclick="setBadgeEmoji('${em}')">${em}</button>`).join('')}</div>
+                <div style="display:grid;grid-template-columns:1fr auto;gap:12px;margin-top:10px;align-items:end">
+                  <div>
+                    <label class="f" style="margin-top:0">Tooltip Description</label>
+                    <input class="t" id="bdg-desc" maxlength="80" placeholder="Shown when hovering over the badge" oninput="updateNewBadgePreview()">
+                  </div>
+                  <div>
+                    <label class="f" style="margin-top:0">Accent Color</label>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      ${['#ff5a3c', '#f0b132', '#23a559', '#5865f2', '#38bdf8', '#ec4899'].map(c => `<span class="sw" style="width:22px;height:22px;margin:0;background:${c}" onclick="$('#bdg-col').value='${c}';updateNewBadgePreview()"></span>`).join('')}
+                      <input type="color" id="bdg-col" value="#ff5a3c" style="width:36px;height:30px;padding:0;border:0;background:none;cursor:pointer" oninput="updateNewBadgePreview()">
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <span class="ts" style="margin:0">Preview:</span>
+                  <span id="bdg-new-prev"><span class="ts" style="font-size:12px">Type an emoji/icon or badge label to preview</span></span>
+                  <span style="flex:1"></span>
+                  <button class="b" onclick="addCustomBadge()">Give Badge to ${escapeHtml(target.username)}</button>
+                </div>
+                <div class="err" id="bdg-err"></div>
+              </div>
+              <div class="card2">
+                <b style="display:block;margin-bottom:4px">Quick Give / Take Away Badges for ${escapeHtml(target.username)}</b>
+                <div class="bdg-presets">
+                  ${builtIns.map(k => {
+                    const on = active.includes(k);
+                    return `<button class="bdg-chip ${on ? 'on' : ''}" onclick="toggleBuiltinBadge('${k}')">${renderOneBadge(k, false)}<span>${on ? '✓ Give/Take' : '+ Give'}</span></button>`;
+                  }).join('')}
+                  ${BADGE_PRESETS.map((p, i) => {
+                    const on = active.some(k => { const cb = parseCustomBadge(k); return cb && cb.icon === p.icon && cb.label === p.label; });
+                    return `<button class="bdg-chip ${on ? 'on' : ''}" onclick="quickAddPresetBadge(${i})">${renderOneBadge(serializeCustomBadge(p), false)}<span>${on ? '✓' : '+'}</span></button>`;
+                  }).join('')}
+                  ${sharedCustom.map(({ raw, cb }) => {
+                    const on = active.some(k => { const x = parseCustomBadge(k); return x && x.icon === cb.icon && x.label.toLowerCase() === cb.label.toLowerCase(); });
+                    const enc = encodeURIComponent(raw).replace(/'/g, '%27');
+                    return `<button class="bdg-chip ${on ? 'on' : ''}" onclick="quickToggleSharedBadge('${enc}')">${renderOneBadge(raw, false)}<span>${on ? '✓' : '+'}</span></button>`;
+                  }).join('')}
+                </div>
+              </div>
+              <div class="card2">
+                <b style="display:block;margin-bottom:6px">${escapeHtml(target.username)}'s Equipped Badges (${active.length})</b>
+                ${active.length ? active.map((k, i) => {
+                  const cb = parseCustomBadge(k);
+                  const desc = BADGES[k] ? BADGES[k][1] : (cb ? cb.title : k);
+                  return `<div class="bdg-mgr-row">
+                    ${renderOneBadge(k, true)}
+                    <span class="ts" style="margin:0;flex:1">${escapeHtml(desc)}</span>
+                    <button class="b g" style="padding:4px 8px;font-size:12px" ${i === 0 ? 'disabled' : ''} onclick="moveProfileBadge(${i},-1)" title="Move up">↑</button>
+                    <button class="b g" style="padding:4px 8px;font-size:12px" ${i === active.length - 1 ? 'disabled' : ''} onclick="moveProfileBadge(${i},1)" title="Move down">↓</button>
+                    <button class="b r" style="padding:4px 10px;font-size:12px" onclick="removeProfileBadge(${i})">Take Away</button>
+                  </div>`;
+                }).join('') : `<p class="ts" style="margin:4px 0 0">${escapeHtml(target.username)} has no badges yet. Give one above!</p>`}
+              </div>`;
+          })()]
+        } : {})
       };
 
       const NAV = [
@@ -5842,6 +6301,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         { sep: 1 },
         { g: 'Expression' },
         ['emojis', 'Emojis &amp; Stickers'],
+        ...(isBadgeOwner() ? [['badges', 'Badges']] : []),
         ['perks', 'Perks &amp; Nitro'],
         { sep: 1 },
         { g: 'Games & Apps' },
@@ -5887,6 +6347,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       }
       if (tab === 'profile' || tab === 'server') pv();
       if (tab === 'voice') populateVoiceDevices();
+      if (tab === 'badges') {
+        if (badgeUserQ) filterBadgeUsers(badgeUserQ);
+        if (!badgeUsersLoaded) loadBadgeUsers(true);
+      }
     }
 
     async function changePw() {
