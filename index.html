@@ -2133,9 +2133,42 @@
     let S = { ...DEFAULTS };
     try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem('procord-settings') || '{}') }; } catch (e) {}
 
+    function copyText(text) {
+      if (!text && text !== 0) return false;
+      const str = String(text);
+      let copied = false;
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = str;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '0';
+        ta.style.left = '-9999px';
+        ta.style.width = '2em';
+        ta.style.height = '2em';
+        ta.style.padding = '0';
+        ta.style.border = 'none';
+        ta.style.outline = 'none';
+        ta.style.boxShadow = 'none';
+        ta.style.background = 'transparent';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, str.length);
+        copied = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch (_) {
+        copied = false;
+      }
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(str).then(() => { copied = true; }).catch(() => {});
+      }
+      return copied;
+    }
+
     function copyId(label, id) {
       if (!id) return toast('No ID available');
-      navigator.clipboard.writeText(String(id)).catch(() => {});
+      copyText(String(id));
       toast(`Copied ${label} ID: ${id}`);
     }
     const devIdItem = (label, id) => (S.devMode && id) ? [`<span class="ci"><span class="id-badge">ID</span></span>Copy ${label} ID`, `copyId('${label}','${String(id).replace(/'/g, '')}')`] : null;
@@ -4082,12 +4115,36 @@
     }
 
     function copyInvite(btn, text, msg = 'Invite link copied') {
-      navigator.clipboard.writeText(text).catch(() => {});
-      toast(msg);
+      const box = btn?.closest ? btn.closest('.inv-link-box') : null;
+      const input = box ? box.querySelector('input') : null;
+      let copied = false;
+
+      if (input) {
+        try {
+          input.focus();
+          input.select();
+          input.setSelectionRange(0, 9999);
+          copied = document.execCommand('copy');
+        } catch (_) {}
+      }
+
+      if (!copied) {
+        copied = copyText(text);
+      } else if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(String(text)).catch(() => {});
+      }
+
+      toast(copied ? msg : 'Link selected! Press Ctrl+C to copy');
       if (btn) {
         const old = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(() => { if (btn) btn.textContent = old; }, 1600);
+        btn.textContent = copied ? 'Copied!' : 'Selected';
+        btn.style.background = copied ? 'var(--green)' : '';
+        setTimeout(() => {
+          if (btn) {
+            btn.textContent = old;
+            btn.style.background = '';
+          }
+        }, 1600);
       }
     }
 
@@ -4168,7 +4225,7 @@
         <p style="margin-bottom:10px">Share your server link — anyone opening it can join.</p>
         ${fHtml}
         <label class="f" style="margin-top:4px">Server invite link</label>
-        <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy</button></div>
+        <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()" onclick="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy</button></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px;flex-wrap:wrap">
           <small style="color:var(--mute)">Code: <code class="mono" style="color:var(--text);cursor:pointer" title="Click to copy code" onclick="copyInvite(null,'${escapeHtml(cur.invite_code)}','Invite code copied')">${escapeHtml(cur.invite_code)}</code></small>
           <div style="display:flex;gap:6px">${canRegen ? `<button class="b g" style="padding:4px 10px;font-size:12px" onclick="closeM();serverSettings('invites')">Customize URL</button><button class="b g" style="padding:4px 10px;font-size:12px" onclick="regenerateInvite()">New link</button>` : ''}</div>
@@ -4604,7 +4661,7 @@
         <p class="srv-sub">Manage your shareable <code class="mono">proanchat.com/</code> link and invite code.</p>
         ${m.access.paused ? `<div class="card2" style="border:1px solid #f0b13266"><b>⏸️ Invites are currently paused</b><p class="ts" style="margin:4px 0 0">Turn off Pause Invites in the Access tab to allow new joins.</p></div>` : ''}
         <span class="f2">Active Invite Link</span>
-        <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy Link</button></div>
+        <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()" onclick="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy Link</button></div>
         ${canRegen ? `<span class="f2">Custom Invite URL</span>
         <div style="display:flex;gap:8px;align-items:center">
           <div class="nm2" style="flex:1"><span style="font-size:14px;margin-right:2px">proanchat.com/</span><input id="cslug" value="${escapeHtml(cur.invite_code)}" maxlength="32" placeholder="example" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_-]/g,'')"></div>
@@ -4857,7 +4914,7 @@
         <div class="srv-split" style="margin-top:16px">
           <div>
             <span class="f2">Public Invite URL</span>
-            <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy</button></div>
+            <div class="inv-link-box"><input readonly value="${escapeHtml(link)}" onfocus="this.select()" onclick="this.select()"><button class="b" style="padding:7px 14px;font-size:13px" onclick="copyInvite(this,'${escapeHtml(link)}')">Copy</button></div>
             <p class="ts" style="margin-top:10px">Edit your server's icon, banner, traits, and description in <b>Server Profile</b>.</p>
           </div>
           <div>${srvCardPreviewHtml(cur.name, m)}</div>

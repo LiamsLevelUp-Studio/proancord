@@ -6,8 +6,13 @@ try {
   ({ autoUpdater } = require('electron-updater'));
 } catch (_) {}
 
+const fs = require('fs');
+
 const APP_URL = 'https://proanchat.com/';
-const ICON_PATH = path.join(__dirname, 'build', 'icon.png');
+let ICON_PATH = path.join(__dirname, 'icon.png');
+if (!fs.existsSync(ICON_PATH) && fs.existsSync(path.join(__dirname, 'build', 'icon.png'))) {
+  ICON_PATH = path.join(__dirname, 'build', 'icon.png');
+}
 
 let mainWindow = null;
 let tray = null;
@@ -26,7 +31,7 @@ function showMainWindow() {
 
 function setupMediaPermissions() {
   session.defaultSession.setPermissionRequestHandler((_wc, permission, callback) => {
-    const allowed = ['media', 'mediaKeySystem', 'display-capture', 'notifications', 'fullscreen'];
+    const allowed = ['media', 'mediaKeySystem', 'display-capture', 'notifications', 'fullscreen', 'clipboard-read', 'clipboard-sanitized-write'];
     callback(allowed.includes(permission));
   });
 
@@ -115,12 +120,15 @@ function createWindow() {
 
 function initAutoUpdater() {
   if (!app.isPackaged || !autoUpdater) return;
-  autoUpdater.autoDownload = true;
-  autoUpdater.autoInstallOnAppQuit = true;
-  autoUpdater.checkForUpdatesAndNotify().catch(() => {});
-  setInterval(() => {
+  try {
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.on('error', () => {});
     autoUpdater.checkForUpdatesAndNotify().catch(() => {});
-  }, 4 * 60 * 60 * 1000);
+    setInterval(() => {
+      autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+    }, 4 * 60 * 60 * 1000);
+  } catch (_) {}
 }
 
 app.on('second-instance', showMainWindow);
