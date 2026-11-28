@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Proanchat</title>
   <meta name="description" content="A Discord-inspired community chat, voice, video, and server management app powered by Supabase.">
   <meta property="og:title" content="Proanchat">
@@ -54,15 +54,19 @@
     /* Base page styles */
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html, body {
       height: 100%;
+      height: 100dvh;
       margin: 0;
+      overscroll-behavior: none;
     }
 
     #root {
       height: 100%;
+      height: 100dvh;
     }
 
     ::-webkit-scrollbar {
@@ -108,7 +112,10 @@
     #app {
       display: grid;
       grid-template-columns: 72px 240px 1fr 240px;
+      grid-template-rows: minmax(0, 1fr);
       height: 100%;
+      min-height: 0;
+      overflow: hidden;
     }
 
     /* Server rail (far left) */
@@ -118,6 +125,8 @@
       width: 72px;
       min-width: 72px;
       max-width: 72px;
+      min-height: 0;
+      height: 100%;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -125,6 +134,8 @@
       gap: 10px;
       overflow-y: auto;
       overflow-x: hidden;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -206,6 +217,9 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
     }
 
     #sh {
@@ -217,11 +231,16 @@
       font-weight: 600;
       border-bottom: 1px solid #0003;
       box-shadow: 0 1px 0 #0002;
+      flex: none;
     }
 
     #chl {
-      flex: 1;
+      flex: 1 1 0;
+      min-height: 0;
       overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
       padding: 8px;
     }
 
@@ -273,6 +292,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex: none;
     }
 
     #me .nm {
@@ -318,6 +338,8 @@
       flex-direction: column;
       min-width: 0;
       min-height: 0;
+      height: 100%;
+      overflow: hidden;
     }
 
     #ch {
@@ -332,8 +354,11 @@
     }
 
     #msgs {
-      flex: 1;
+      flex: 1 1 0;
+      min-height: 0;
       overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
       padding: 16px 0;
     }
 
@@ -491,7 +516,12 @@
     /* Member list (far right) */
     #mem {
       background: var(--side);
+      min-height: 0;
+      height: 100%;
       overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
       padding: 8px;
     }
 
@@ -546,6 +576,7 @@
       justify-content: center;
       z-index: 10;
       padding: 16px;
+      overflow-y: auto;
     }
 
     #modal.on {
@@ -557,8 +588,10 @@
       border-radius: 8px;
       width: 440px;
       max-width: 100%;
-      max-height: 90vh;
+      max-height: 90dvh;
       overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
       padding: 24px;
     }
 
@@ -737,14 +770,14 @@
 
     /* Full-page settings, channels, uploads */
     .badge { background: linear-gradient(135deg, #ff4d5a, #b3091a); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle; }
-    #set { position: fixed; inset: 0; z-index: 12; background: var(--main); display: grid; grid-template-columns: minmax(220px, 36%) 1fr; animation: fade .15s; }
-    #setnav { background: var(--side); padding: 60px 8px 20px; display: flex; justify-content: flex-end; overflow-y: auto; }
+    #set { position: fixed; inset: 0; z-index: 12; background: var(--main); display: grid; grid-template-columns: minmax(220px, 36%) 1fr; grid-template-rows: minmax(0, 1fr); min-height: 0; overflow: hidden; animation: fade .15s; }
+    #setnav { background: var(--side); padding: 60px 8px 20px; display: flex; justify-content: flex-end; min-height: 0; height: 100%; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; }
     #setnav > div { width: 192px; margin-right: 12px; }
     .sg { font-size: 12px; font-weight: 700; color: var(--mute); text-transform: uppercase; padding: 6px 10px; margin-top: 12px; }
     .sn { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 4px; padding: 6px 10px; color: var(--mute); font-weight: 500; margin: 1px 0; transition: background .12s; }
     .sn:hover { background: var(--hover); color: var(--text); }
     .sn.on { background: #ffffff1c; color: #fff; }
-    #setmain { overflow-y: auto; padding: 60px 40px 80px; }
+    #setmain { min-height: 0; height: 100%; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 60px 40px 80px; }
     #setmain > div { max-width: 660px; }
     #setx { position: fixed; top: 40px; right: 40px; width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--mute); background: none; color: var(--mute); font-size: 16px; }
     #setx:hover { color: #fff; border-color: #fff; }
@@ -794,7 +827,7 @@
     .b:disabled { opacity: .5; cursor: not-allowed; filter: none; }
 
     /* Voice, forums, friends, badges */
-    #vbar { background: #111214; padding: 8px 12px; border-bottom: 1px solid #0006; display: flex; align-items: center; gap: 4px; }
+    #vbar { background: #111214; padding: 8px 12px; border-bottom: 1px solid #0006; display: flex; align-items: center; gap: 4px; flex: none; }
     #vbar:empty { display: none; }
     #vbar small { display: block; color: var(--mute); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .vroom, .forum, .fr { padding: 24px; }
@@ -987,8 +1020,9 @@
     .vu { display: flex; align-items: center; gap: 8px; padding: 3px 8px 3px 30px; color: var(--mute); font-size: 14px; border-radius: 8px; }
     .vu .av { transition: box-shadow .15s; }
     .vu.speaking .av { box-shadow: 0 0 0 2px var(--green); }
-    #msgs.stage { background: #000; padding: 0; display: flex; flex-direction: column; }
-    .vstage { flex: 1; display: flex; flex-direction: column; min-height: 100%; }
+    #call:not(:empty):not(.expanded) { flex: none; max-height: 58dvh; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; }
+    #msgs.stage { background: #000; padding: 0; display: flex; flex-direction: column; min-height: 0; }
+    .vstage { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; }
     .vgrid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; padding: 20px 24px; align-content: center; }
     .vtile { position: relative; background: #17171a; border-radius: 16px; aspect-ratio: 16 / 9; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: box-shadow .15s; }
     .vtile.wide { background: #000; }
@@ -1016,31 +1050,172 @@
     .incall { color: var(--green); font-size: 13px; font-weight: 600; margin-left: 12px; }
 
     /* Custom icon set */
-    .ico { display: inline-block; width: 1.18em; height: 1.18em; vertical-align: -.22em; flex: none; }
+    .ico { display: inline-block; width: 1.18em; height: 1.18em; vertical-align: -.22em; flex: none; color: #fff; }
     .ico svg { width: 100%; height: 100%; display: block; }
+    .ch .ico { opacity: .82; transition: opacity .12s; }
+    .ch:hover .ico, .ch.on .ico { opacity: 1; }
     .ci .ico { width: 19px; height: 19px; vertical-align: -5px; }
     .bdg .ico { width: 1.35em; height: 1.35em; vertical-align: -.3em; }
     .kind .ki .ico { width: 24px; height: 24px; }
     .tsw .ico { width: 26px; height: 26px; }
     .vname .ico, .vu .ico { width: 1.15em; height: 1.15em; margin-left: 2px; }
 
-    /* Smaller screens: hide panels */
-    @media (max-width: 900px) {
-      #app {
-        grid-template-columns: 72px 200px 1fr;
+    /* Mobile navigation drawers & touch responsiveness */
+    .mob-btn { display: none; align-items: center; justify-content: center; flex: none; }
+    #mob-scrim { display: none; }
+    .fr-scroll { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    .fr-scroll::-webkit-scrollbar { display: none; }
+    .fr-scroll .ftab { white-space: nowrap; flex: none; }
+    #msgs, #chl, #rail, #mem, #setnav, #setmain, .mbox, .bdg-users, #emo, #eauto { -webkit-overflow-scrolling: touch; }
+
+    @media (max-width: 960px) {
+      #app, #app.nomem {
+        grid-template-columns: 72px 210px 1fr;
       }
+      .mob-btn.mem-btn { display: inline-flex; min-width: 40px; min-height: 40px; }
       #mem {
-        display: none;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: min(270px, 82vw);
+        height: 100dvh;
+        max-height: 100dvh;
+        z-index: 42;
+        border-left: 1px solid var(--border);
+        transform: translateX(100%);
+        transition: transform .22s cubic-bezier(.16, 1, .3, 1);
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
+        overflow-y: auto;
+      }
+      #app.mob-mem #mem {
+        display: block;
+        transform: translateX(0);
+        box-shadow: -8px 0 32px #000c;
+      }
+      #app.mob-mem #mob-scrim {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: #0000008c;
+        backdrop-filter: blur(2px);
       }
     }
 
-    @media (max-width: 560px) {
-      #app {
-        grid-template-columns: 72px 1fr;
+    @media (max-width: 768px) {
+      #app, #app.nomem {
+        grid-template-columns: 1fr;
+        height: 100%;
+        height: 100dvh;
+      }
+      .mob-btn { display: inline-flex; min-width: 40px; min-height: 40px; }
+      #rail {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        height: 100dvh;
+        max-height: 100dvh;
+        z-index: 42;
+        transform: translateX(-100%);
+        transition: transform .22s cubic-bezier(.16, 1, .3, 1);
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
+        overflow-y: auto;
       }
       #side {
-        display: none;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 72px;
+        width: min(268px, calc(100vw - 84px));
+        height: 100dvh;
+        max-height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+        z-index: 42;
+        border-top-left-radius: 0;
+        border-right: 1px solid var(--border);
+        transform: translateX(calc(-100% - 72px));
+        transition: transform .22s cubic-bezier(.16, 1, .3, 1);
+        padding-bottom: env(safe-area-inset-bottom);
       }
+      #sh { border-top-left-radius: 0; }
+      #app.mob-nav #rail, #app.mob-nav #side {
+        transform: translateX(0);
+        box-shadow: 8px 0 32px #000c;
+      }
+      #app.mob-nav #mob-scrim, #app.mob-mem #mob-scrim {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: #0000008c;
+        backdrop-filter: blur(2px);
+      }
+      #ch {
+        padding: 0 10px;
+        gap: 6px;
+        height: 52px;
+      }
+      .topic { display: none; }
+      #comp {
+        padding: 0 10px calc(10px + env(safe-area-inset-bottom));
+      }
+      #cbox { padding: 0 6px; }
+      #cbox .ib { min-width: 42px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; }
+      #inp { font-size: 16px; padding: 11px 6px; }
+      input, textarea, select { font-size: 16px; }
+      .msg { gap: 10px; padding: 4px 10px; margin: 10px 4px 0; }
+      .msg > div:first-child, .gt { width: 36px; }
+      .ch { min-height: 40px; padding: 8px 10px; }
+      .mm { min-height: 42px; }
+      .rbtn { width: 40px; height: 40px; }
+      .vroom, .forum, .fr { padding: 14px; }
+      .esc { display: none; }
+      #set { grid-template-columns: 1fr; }
+      #setnav { display: none; }
+      .mob { display: flex; padding-bottom: 6px; margin-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .mob::-webkit-scrollbar { display: none; }
+      #setmain { padding: 54px 14px calc(36px + env(safe-area-inset-bottom)); }
+      #setx { top: 10px; right: 10px; width: 38px; height: 38px; z-index: 5; background: #16171da8; backdrop-filter: blur(6px); }
+    }
+
+    @media (hover: none), (max-width: 768px) {
+      .msg.sel .acts, .msg.sel .racts { display: flex; top: -18px; }
+      .msg.sel .acts { right: 8px; }
+      .msg.sel .acts ~ .racts { right: 88px; }
+      .msg.sel { background: #ffffff0a; }
+      .chw .cog { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; top: 4px; opacity: .65; }
+      .tw .tedit { display: flex; align-items: center; justify-content: center; }
+    }
+
+    @media (max-width: 600px) {
+      #modal { padding: 10px; }
+      .mbox, .mbox.wide { width: 100%; padding: 18px; border-radius: 18px; max-height: 88dvh; }
+      .mbox.ppop-box { width: min(372px, 100%); padding: 0; max-height: 88dvh; overflow-y: auto; }
+      .card { padding: 24px 18px; border-radius: 20px; }
+      #auth { overflow-y: auto; align-items: flex-start; padding: 24px 14px; }
+      #emo { left: 8px; right: 8px; width: auto; bottom: 68px; max-height: 52dvh; }
+      .emo-grid { grid-template-columns: repeat(7, 1fr); }
+      .emo-grid button { height: 42px; }
+      #eauto { left: 8px; right: 8px; bottom: 68px; max-height: 36dvh; }
+      #rxp { width: min(310px, calc(100vw - 16px)); max-width: calc(100vw - 16px); }
+      #vcpop { width: min(310px, calc(100vw - 16px)); }
+      #ring-pop { min-width: 0; width: min(360px, calc(100vw - 20px)); padding: 12px 14px; top: calc(10px + env(safe-area-inset-top)); }
+      #lightbox { padding: 12px; }
+      #lightbox .lb-x { top: 10px; right: 10px; }
+      #lightbox .lb-bar { flex-wrap: wrap; justify-content: center; max-width: 100%; }
+      .vgrid { grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); padding: 10px; gap: 8px; }
+      .vctl { flex-wrap: wrap; justify-content: center; gap: 6px; padding: 6px; border-radius: 16px; max-width: 100%; }
+      .cbtn { min-width: 44px; min-height: 42px; }
+      .callpanel { padding: 12px 10px; gap: 12px; }
+      .vstrip .vtile { width: 132px; height: 76px; }
+      .prof-tiles, .dstyle-grid { grid-template-columns: 1fr; }
+      #setmain [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+      .srow, .bdg-mgr-row { flex-wrap: wrap; }
+      .fr-lbl { display: none; }
+      .fr-scroll .vsep { display: none; }
     }
 
     /* ---- Nitro extras: emojis, stickers, reactions, soundboard ---- */
@@ -2352,6 +2527,7 @@
       applyS();
       $('#root').innerHTML = `
        <div id="app">
+        <div id="mob-scrim" onclick="closeMob()"></div>
         <div id="rail"></div>
         <div id="side">
          <div id="sh"></div>
@@ -2378,6 +2554,7 @@
         </div>
         <div id="mem"></div>
        </div>`;
+      bindMobGestures();
       const inp = $('#inp');
       inp.onkeydown = e => {
         if (handleAutoKey(e)) return;
@@ -2499,6 +2676,7 @@
     }
 
     async function selectChannel(id) {
+      closeMob();
       curCh = channels.find(c => c.id === id);
       curThread = null; dmWith = null; typers = {};
       if (unreadChans[id]) { delete unreadChans[id]; updateTabBadge(); renderRail(); }
@@ -2536,7 +2714,53 @@
       renderChat();
     }
 
-    // ---------- Drawing the screen ----------
+    // ---------- Drawing the screen & Mobile Drawers ----------
+    let mobPanel = null;
+    function setMobPanel(next) {
+      mobPanel = mobPanel === next ? null : next;
+      const app = $('#app');
+      if (!app) return;
+      app.classList.toggle('mob-nav', mobPanel === 'nav');
+      app.classList.toggle('mob-mem', mobPanel === 'mem');
+    }
+    function closeMob() {
+      mobPanel = null;
+      const app = $('#app');
+      if (!app) return;
+      app.classList.remove('mob-nav', 'mob-mem');
+    }
+    function bindMobGestures() {
+      const app = $('#app');
+      if (!app || app.dataset.swiped) return;
+      app.dataset.swiped = '1';
+      let sx = 0, sy = 0;
+      app.addEventListener('touchstart', e => {
+        if (e.touches.length !== 1) return;
+        sx = e.touches[0].clientX;
+        sy = e.touches[0].clientY;
+      }, { passive: true });
+      app.addEventListener('touchend', e => {
+        if (!e.changedTouches.length || window.innerWidth > 960) return;
+        const dx = e.changedTouches[0].clientX - sx;
+        const dy = e.changedTouches[0].clientY - sy;
+        if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        if (dx > 0) {
+          if (mobPanel === 'mem') closeMob();
+          else if (!mobPanel && sx < 52 && window.innerWidth <= 768) setMobPanel('nav');
+        } else {
+          if (mobPanel === 'nav') closeMob();
+          else if (!mobPanel && cur && sx > window.innerWidth - 52) setMobPanel('mem');
+        }
+      }, { passive: true });
+    }
+    function tapMsg(ev, el) {
+      if (!window.matchMedia('(max-width: 768px), (hover: none)').matches) return;
+      if (ev.target.closest('a,button,img,video,audio,b,.rx,.ce,.inv-embed')) return;
+      const was = el.classList.contains('sel');
+      document.querySelectorAll('.msg.sel').forEach(x => x.classList.remove('sel'));
+      if (!was) el.classList.add('sel');
+    }
+
     function renderAll() {
       renderRail();
       renderSide();
@@ -2806,9 +3030,10 @@
       renderAll();
     }
 
-    function showFriends() { dmWith = null; msgs = []; renderAll(); }
+    function showFriends() { closeMob(); dmWith = null; msgs = []; renderAll(); }
 
     async function openDM(pid) {
+      closeMob();
       const p = myFriends().find(x => x.id === pid);
       if (!p) return;
       if (cur) goHome();
@@ -3131,6 +3356,7 @@
 
     function serverSettings(tab = 'profile') {
       if (!cur) return;
+      closeMob();
       if (tab === 'overview') tab = 'profile';
       const firstOpen = !$('#set') || $('#set').dataset.kind !== 'server';
       if (firstOpen) {
@@ -3202,7 +3428,7 @@
       const nav = NAV.map(n => n.sep ? '<div class="ssep"></div>'
         : n.g ? `<div class="sg">${escapeHtml(n.g)}</div>`
         : `<button class="sn ${n[0] === '__del' ? 'danger' : ''} ${n[0] === tab ? 'on' : ''}" onclick="${go(n[0])}"><span class="sn-ic">${SSET_IC[n[0] === '__del' ? 'del' : n[0]] || ''}</span><span>${n[1]}</span>${n[2] ? `<span class="sn-ext">${n[2]}</span>` : ''}</button>`).join('');
-      const mob = `<div class="tabs mob" style="overflow-x:auto;flex-wrap:nowrap">${NAV.filter(Array.isArray).filter(n => n[0] !== '__del').map(n => `<button class="tab ${n[0] === tab ? 'on' : ''}" style="white-space:nowrap" onclick="${go(n[0])}">${n[1]}</button>`).join('')}</div>`;
+      const mob = `<div class="tabs mob" style="overflow-x:auto;flex-wrap:nowrap">${NAV.filter(Array.isArray).map(n => `<button class="tab ${n[0] === tab ? 'on' : ''}" style="white-space:nowrap;${n[0] === '__del' ? 'color:var(--red)' : ''}" onclick="${go(n[0])}">${n[1]}</button>`).join('')}</div>`;
       const wide = ['profile', 'tag', 'insights', 'webpage'].includes(tab);
       let el = $('#set');
       if (!el) { el = document.createElement('div'); el.id = 'set'; document.body.append(el); }
@@ -3927,7 +4153,7 @@
 
     function filterRows(v) { document.querySelectorAll('#msgs .frow[data-n]').forEach(r => { r.style.display = r.dataset.n.includes(v.toLowerCase()) ? '' : 'none'; }); }
     function filterDMs(v) { document.querySelectorAll('#chl .dmrow').forEach(r => { r.style.display = r.dataset.n.includes(v.toLowerCase()) ? '' : 'none'; }); }
-    const friendHeaderHtml = () => `👥 <b>Friends</b><span class="vsep"></span>` + [['online', 'Online'], ['all', 'All'], ['pending', 'Pending']].map(([k, l]) => `<button class="ftab ${friendTab === k ? 'on' : ''}" onclick="friendTab='${k}';renderChat()">${l}</button>`).join('') + `<button class="ftab add ${friendTab === 'add' ? 'on' : ''}" onclick="friendTab='add';renderChat()">Add Friend</button>`;
+    const friendHeaderHtml = () => `<div class="fr-scroll"><span class="fr-lbl" style="display:inline-flex;align-items:center;gap:6px;flex:none">👥 <b>Friends</b></span><span class="vsep"></span>` + [['online', 'Online'], ['all', 'All'], ['pending', 'Pending']].map(([k, l]) => `<button class="ftab ${friendTab === k ? 'on' : ''}" onclick="friendTab='${k}';renderChat()">${l}</button>`).join('') + `<button class="ftab add ${friendTab === 'add' ? 'on' : ''}" onclick="friendTab='add';renderChat()">Add Friend</button></div>`;
     // ---------- Colour themes ----------
     // Default themes just recolour the panels. Colour themes paint a gradient behind see-through panels.
     const THEMES = {
@@ -4466,37 +4692,37 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     // ---------- Custom icon set: Proanchat's own icons replace the stock emoji in the interface ----------
     const svg = body => `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
     const ICO = {
-      link: svg('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" fill="none" stroke="#4da3ff" stroke-width="2.4" stroke-linecap="round"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 10 18.7l1-1" fill="none" stroke="#8ec5ff" stroke-width="2.4" stroke-linecap="round"/>'),
-      gear: svg('<path fill="#aab0bd" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/>'),
-      plus: svg('<rect x="10.5" y="4" width="3" height="16" rx="1.5" fill="#9b7bff"/><rect x="4" y="10.5" width="16" height="3" rx="1.5" fill="#9b7bff"/>'),
-      folder: svg('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#ffb020"/><path d="M3 10h18v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#ffd166"/>'),
-      user: svg('<circle cx="12" cy="8.5" r="4" fill="#ffb347"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0z" fill="#ff8a3d"/>'),
-      trash: svg('<path d="M6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z" fill="#ff5a5f"/><rect x="4.5" y="5" width="15" height="2.6" rx="1.3" fill="#ff8a8e"/><rect x="9" y="3" width="6" height="2.4" rx="1.2" fill="#ff8a8e"/>'),
-      voice: svg('<path d="M4 9.5v5h3.2L12 18.5v-13L7.2 9.5z" fill="currentColor"/><path d="M15 9a4 4 0 0 1 0 6M17.5 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="#4da3ff" stroke-width="2" stroke-linecap="round"/>'),
-      forum: svg('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z" fill="#b69bff"/><circle cx="9" cy="9.5" r="1.2" fill="#fff"/><circle cx="12" cy="9.5" r="1.2" fill="#fff"/><circle cx="15" cy="9.5" r="1.2" fill="#fff"/>'),
-      megaphone: svg('<path d="M4 10v4a1 1 0 0 0 1 1h2l5 4V5L7 9H5a1 1 0 0 0-1 1z" fill="#ff5fa2"/><path d="M15 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="#ff9cc7" stroke-width="2" stroke-linecap="round"/><path d="M8 15l1 5h2.2l-1-4z" fill="#d93d85"/>'),
-      rules: svg('<path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#ffd166"/><path d="M9 9h7M9 12h7M9 15h4" stroke="#c98a00" stroke-width="1.6" stroke-linecap="round"/>'),
-      stage: svg('<rect x="9" y="3" width="6" height="11" rx="3" fill="#9b7bff"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M8.5 21h7" fill="none" stroke="#c9b8ff" stroke-width="2" stroke-linecap="round"/>'),
-      mute: svg('<rect x="9" y="3" width="6" height="11" rx="3" fill="#ff5a5f"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3" fill="none" stroke="#ff8a8e" stroke-width="2" stroke-linecap="round"/><path d="M4 4l16 16" stroke="#17171a" stroke-width="4" stroke-linecap="round"/><path d="M4 4l16 16" stroke="#ff5a5f" stroke-width="2.2" stroke-linecap="round"/>'),
-      deaf: svg('<path d="M4 15v-3a8 8 0 0 1 16 0v3" fill="none" stroke="#ff5a5f" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14" width="4.5" height="6.5" rx="2" fill="#ff5a5f"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="2" fill="#ff5a5f"/><path d="M4 4l16 16" stroke="#17171a" stroke-width="4" stroke-linecap="round"/><path d="M4 4l16 16" stroke="#ff8a8e" stroke-width="2.2" stroke-linecap="round"/>'),
-      screen: svg('<rect x="3" y="4" width="18" height="12" rx="2.2" fill="#4da3ff"/><rect x="5" y="6" width="14" height="8" rx="1" fill="#a9d1ff"/><path d="M9 20h6M12 16v4" stroke="#4da3ff" stroke-width="2" stroke-linecap="round"/>'),
-      camera: svg('<rect x="3" y="7" width="13" height="10" rx="2.2" fill="#3ddc84"/><path d="M16 10.5l5-3v9l-5-3z" fill="#7ff0ae"/>'),
-      crown: svg('<path d="M3.5 8l4.5 4 4-6 4 6 4.5-4-1.5 10h-14z" fill="#ffc83d"/><rect x="5" y="19" width="14" height="2" rx="1" fill="#e0a500"/>'),
-      flask: svg('<path d="M9.5 3h5v5.5l4.4 8.4A2.2 2.2 0 0 1 17 20H7a2.2 2.2 0 0 1-1.9-3.1L9.5 8.5z" fill="#c7f2dc"/><path d="M7.6 14.5h8.8l2.2 3.9A1.2 1.2 0 0 1 17.6 20H6.4a1.2 1.2 0 0 1-1-1.6z" fill="#3ddc84"/><rect x="8.5" y="2.2" width="7" height="2" rx="1" fill="#9be8c0"/>'),
-      lock: svg('<rect x="5" y="10" width="14" height="10" rx="2.4" fill="#ffc83d"/><path d="M8 10V8a4 4 0 0 1 8 0v2" fill="none" stroke="#e0a500" stroke-width="2.2" stroke-linecap="round"/>'),
-      friends: svg('<circle cx="9" cy="8.5" r="3.5" fill="#9aa3b2"/><path d="M2.5 19a6.5 6.5 0 0 1 13 0z" fill="#9aa3b2"/><circle cx="17" cy="9.5" r="2.8" fill="#c1c8d4"/><path d="M14.5 19a5 5 0 0 1 7.5-4.3V19z" fill="#c1c8d4"/>'),
-      phone: svg('<path fill="#3ddc84" d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z"/>'),
-      clip: svg('<path d="M16.5 6.5l-7.8 7.8a2.2 2.2 0 0 0 3.1 3.1l8-8a4 4 0 0 0-5.7-5.7l-8.2 8.2a5.8 5.8 0 0 0 8.2 8.2" fill="none" stroke="#aab0bd" stroke-width="2" stroke-linecap="round"/>'),
-      search: svg('<circle cx="10.5" cy="10.5" r="6" fill="none" stroke="#aab0bd" stroke-width="2.4"/><path d="M15.5 15.5L21 21" stroke="#aab0bd" stroke-width="2.6" stroke-linecap="round"/>'),
-      shield: svg('<path d="M12 2.5l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10v-6z" fill="#7aa2ff"/><path d="M12 6v12c3-1 5.5-3.8 5.5-7.2V7.5z" fill="#a9c1ff"/>'),
-      pencil: svg('<path d="M4 20l1-4.5L16.5 4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19z" fill="#ffc83d"/><path d="M4 20l1-4.5 3.5 3.5z" fill="#e0a500"/>'),
-      smile: svg('<circle cx="12" cy="12" r="9" fill="#ffc83d"/><circle cx="9" cy="10" r="1.3" fill="#7a4a00"/><circle cx="15" cy="10" r="1.3" fill="#7a4a00"/><path d="M7.8 14a4.5 4.5 0 0 0 8.4 0" fill="none" stroke="#7a4a00" stroke-width="1.8" stroke-linecap="round"/>'),
-      palette: svg('<path d="M12 3a9 9 0 0 0 0 18c1.4 0 2-1 1.5-2-.6-1.2.2-2.5 1.6-2.5H17a4 4 0 0 0 4-4C21 7 17 3 12 3z" fill="#c9b8ff"/><circle cx="7.5" cy="11" r="1.5" fill="#ff5a5f"/><circle cx="10.5" cy="7" r="1.5" fill="#ffc83d"/><circle cx="15.5" cy="7.5" r="1.5" fill="#3ddc84"/>'),
-      doc: svg('<path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#dfe4ee"/><path d="M14 3v5h5z" fill="#aab0bd"/>'),
-      mic: svg('<rect x="9" y="3" width="6" height="11" rx="3" fill="#aab0bd"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="#aab0bd" stroke-width="2" stroke-linecap="round"/>'),
-      head: svg('<path d="M4 15v-3a8 8 0 0 1 16 0v3" fill="none" stroke="#aab0bd" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14" width="4.5" height="6.5" rx="2" fill="#aab0bd"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="2" fill="#aab0bd"/>'),
-      gem: svg('<path d="M12 21L2.5 9.5 6 4h12l3.5 5.5z" fill="#ffd166"/><path d="M2.5 9.5h19L12 21z" fill="#ff9f43"/><path d="M6 4l2.5 5.5L12 4zm12 0l-2.5 5.5L12 4z" fill="#fff3c4"/>'),
-  door: svg('<path d="M5 3h9a2 2 0 0 1 2 2v3h-2V5H7v14h7v-3h2v3a2 2 0 0 1-2 2H5z" fill="#ff5a5f"/><path d="M13 12h8m0 0l-3-3m3 3l-3 3" stroke="#ff8a8e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
+      link: svg('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 10 18.7l1-1" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity=".82"/>'),
+      gear: svg('<path fill="#ffffff" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/>'),
+      plus: svg('<rect x="10.5" y="4" width="3" height="16" rx="1.5" fill="#ffffff"/><rect x="4" y="10.5" width="16" height="3" rx="1.5" fill="#ffffff"/>'),
+      folder: svg('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#ffffff" opacity=".75"/><path d="M3 10h18v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#ffffff"/>'),
+      user: svg('<circle cx="12" cy="8.5" r="4" fill="#ffffff"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0z" fill="#ffffff" opacity=".9"/>'),
+      trash: svg('<path d="M6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z" fill="#ffffff"/><rect x="4.5" y="5" width="15" height="2.6" rx="1.3" fill="#ffffff" opacity=".88"/><rect x="9" y="3" width="6" height="2.4" rx="1.2" fill="#ffffff" opacity=".88"/>'),
+      voice: svg('<path d="M4 9.5v5h3.2L12 18.5v-13L7.2 9.5z" fill="#ffffff"/><path d="M15 9a4 4 0 0 1 0 6M17.5 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".88"/>'),
+      forum: svg('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z" fill="#ffffff"/><circle cx="9" cy="9.5" r="1.25" fill="#141418"/><circle cx="12" cy="9.5" r="1.25" fill="#141418"/><circle cx="15" cy="9.5" r="1.25" fill="#141418"/>'),
+      megaphone: svg('<path d="M4 10v4a1 1 0 0 0 1 1h2l5 4V5L7 9H5a1 1 0 0 0-1 1z" fill="#ffffff"/><path d="M15 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".88"/><path d="M8 15l1 5h2.2l-1-4z" fill="#ffffff" opacity=".82"/>'),
+      rules: svg('<path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#ffffff"/><path d="M9 9h7M9 12h7M9 15h4" stroke="#141418" stroke-width="1.7" stroke-linecap="round"/>'),
+      stage: svg('<rect x="9" y="3" width="6" height="11" rx="3" fill="#ffffff"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M8.5 21h7" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".9"/>'),
+      mute: svg('<rect x="9" y="3" width="6" height="11" rx="3" fill="#ffffff"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".9"/><path d="M4 4l16 16" stroke="#17171a" stroke-width="4" stroke-linecap="round"/><path d="M4 4l16 16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>'),
+      deaf: svg('<path d="M4 15v-3a8 8 0 0 1 16 0v3" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14" width="4.5" height="6.5" rx="2" fill="#ffffff"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="2" fill="#ffffff"/><path d="M4 4l16 16" stroke="#17171a" stroke-width="4" stroke-linecap="round"/><path d="M4 4l16 16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>'),
+      screen: svg('<rect x="3" y="4" width="18" height="12" rx="2.2" fill="#ffffff"/><rect x="5" y="6" width="14" height="8" rx="1" fill="#141418" opacity=".45"/><path d="M9 20h6M12 16v4" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>'),
+      camera: svg('<rect x="3" y="7" width="13" height="10" rx="2.2" fill="#ffffff"/><path d="M16 10.5l5-3v9l-5-3z" fill="#ffffff" opacity=".86"/>'),
+      crown: svg('<path d="M3.5 8l4.5 4 4-6 4 6 4.5-4-1.5 10h-14z" fill="#ffffff"/><rect x="5" y="19" width="14" height="2" rx="1" fill="#ffffff" opacity=".85"/>'),
+      flask: svg('<path d="M9.5 3h5v5.5l4.4 8.4A2.2 2.2 0 0 1 17 20H7a2.2 2.2 0 0 1-1.9-3.1L9.5 8.5z" fill="#ffffff" opacity=".45"/><path d="M7.6 14.5h8.8l2.2 3.9A1.2 1.2 0 0 1 17.6 20H6.4a1.2 1.2 0 0 1-1-1.6z" fill="#ffffff"/><rect x="8.5" y="2.2" width="7" height="2" rx="1" fill="#ffffff"/>'),
+      lock: svg('<rect x="5" y="10" width="14" height="10" rx="2.4" fill="#ffffff"/><path d="M8 10V8a4 4 0 0 1 8 0v2" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>'),
+      friends: svg('<circle cx="9" cy="8.5" r="3.5" fill="#ffffff"/><path d="M2.5 19a6.5 6.5 0 0 1 13 0z" fill="#ffffff"/><circle cx="17" cy="9.5" r="2.8" fill="#ffffff" opacity=".78"/><path d="M14.5 19a5 5 0 0 1 7.5-4.3V19z" fill="#ffffff" opacity=".78"/>'),
+      phone: svg('<path fill="#ffffff" d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z"/>'),
+      clip: svg('<path d="M16.5 6.5l-7.8 7.8a2.2 2.2 0 0 0 3.1 3.1l8-8a4 4 0 0 0-5.7-5.7l-8.2 8.2a5.8 5.8 0 0 0 8.2 8.2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>'),
+      search: svg('<circle cx="10.5" cy="10.5" r="6" fill="none" stroke="#ffffff" stroke-width="2.4"/><path d="M15.5 15.5L21 21" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round"/>'),
+      shield: svg('<path d="M12 2.5l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10v-6z" fill="#ffffff"/><path d="M12 6v12c3-1 5.5-3.8 5.5-7.2V7.5z" fill="#141418" opacity=".25"/>'),
+      pencil: svg('<path d="M4 20l1-4.5L16.5 4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19z" fill="#ffffff"/><path d="M4 20l1-4.5 3.5 3.5z" fill="#ffffff" opacity=".7"/>'),
+      smile: svg('<circle cx="12" cy="12" r="9" fill="#ffffff"/><circle cx="9" cy="10" r="1.3" fill="#141418"/><circle cx="15" cy="10" r="1.3" fill="#141418"/><path d="M7.8 14a4.5 4.5 0 0 0 8.4 0" fill="none" stroke="#141418" stroke-width="1.8" stroke-linecap="round"/>'),
+      palette: svg('<path d="M12 3a9 9 0 0 0 0 18c1.4 0 2-1 1.5-2-.6-1.2.2-2.5 1.6-2.5H17a4 4 0 0 0 4-4C21 7 17 3 12 3z" fill="#ffffff"/><circle cx="7.5" cy="11" r="1.5" fill="#141418"/><circle cx="10.5" cy="7" r="1.5" fill="#141418"/><circle cx="15.5" cy="7.5" r="1.5" fill="#141418"/>'),
+      doc: svg('<path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#ffffff"/><path d="M14 3v5h5z" fill="#141418" opacity=".4"/>'),
+      mic: svg('<rect x="9" y="3" width="6" height="11" rx="3" fill="#ffffff"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>'),
+      head: svg('<path d="M4 15v-3a8 8 0 0 1 16 0v3" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="14" width="4.5" height="6.5" rx="2" fill="#ffffff"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="2" fill="#ffffff"/>'),
+      gem: svg('<path d="M12 21L2.5 9.5 6 4h12l3.5 5.5z" fill="#ffffff"/><path d="M2.5 9.5h19M6 4l2.5 5.5L12 4l3.5 5.5L18 4M8.5 9.5L12 21l3.5-11.5" stroke="#141418" stroke-width="1.2" fill="none" opacity=".35"/>'),
+      door: svg('<path d="M5 3h9a2 2 0 0 1 2 2v3h-2V5H7v14h7v-3h2v3a2 2 0 0 1-2 2H5z" fill="#ffffff"/><path d="M13 12h8m0 0l-3-3m3 3l-3 3" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
     };
     const EMOJI_BASE = { '🔗': 'link', '⚙': 'gear', '➕': 'plus', '📁': 'folder', '🧑': 'user', '🗑': 'trash', '🔊': 'voice', '💬': 'forum', '📢': 'megaphone', '📜': 'rules', '🎙': 'stage', '🔇': 'mute', '🙉': 'deaf', '🖥': 'screen', '📷': 'camera', '👑': 'crown', '🧪': 'flask', '🔒': 'lock', '👥': 'friends', '📞': 'phone', '📎': 'clip', '🔍': 'search', '🛡': 'shield', '✏': 'pencil', '😀': 'smile', '🎨': 'palette', '📄': 'doc', '🎤': 'mic', '🎧': 'head', '🚪': 'door', '💎': 'gem' };
     const EMOJI_ICON = {};
@@ -4563,13 +4789,15 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     function renderChat(keep) {
       const el = $('#msgs'), ch = $('#ch'), comp = $('#comp');
       if (!el) return;
-      if (!cur && !dmWith) { ch.innerHTML = friendHeaderHtml(); comp.style.display = 'none'; $('#call').classList.remove('expanded'); $('#call').innerHTML = ''; el.style.display = ''; el.classList.remove('stage'); el.innerHTML = friendsHtml(); return; }
+      const navBtn = `<button class="ib mob-btn" title="Channels &amp; Servers" onclick="setMobPanel('nav')" aria-label="Open navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>`;
+      const memBtn = cur ? `<button class="ib mob-btn mem-btn" style="margin-left:auto" title="Members" onclick="setMobPanel('mem')" aria-label="Show members">👥</button>` : '';
+      if (!cur && !dmWith) { ch.innerHTML = navBtn + friendHeaderHtml(); comp.style.display = 'none'; $('#call').classList.remove('expanded'); $('#call').innerHTML = ''; el.style.display = ''; el.classList.remove('stage'); el.innerHTML = friendsHtml(); return; }
       const isDM = !cur, kind = isDM ? 'dm' : curCh?.kind;
       const composer = isDM || ['text', 'announcement', 'rules'].includes(kind) || (kind === 'forum' && curThread);
       const locked = !isDM && ['announcement', 'rules'].includes(kind) && !can('administrator');
-      if (isDM) ch.innerHTML = `<span style="color:var(--mute);font-size:22px">@</span> <span ${isFounder(dmWith) ? 'data-f' : ''}>${escapeHtml(dmWith.username)}</span>${vc && vc.room === dmRoom(dmWith.id) ? '<span class="incall">In a call</span>' : ''}<button class="ib" style="margin-left:auto" title="Start a voice call" onclick="startCall()">📞</button>`;
-      else if (curThread) ch.innerHTML = `<button class="ib" onclick="closeThread()">‹ Back</button> ${escapeHtml(curThread.title)}`;
-      else ch.innerHTML = `<span style="color:var(--mute);font-size:22px">${ICON[kind] || '#'}</span> ${escapeHtml(curCh?.name || '')}${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}`;
+      if (isDM) ch.innerHTML = `${navBtn}<span style="color:var(--mute);font-size:22px">@</span> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" ${isFounder(dmWith) ? 'data-f' : ''}>${escapeHtml(dmWith.username)}</span>${vc && vc.room === dmRoom(dmWith.id) ? '<span class="incall">In a call</span>' : ''}<button class="ib" style="margin-left:auto" title="Start a voice call" onclick="startCall()">📞</button>`;
+      else if (curThread) ch.innerHTML = `${navBtn}<button class="ib" onclick="closeThread()">‹ Back</button> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(curThread.title)}</span>${memBtn}`;
+      else ch.innerHTML = `${navBtn}<span style="color:var(--mute);font-size:22px">${ICON[kind] || '#'}</span> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(curCh?.name || '')}</span>${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}${memBtn}`;
       comp.style.display = composer ? '' : 'none';
       el.classList.toggle('stage', kind === 'voice');
       const inDmCall = isDM && vc && vc.room === dmRoom(dmWith.id);
@@ -4601,7 +4829,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         const body = m.dm && m.content === '[call]'
           ? `<button class="b" onclick="joinVoice('${dmRoom(m.user_id === me.id ? m.recipient : m.user_id)}','Call with ${escapeHtml(dmWith?.username || 'friend')}')">📞 ${m.user_id === me.id ? 'You started a call' : escapeHtml(p.username) + ' started a call'} · Join</button>`
           : `${fmtText(m.content || '')}${attHtml(m)}${embeds}${m.edited ? ' <span class="ed">(edited)</span>' : ''}${rxHtml(m)}`;
-        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}" oncontextmenu="msgCtx(event,${m.id},'${m.user_id}')">${left}<div class="mb">${head}<div class="mc ${jumbo ? 'jumbo' : ''}">${body}</div></div>${acts}<div class="racts"><button class="ib" onclick="rxPick(event,${m.id},${m.dm ? 1 : 0})" title="Add reaction">😀</button></div></div>`;
+        html += divider + `<div class="msg ${grouped ? 'grouped grp' : ''} ${isNew ? 'new' : ''}" onclick="tapMsg(event,this)" oncontextmenu="msgCtx(event,${m.id},'${m.user_id}')">${left}<div class="mb">${head}<div class="mc ${jumbo ? 'jumbo' : ''}">${body}</div></div>${acts}<div class="racts"><button class="ib" onclick="rxPick(event,${m.id},${m.dm ? 1 : 0})" title="Add reaction">😀</button></div></div>`;
       });
       animateLast = false;
       el.innerHTML = html || `<div class="empty"><h2>${isDM ? 'This is the start of your chat with ' + escapeHtml(dmWith.username) : 'Welcome to #' + escapeHtml(curCh?.name || '')}</h2><p>Say something!</p></div>`;
@@ -4822,8 +5050,6 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const old = $('#rxp'); if (old) old.remove();
       const d = document.createElement('div');
       d.id = 'rxp';
-      d.style.left = Math.min(ev.clientX, innerWidth - 330) + 'px';
-      d.style.top = Math.max(10, Math.min(ev.clientY - 140, innerHeight - 300)) + 'px';
       const customSeen = new Set();
       const customList = ALL_EMOJIS.filter(e => { const k = e.name.toLowerCase(); if (customSeen.has(k)) return false; customSeen.add(k); return true; });
       const all = [...QUICK, ...EMO, ...customList.map(e => ':' + e.name + ':')];
@@ -4836,7 +5062,11 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       d.querySelector('#rxq').oninput = e => { d.querySelector('.rx-grid').innerHTML = renderGrid(e.target.value); };
       d.onclick = e => { const b = e.target.closest('button'); if (!b) return; rxToggle(id, dm, b.dataset.e, $('#rxs').checked); d.remove(); };
       document.body.append(d);
-      setTimeout(() => { const q = d.querySelector('#rxq'); if (q) q.focus(); document.addEventListener('mousedown', function f(e) { if (!d.contains(e.target)) { d.remove(); document.removeEventListener('mousedown', f); } }); }, 0);
+      const r = d.getBoundingClientRect();
+      const cx = ev.clientX || (innerWidth / 2), cy = ev.clientY || (innerHeight / 2);
+      d.style.left = Math.max(8, Math.min(cx, innerWidth - r.width - 8)) + 'px';
+      d.style.top = Math.max(10, Math.min(cy - 140, innerHeight - r.height - 10)) + 'px';
+      setTimeout(() => { const q = d.querySelector('#rxq'); if (q && window.innerWidth > 768) q.focus(); document.addEventListener('mousedown', function f(e) { if (!d.contains(e.target)) { d.remove(); document.removeEventListener('mousedown', f); } }); }, 0);
     }
 
     async function sendSticker(i) {
@@ -5373,8 +5603,8 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         ${p.id === me.id ? `<button class="ppop-cbtn" title="Edit Profile" onclick="closeM();settings('${cur ? 'server' : 'profile'}')">✎</button>`
         : `${isFriend
           ? `<button class="ppop-cbtn" title="Open DM" onclick="closeM();openDM('${p.id}')">💬</button>`
-          : `<button class="ppop-cbtn" title="Add Friend" onclick="quickAdd('${p.id}')">👤+</button>`}
-          ${cur && can('kick_members') && p.id !== cur.owner_id ? `<button class="ppop-cbtn" title="Kick Member" onclick="quickKickFromPop('${p.id}')">🥾</button>` : ''}`}
+          : `<button class="ppop-cbtn" title="Add Friend" onclick="quickAdd('${p.id}')">🧑+</button>`}
+          ${cur && can('kick_members') && p.id !== cur.owner_id ? `<button class="ppop-cbtn" title="Kick Member" onclick="quickKickFromPop('${p.id}')">🚪</button>` : ''}`}
         <button class="ppop-cbtn" title="Close" onclick="closeM()">✕</button>
       </div>`;
       const badges = badgePills(p, false);
@@ -5498,7 +5728,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (gp) { supabaseClient.removeChannel(gp); gp = null; }
       watchers.forEach(w => supabaseClient.removeChannel(w));
       watchers = [];
-      unreadDMs = {}; unreadChans = {}; unreadAlerts = 0; chanSrvMap = {}; vcFocus = null;
+      unreadDMs = {}; unreadChans = {}; unreadAlerts = 0; chanSrvMap = {}; vcFocus = null; mobPanel = null;
       badgeUsers = []; badgeUsersLoaded = false; badgeTargetId = null; badgeUserQ = ''; badgeNeedsSql = false;
       updateTabBadge();
       me = null; meEmail = ''; cur = null; curCh = null; dmWith = null;
@@ -5882,6 +6112,7 @@ GRANT EXECUTE ON FUNCTION public.set_user_badges(uuid, text[]) TO authenticated;
     }
 
     function settings(tab = 'account', voiceSub = null) {
+      closeMob();
       if (tab === 'look') tab = 'appearance';
       if (tab === 'badges' && !isBadgeOwner()) tab = 'account';
       if (voiceSub) usetVoiceSub = voiceSub;
@@ -6334,7 +6565,8 @@ GRANT EXECUTE ON FUNCTION public.set_user_badges(uuid, text[]) TO authenticated;
         <div class="uset-search"><span>🔍</span><input id="uset-q" type="search" name="q_uset_search" autocomplete="new-password" placeholder="Search" value="${escapeHtml(usetQ)}" oninput="filterUSetNav(this.value)"></div>`;
 
       const [title, body] = pages[tab] || pages.account;
-      const mob = `<div class="tabs mob" style="overflow-x:auto;flex-wrap:nowrap">${NAV.filter(Array.isArray).filter(n => n[0] !== '__logout').map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" style="white-space:nowrap" onclick="settings('${k}')">${l}</button>`).join('')}</div>`;
+      const mobItems = [['profile', 'Profiles'], ...(cur ? [['server', 'Server Profile']] : []), ...NAV.filter(Array.isArray)];
+      const mob = `<div class="tabs mob" style="overflow-x:auto;flex-wrap:nowrap">${mobItems.map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" style="white-space:nowrap;${k === '__logout' ? 'color:var(--red)' : ''}" onclick="${k === '__logout' ? 'logout()' : `settings('${k}')`}">${l}</button>`).join('')}</div>`;
       let el = $('#set');
       if (!el) { el = document.createElement('div'); el.id = 'set'; document.body.append(el); }
       delete el.dataset.kind;
