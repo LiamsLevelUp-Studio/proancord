@@ -90,6 +90,7 @@ function createWindow() {
   const baseUa = mainWindow.webContents.getUserAgent();
   mainWindow.webContents.setUserAgent(`${baseUa} ProanchatDesktop/${app.getVersion()}`);
 
+  mainWindow.webContents.session.clearCache().catch(() => {});
   mainWindow.loadURL(APP_URL);
 
   mainWindow.webContents.on('dom-ready', () => {
@@ -115,10 +116,18 @@ function createWindow() {
   });
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
-    if (input.type === 'keyDown' && input.key === 'F11') {
-      const isFs = mainWindow.isFullScreen();
-      mainWindow.setFullScreen(!isFs);
-      event.preventDefault();
+    if (input.type === 'keyDown') {
+      if (input.key === 'F11') {
+        const isFs = mainWindow.isFullScreen();
+        mainWindow.setFullScreen(!isFs);
+        event.preventDefault();
+      } else if (input.key === 'F5' || (input.control && input.key.toLowerCase() === 'r')) {
+        mainWindow.webContents.reloadIgnoringCache();
+        event.preventDefault();
+      } else if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+        mainWindow.webContents.toggleDevTools();
+        event.preventDefault();
+      }
     }
   });
 
