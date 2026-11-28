@@ -9,10 +9,17 @@
   <meta property="og:description" content="A Discord-inspired community chat, voice, video, and server management app powered by Supabase.">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#08080a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Proanchat">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23d6182a'/%3E%3Cpath d='M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z' fill='%23fff'/%3E%3C/svg%3E">
 
   <!-- Supabase client library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -1217,6 +1224,27 @@
       .fr-lbl { display: none; }
       .fr-scroll .vsep { display: none; }
     }
+
+    /* PWA Standalone safe areas, Install button & Offline indicator */
+    @media all and (display-mode: standalone) {
+      #rail { padding-top: max(12px, env(safe-area-inset-top)); }
+      #side { padding-top: env(safe-area-inset-top); }
+      #main { padding-top: env(safe-area-inset-top); }
+      #mem { padding-top: max(8px, env(safe-area-inset-top)); }
+      #setnav { padding-top: max(60px, calc(20px + env(safe-area-inset-top))); }
+      #setmain { padding-top: max(54px, calc(42px + env(safe-area-inset-top))); }
+      #setx { top: max(12px, env(safe-area-inset-top)); }
+      #auth { padding-top: max(24px, env(safe-area-inset-top)); }
+    }
+    .pwa-inst { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--accent) 55%, #ffffff22); background: color-mix(in srgb, var(--accent) 22%, #18181d); color: #fff; font-size: 12px; font-weight: 600; white-space: nowrap; flex: none; cursor: pointer; transition: background .15s, transform .12s; }
+    .pwa-inst:hover { background: color-mix(in srgb, var(--accent) 36%, #18181d); transform: translateY(-1px); }
+    .pwa-inst svg { width: 14px; height: 14px; flex: none; }
+    .pwa-steps { display: flex; flex-direction: column; gap: 10px; margin: 14px 0 18px; }
+    .pwa-step { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; background: #ffffff08; border: 1px solid var(--border); font-size: 14px; line-height: 1.45; }
+    .pwa-step b.num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex: none; margin-top: 1px; }
+    #net-off { position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 95; display: none; align-items: center; gap: 8px; background: #1c1608; border: 1px solid #f0b13266; color: #fcd34d; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px #000b; }
+    #net-off.on { display: flex; }
+    #net-off i { width: 8px; height: 8px; border-radius: 50%; background: #f0b132; display: inline-block; }
 
     /* ---- Nitro extras: emojis, stickers, reactions, soundboard ---- */
     .ce { height: 1.4em; width: auto; vertical-align: -0.3em; margin: 0 1px; }
@@ -2582,12 +2610,126 @@
       }
     }
 
+    // ---------- PWA Install & Offline Handling ----------
+    let pwaPrompt = null;
+    const isPwaStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches || window.navigator.standalone === true;
+    const isIosDevice = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroidDevice = () => /android/i.test(navigator.userAgent);
+    let pwaInstalled = isPwaStandalone();
+    let pwaDismissed = false;
+    try { pwaDismissed = localStorage.getItem('proanchat_pwa_dismissed') === '1'; } catch {}
+
+    function pwaCanInstallInline() {
+      if (pwaInstalled || isPwaStandalone()) return false;
+      return !!pwaPrompt || (!pwaDismissed && (isIosDevice() || isAndroidDevice()));
+    }
+
+    function pwaInstallBtnHtml(cls = '') {
+      if (!pwaCanInstallInline()) return '';
+      return `<button type="button" class="pwa-inst ${cls}" onclick="promptPwaInstall()" title="Install Proanchat as an app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/></svg><span>Install App</span></button>`;
+    }
+
+    function updatePwaUi() {
+      const slot = $('#pwa-auth-slot');
+      if (slot) slot.innerHTML = (!pwaInstalled && !isPwaStandalone()) ? `<button type="button" class="b g" style="width:100%;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border)" onclick="promptPwaInstall()">📲 Install Proanchat App</button>` : '';
+      if (me && $('#ch')) renderChat(true);
+      const setBtn = $('#pwa-set-slot');
+      if (setBtn) setBtn.innerHTML = pwaSettingsCardHtml();
+    }
+
+    function pwaSettingsCardHtml() {
+      if (isPwaStandalone() || pwaInstalled) {
+        return `<div class="card2" style="margin-top:12px"><div class="srow"><div><b>Proanchat App Installed</b><small class="ts">Running in standalone app mode.</small></div><span class="badge" style="background:var(--green)">Active</span></div></div>`;
+      }
+      return `<div class="card2" style="margin-top:12px"><div class="srow"><div><b>Install Proanchat App</b><small class="ts">Add Proanchat to your Android or iPhone/iPad home screen so it launches as a standalone app.</small></div><button class="b" onclick="promptPwaInstall()">Install App</button></div></div>`;
+    }
+
+    async function promptPwaInstall() {
+      if (pwaPrompt) {
+        try {
+          await pwaPrompt.prompt();
+          const choice = await pwaPrompt.userChoice;
+          if (choice?.outcome === 'accepted') {
+            pwaInstalled = true;
+            pwaPrompt = null;
+            updatePwaUi();
+            toast('Proanchat installed!');
+            return;
+          }
+        } catch (e) {}
+      }
+      if (isIosDevice()) {
+        modal(`<button class="ib mx" onclick="closeM()" title="Close">✕</button>
+          <h2>Install Proanchat on iPhone / iPad</h2>
+          <p class="ts">Save Proanchat to your Home Screen so it opens as its own full-screen app instead of a browser tab.</p>
+          <div class="pwa-steps">
+            <div class="pwa-step"><b class="num">1</b><div>Open this page in <b>Safari</b> (Apple only allows Home Screen app installs from Safari).</div></div>
+            <div class="pwa-step"><b class="num">2</b><div>Tap the <b>Share</b> button (square with an up arrow) in the Safari toolbar.</div></div>
+            <div class="pwa-step"><b class="num">3</b><div>Scroll down and tap <b>Add to Home Screen</b>, then tap <b>Add</b>.</div></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="b g" onclick="dismissPwaBanner();closeM()">Don't show button</button>
+            <button class="b" onclick="closeM()">Got it</button>
+          </div>`);
+        return;
+      }
+      modal(`<button class="ib mx" onclick="closeM()" title="Close">✕</button>
+        <h2>Install Proanchat App</h2>
+        <p class="ts">Install Proanchat to your home screen so it opens as a standalone app without browser bars.</p>
+        <div class="pwa-steps">
+          <div class="pwa-step"><b class="num">1</b><div>If you're inside an in-app browser, tap the menu and choose <b>Open in Chrome</b> (or your main browser).</div></div>
+          <div class="pwa-step"><b class="num">2</b><div>Tap your browser's menu button (<b>⋮</b> in the top-right corner).</div></div>
+          <div class="pwa-step"><b class="num">3</b><div>Tap <b>Install app</b> or <b>Add to Home screen</b> → <b>Install</b>.</div></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="b g" onclick="dismissPwaBanner();closeM()">Don't show button</button>
+          <button class="b" onclick="closeM()">Got it</button>
+        </div>`);
+    }
+
+    function dismissPwaBanner() {
+      pwaDismissed = true;
+      try { localStorage.setItem('proanchat_pwa_dismissed', '1'); } catch {}
+      updatePwaUi();
+    }
+
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      pwaPrompt = e;
+      updatePwaUi();
+    });
+    window.addEventListener('appinstalled', () => {
+      pwaInstalled = true;
+      pwaPrompt = null;
+      updatePwaUi();
+      toast('Proanchat installed as an app!');
+    });
+
+    function updateNetworkBanner() {
+      let el = $('#net-off');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'net-off';
+        el.innerHTML = '<i></i><span>Offline — Cached app shell active</span>';
+        document.body.append(el);
+      }
+      el.classList.toggle('on', navigator.onLine === false);
+    }
+    window.addEventListener('online', updateNetworkBanner);
+    window.addEventListener('offline', updateNetworkBanner);
+    setTimeout(updateNetworkBanner, 0);
+    if ('serviceWorker' in navigator && !document.getElementById('vite-plugin-pwa:register-sw')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    }
+
     // ---------- Login and sign-up ----------
     function authView(mode = 'in') {
       const invHtml = pendingInvite ? `<div class="inv-banner"><div class="inv-ico" id="auth-inv-ico">🔗</div><div><b id="auth-inv-title">You've been invited to join a server</b><small id="auth-inv-sub">${mode === 'in' ? 'Log in' : 'Create an account'} to accept invite (${escapeHtml(pendingInvite)})</small></div></div>` : '';
+      const showAuthInst = !pwaInstalled && !isPwaStandalone();
       $('#root').innerHTML = `<div id="auth"><div class="card"><svg class="logo" width="64" height="64"><use href="#logo"/></svg><h1>${mode === 'in' ? 'Welcome back!' : 'Create an account'}</h1><div class="sub">${mode === 'in' ? "We're so excited to see you again!" : 'Join a community in seconds.'}</div>${invHtml}
      ${mode === 'up' ? `<label class="f">Username</label><input class="t" id="au">` : ''}<label class="f">Email</label><input class="t" id="ae" type="email"><label class="f">Password</label><input class="t" id="ap" type="password">
      <div class="err" id="aerr"></div><button class="b" style="width:100%;padding:12px" onclick="doAuth('${mode}')">${mode === 'in' ? 'Log in' : 'Continue'}</button>
+     <div id="pwa-auth-slot">${showAuthInst ? `<button type="button" class="b g" style="width:100%;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border)" onclick="promptPwaInstall()">📲 Install Proanchat App</button>` : ''}</div>
      <p style="margin:16px 0 0;color:var(--mute)">${mode === 'in' ? 'Need an account?' : 'Already registered?'} <a href="#" style="color:#ff6b78" onclick="authView('${mode === 'in' ? 'up' : 'in'}');return false">${mode === 'in' ? 'Register' : 'Log in'}</a></p></div></div>`;
       if (pendingInvite && supabaseClient) {
         fetchInvitePreview(pendingInvite).then(info => {
@@ -4790,14 +4932,16 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       const el = $('#msgs'), ch = $('#ch'), comp = $('#comp');
       if (!el) return;
       const navBtn = `<button class="ib mob-btn" title="Channels &amp; Servers" onclick="setMobPanel('nav')" aria-label="Open navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>`;
-      const memBtn = cur ? `<button class="ib mob-btn mem-btn" style="margin-left:auto" title="Members" onclick="setMobPanel('mem')" aria-label="Show members">👥</button>` : '';
-      if (!cur && !dmWith) { ch.innerHTML = navBtn + friendHeaderHtml(); comp.style.display = 'none'; $('#call').classList.remove('expanded'); $('#call').innerHTML = ''; el.style.display = ''; el.classList.remove('stage'); el.innerHTML = friendsHtml(); return; }
+      const memBtn = cur ? `<button class="ib mob-btn mem-btn" title="Members" onclick="setMobPanel('mem')" aria-label="Show members">👥</button>` : '';
+      const pwaBtn = pwaInstallBtnHtml();
+      const wrapRight = inner => inner ? `<div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex:none">${inner}</div>` : '';
+      if (!cur && !dmWith) { ch.innerHTML = navBtn + friendHeaderHtml() + wrapRight(pwaBtn); comp.style.display = 'none'; $('#call').classList.remove('expanded'); $('#call').innerHTML = ''; el.style.display = ''; el.classList.remove('stage'); el.innerHTML = friendsHtml(); return; }
       const isDM = !cur, kind = isDM ? 'dm' : curCh?.kind;
       const composer = isDM || ['text', 'announcement', 'rules'].includes(kind) || (kind === 'forum' && curThread);
       const locked = !isDM && ['announcement', 'rules'].includes(kind) && !can('administrator');
-      if (isDM) ch.innerHTML = `${navBtn}<span style="color:var(--mute);font-size:22px">@</span> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" ${isFounder(dmWith) ? 'data-f' : ''}>${escapeHtml(dmWith.username)}</span>${vc && vc.room === dmRoom(dmWith.id) ? '<span class="incall">In a call</span>' : ''}<button class="ib" style="margin-left:auto" title="Start a voice call" onclick="startCall()">📞</button>`;
-      else if (curThread) ch.innerHTML = `${navBtn}<button class="ib" onclick="closeThread()">‹ Back</button> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(curThread.title)}</span>${memBtn}`;
-      else ch.innerHTML = `${navBtn}<span style="color:var(--mute);font-size:22px">${ICON[kind] || '#'}</span> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(curCh?.name || '')}</span>${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}${memBtn}`;
+      if (isDM) ch.innerHTML = `${navBtn}<span style="color:var(--mute);font-size:22px">@</span> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" ${isFounder(dmWith) ? 'data-f' : ''}>${escapeHtml(dmWith.username)}</span>${vc && vc.room === dmRoom(dmWith.id) ? '<span class="incall">In a call</span>' : ''}${wrapRight(`${pwaBtn}<button class="ib" title="Start a voice call" onclick="startCall()">📞</button>`)}`;
+      else if (curThread) ch.innerHTML = `${navBtn}<button class="ib" onclick="closeThread()">‹ Back</button> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(curThread.title)}</span>${wrapRight(`${pwaBtn}${memBtn}`)}`;
+      else ch.innerHTML = `${navBtn}<span style="color:var(--mute);font-size:22px">${ICON[kind] || '#'}</span> <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(curCh?.name || '')}</span>${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}${wrapRight(`${pwaBtn}${memBtn}`)}`;
       comp.style.display = composer ? '' : 'none';
       el.classList.toggle('stage', kind === 'voice');
       const inDmCall = isDM && vc && vc.room === dmRoom(dmWith.id);
@@ -6324,7 +6468,8 @@ GRANT EXECUTE ON FUNCTION public.set_user_badges(uuid, text[]) TO authenticated;
           <label class="opt"><span><b>High Contrast Borders</b><small class="ts">Boost panel outlines and muted label contrast.</small></span><input type="checkbox" class="tg" ${S.accessibility?.highContrast ? 'checked' : ''} onchange="S.accessibility.highContrast=this.checked;saveS()"></label>
           <label class="opt" style="border:0"><span><b>Automatically play animated GIFs &amp; stickers</b></span><input type="checkbox" class="tg" ${S.accessibility?.autoplayGifs !== false ? 'checked' : ''} onchange="S.accessibility.autoplayGifs=this.checked;saveS()"></label>
         </div>`],
-        system: ['System', `<div class="card2">
+        system: ['System', `<div id="pwa-set-slot">${pwaSettingsCardHtml()}</div>
+        <div class="card2">
           <label class="opt"><span><b>Hardware Acceleration</b><small class="ts">Use GPU compositing for smooth video &amp; animations.</small></span><input type="checkbox" class="tg" ${S.system?.hwAccel !== false ? 'checked' : ''} onchange="S.system.hwAccel=this.checked;saveS()"></label>
           <label class="opt"><span><b>Minimise to Background</b><small class="ts">Keep voice &amp; notifications active while navigating tabs.</small></span><input type="checkbox" class="tg" ${S.system?.minToTray !== false ? 'checked' : ''} onchange="S.system.minToTray=this.checked;saveS()"></label>
           <label class="opt" style="border:0"><span><b>Open Proanchat on Launch</b><small class="ts">Remember last open server when returning.</small></span><input type="checkbox" class="tg" ${S.system?.autoStart ? 'checked' : ''} onchange="S.system.autoStart=this.checked;saveS()"></label>
