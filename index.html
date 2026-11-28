@@ -15,8 +15,8 @@
   <meta name="apple-mobile-web-app-title" content="Proanchat">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/svg+xml" href="/icon.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1784,8 +1784,8 @@
       const remote = (s && s.settings && typeof s.settings === 'object') ? s.settings : (s && s.metadata ? (typeof s.metadata === 'object' ? s.metadata : (() => { try { return JSON.parse(s.metadata); } catch(e){ return {}; } })()) : {});
       const m = { ...base, ...remote, ...local };
       const isProanchat = s && ((s.invite_code || '').toLowerCase() === 'proanchat' || (s.name || '').toLowerCase().includes('proanchat'));
-      if ((!m.icon_url || m.icon_url.includes('procord-logo_1__c85137bf.svg') || (isProanchat && !m.procord_logo_v2)) && (isProanchat || (s && (s.name || '').toLowerCase().includes('proanfun')))) {
-        m.icon_url = '/assets/aistudio/procord-logo_910755f1.jpg';
+      if ((!m.icon_url || m.icon_url.includes('procord-logo_1__c85137bf.svg') || m.icon_url.includes('/assets/aistudio/procord-logo_910755f1.jpg') || (isProanchat && !m.procord_logo_v2)) && (isProanchat || (s && (s.name || '').toLowerCase().includes('proanfun')))) {
+        m.icon_url = '/pwa-512x512.png';
       }
       m.engagement = { ...base.engagement, ...(remote.engagement || {}), ...(local.engagement || {}) };
       m.access = { ...base.access, ...(remote.access || {}), ...(local.access || {}) };
@@ -2394,7 +2394,7 @@
 
         if (!srv) {
           const initMeta = {
-            icon_url: '/assets/aistudio/procord-logo_910755f1.jpg',
+            icon_url: '/pwa-512x512.png',
             procord_logo_v2: true,
             description: 'Official Proanchat Community Server',
             banner_id: 'sunset'
@@ -2462,8 +2462,8 @@
           }
         } else {
           const currentSettings = typeof srv.settings === 'object' && srv.settings ? { ...srv.settings } : (srv.metadata ? (typeof srv.metadata === 'object' ? { ...srv.metadata } : (() => { try { return JSON.parse(srv.metadata); } catch(e){ return {}; } })()) : {});
-          if (!currentSettings.icon_url || currentSettings.icon_url.includes('procord-logo_1__c85137bf.svg') || !currentSettings.procord_logo_v2) {
-            currentSettings.icon_url = '/assets/aistudio/procord-logo_910755f1.jpg';
+          if (!currentSettings.icon_url || currentSettings.icon_url.includes('procord-logo_1__c85137bf.svg') || currentSettings.icon_url.includes('/assets/aistudio/procord-logo_910755f1.jpg') || !currentSettings.procord_logo_v2) {
+            currentSettings.icon_url = '/pwa-512x512.png';
             currentSettings.procord_logo_v2 = true;
           }
           currentSettings.description = currentSettings.description || 'Official Proanchat Community Server';
@@ -2476,8 +2476,8 @@
             if (proanfunId && srv.owner_id !== proanfunId) metaPatch.owner_id = proanfunId;
             await supabaseClient.from('servers').update(metaPatch).eq('id', srv.id);
           }
-          if (S.srvMeta && S.srvMeta[srv.id] && (!S.srvMeta[srv.id].procord_logo_v2 || !S.srvMeta[srv.id].icon_url || S.srvMeta[srv.id].icon_url.includes('procord-logo_1__c85137bf.svg'))) {
-            S.srvMeta[srv.id].icon_url = '/assets/aistudio/procord-logo_910755f1.jpg';
+          if (S.srvMeta && S.srvMeta[srv.id] && (!S.srvMeta[srv.id].procord_logo_v2 || !S.srvMeta[srv.id].icon_url || S.srvMeta[srv.id].icon_url.includes('procord-logo_1__c85137bf.svg') || S.srvMeta[srv.id].icon_url.includes('/assets/aistudio/procord-logo_910755f1.jpg'))) {
+            S.srvMeta[srv.id].icon_url = '/pwa-512x512.png';
             S.srvMeta[srv.id].procord_logo_v2 = true;
             saveS();
           }

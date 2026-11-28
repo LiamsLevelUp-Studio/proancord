@@ -1,14 +1,12 @@
-const CACHE_NAME = 'proanchat-shell-v1';
+const CACHE_NAME = 'proanchat-shell-v2';
 const SHELL_ASSETS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/icon.svg',
   '/apple-touch-icon.png',
   '/pwa-192x192.png',
   '/pwa-512x512.png',
-  '/pwa-maskable-512x512.png',
-  '/assets/aistudio/procord-logo_910755f1.jpg'
+  '/pwa-maskable-512x512.png'
 ];
 
 self.addEventListener('install', (event) => {
