@@ -1287,6 +1287,48 @@
     body.high-contrast { --border: #ffffff38; --mute: #cbd5e1; }
     .conn-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .conn-pill { display: inline-flex; align-items: center; gap: 5px; background: #00000050; border: 1px solid #ffffff1a; border-radius: 7px; padding: 3px 8px; font-size: 11px; color: #e4e4e7; }
+
+    /* ---- Unread badges, Incoming Call Ring UI, Lightbox & Stream Focus ---- */
+    .sv-wrap { position: relative; width: 48px; height: 48px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; }
+    .ubadge { position: absolute; right: -2px; bottom: -2px; z-index: 3; pointer-events: none; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--red); border: 2px solid var(--rail); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; line-height: 1; font-variant-numeric: tabular-nums; box-shadow: 0 2px 6px #0008; }
+    .ch { display: flex; align-items: center; gap: 6px; }
+    .ch .ch-txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ch.unread { color: #fff; font-weight: 700; }
+    .ch-ubadge { margin-left: auto; flex: none; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--red); color: #fff; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; line-height: 1; font-variant-numeric: tabular-nums; }
+    .chw:hover .ch-ubadge { opacity: 0; }
+    @keyframes ringpulse { 0% { box-shadow: 0 0 0 0 #23a55988; } 70% { box-shadow: 0 0 0 14px #23a55900; } 100% { box-shadow: 0 0 0 0 #23a55900; } }
+    #ring-pop { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 150; background: #14151a; border: 1px solid #ffffff28; border-radius: 18px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 18px 50px #000d; animation: pop .18s; min-width: 310px; max-width: calc(100vw - 24px); }
+    #ring-pop .ring-av { border-radius: 50%; animation: ringpulse 1.4s infinite; flex: none; }
+    #ring-pop .ring-meta { flex: 1; min-width: 0; }
+    #ring-pop .ring-meta b { display: block; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #ring-pop .ring-meta small { display: block; font-size: 12px; color: var(--green); font-weight: 600; }
+    #ring-pop .ring-acts { display: flex; gap: 8px; flex: none; }
+    #ring-pop .ring-btn { width: 40px; height: 40px; border-radius: 50%; border: 0; color: #fff; font-size: 17px; display: flex; align-items: center; justify-content: center; transition: transform .12s, filter .12s; }
+    #ring-pop .ring-btn:hover { transform: scale(1.07); filter: brightness(1.08); }
+    #ring-pop .ring-btn.acc { background: var(--green); }
+    #ring-pop .ring-btn.dec { background: var(--red); }
+    img.att.zoomable { cursor: zoom-in; transition: transform .15s, filter .15s; }
+    img.att.zoomable:hover { filter: brightness(1.06); }
+    #lightbox { position: fixed; inset: 0; z-index: 200; background: #000000e0; backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; gap: 14px; animation: fade .15s; }
+    #lightbox img { max-width: 92vw; max-height: 82vh; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 60px #000e; background: #000; }
+    #lightbox .lb-bar { display: flex; align-items: center; gap: 14px; color: var(--mute); font-size: 13px; background: #14151a; border: 1px solid #ffffff1a; padding: 8px 14px; border-radius: 10px; }
+    #lightbox .lb-bar a { color: #ff7b85; text-decoration: none; font-weight: 600; }
+    #lightbox .lb-bar a:hover { text-decoration: underline; }
+    #lightbox .lb-x { position: fixed; top: 18px; right: 22px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid #ffffff2a; background: #16171d; color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+    .vtile.clickable, .callav.clickable { cursor: zoom-in; }
+    .vtile.clickable:hover { border-color: #ffffff38; }
+    .vtile.enlarged { cursor: zoom-out; width: 100%; height: 100%; max-height: none !important; aspect-ratio: auto !important; background: #000; }
+    .vtile.enlarged video { object-fit: contain !important; }
+    .vzoom-pill { position: absolute; top: 10px; right: 10px; z-index: 4; background: #000b; border: 1px solid #ffffff26; color: #fff; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .15s; pointer-events: none; }
+    .vtile:hover .vzoom-pill, .vtile.enlarged .vzoom-pill { opacity: 1; pointer-events: auto; }
+    .vfocus-wrap { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 0; }
+    .vfocus-main { flex: 1; min-height: 0; display: flex; }
+    .vstrip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; flex: none; justify-content: center; }
+    .vstrip .vtile { width: 184px; height: 104px; flex: none; aspect-ratio: 16 / 9; }
+    #call.expanded { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .callpanel.expanded { flex: 1; min-height: 0; height: 100%; padding: 12px 16px 14px; border-bottom: 0; justify-content: space-between; }
+    .callpanel.expanded .vfocus-wrap { padding: 0; }
+    .callpanel.expanded .vtile.enlarged { min-height: 260px; }
   </style>
 </head>
 
@@ -1387,6 +1429,13 @@
     let srvBans = [];        // banned users in current server (cached)
     let srvAudits = [];      // audit logs in current server (cached)
     const slowLast = {};     // channelId -> last message timestamp for slowmode
+    let unreadDMs = {};      // userId -> unread message count
+    let unreadChans = {};    // channelId -> unread message count
+    let unreadAlerts = 0;    // pending friend requests / missed calls while away
+    let chanSrvMap = {};     // channelId -> serverId across joined servers
+    let vcFocus = null;      // enlarged stream/tile key ('uid:screen' | 'uid:cam' | 'uid:av')
+    let ringState = null;    // active incoming or outgoing call ring state
+    let appActx = null;      // shared unlocked AudioContext for background ringtones & sounds
 
     // ---------- Settings (saved in this browser) ----------
     const DEFAULTS = {
@@ -1620,10 +1669,65 @@
       document.body.classList.toggle('high-contrast', !!S.accessibility?.highContrast);
       const [a, b] = ICONS[S.icon] || ICONS.red;
       document.querySelectorAll('#pc-grad stop').forEach((s, i) => s.setAttribute('stop-color', i ? b : a));
-      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='${a}'/><path d='M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z' fill='#fff'/></svg>`;
+      updateTabBadge();
+    }
+
+    function totalUnreadCount() {
+      const dmSum = Object.values(unreadDMs).reduce((s, n) => s + (n || 0), 0);
+      const chSum = Object.values(unreadChans).reduce((s, n) => s + (n || 0), 0);
+      return dmSum + chSum + (unreadAlerts || 0) + (ringState?.mode === 'in' ? 1 : 0);
+    }
+
+    function updateTabBadge() {
+      const total = totalUnreadCount();
+      if (ringState?.mode === 'in') {
+        document.title = `📞 Call from ${ringState.caller?.username || 'Friend'} (${total}) — Proanchat`;
+      } else {
+        document.title = total > 0 ? `(${total > 99 ? '99+' : total}) Proanchat` : 'Proanchat';
+      }
+      const [a] = ICONS[S.icon] || ICONS.red;
+      let badgeSvg = '';
+      if (total > 0 || ringState?.mode === 'in') {
+        const txt = ringState?.mode === 'in' && total <= 1 ? '!' : (total > 99 ? '99+' : String(total));
+        const fill = ringState?.mode === 'in' ? '#23a559' : '#f23f43';
+        const w = txt.length >= 3 ? 34 : txt.length === 2 ? 28 : 24;
+        const x = 64 - w - 1;
+        badgeSvg = `<rect x='${x}' y='39' width='${w}' height='24' rx='12' fill='${fill}' stroke='#08080a' stroke-width='3'/><text x='${x + w / 2}' y='55.5' text-anchor='middle' font-family='system-ui,Arial,sans-serif' font-size='14' font-weight='900' fill='#fff'>${txt}</text>`;
+      }
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='${a}'/><path d='M20 15h14a12 12 0 0 1 0 24h-6v10l-8-7z' fill='#fff'/>${badgeSvg}</svg>`;
       const link = document.querySelector('link[rel=icon]');
       if (link) link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
     }
+
+    function clearActiveUnread() {
+      if (!me || document.hidden) return;
+      let changed = false;
+      if (cur && curCh && unreadChans[curCh.id]) { delete unreadChans[curCh.id]; changed = true; }
+      if (!cur && dmWith && unreadDMs[dmWith.id]) { delete unreadDMs[dmWith.id]; changed = true; }
+      if (unreadAlerts) { unreadAlerts = 0; changed = true; }
+      if (changed) {
+        updateTabBadge();
+        renderRail();
+        renderSide();
+      } else {
+        updateTabBadge();
+      }
+    }
+
+    window.addEventListener('focus', clearActiveUnread);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) clearActiveUnread(); });
+
+    function getAudioCtx() {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      if (!appActx || appActx.state === 'closed') appActx = new AC();
+      if (appActx.state === 'suspended') appActx.resume().catch(() => {});
+      return appActx;
+    }
+
+    ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(ev =>
+      window.addEventListener(ev, () => { getAudioCtx(); }, { passive: true })
+    );
 
     function saveS() {
       try { localStorage.setItem('procord-settings', JSON.stringify(S)); } catch (e) {}
@@ -1641,16 +1745,162 @@
     function beep() {
       if (!S.sound) return;
       try {
-        const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator(), g = c.createGain();
-        o.connect(g); g.connect(c.destination); o.frequency.value = 660;
-        g.gain.setValueAtTime(.05, c.currentTime);
-        g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + .25);
-        o.start(); o.stop(c.currentTime + .25);
+        const c = getAudioCtx();
+        if (!c) return;
+        const o = c.createOscillator(), g = c.createGain(), now = c.currentTime;
+        o.type = 'sine';
+        o.frequency.setValueAtTime(660, now);
+        o.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+        o.connect(g); g.connect(c.destination);
+        g.gain.setValueAtTime(0.06, now);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+        o.start(now); o.stop(now + 0.24);
       } catch (e) {}
     }
 
+    function playRingBurst(mode = 'in') {
+      if (!S.sound) return;
+      try {
+        const c = getAudioCtx();
+        if (!c) return;
+        const t0 = c.currentTime + 0.02;
+        const notes = mode === 'in'
+          ? [[659.25, 0, 0.14], [830.61, 0.13, 0.14], [987.77, 0.26, 0.18], [1318.51, 0.41, 0.28], [659.25, 0.85, 0.14], [830.61, 0.98, 0.14], [987.77, 1.11, 0.18], [1318.51, 1.26, 0.32]]
+          : [[440, 0, 0.42], [480, 0, 0.42]];
+        notes.forEach(([freq, off, dur]) => {
+          const o = c.createOscillator(), g = c.createGain();
+          o.type = mode === 'in' ? 'triangle' : 'sine';
+          o.frequency.setValueAtTime(freq, t0 + off);
+          const vol = mode === 'in' ? 0.13 : 0.045;
+          g.gain.setValueAtTime(0.0001, t0 + off);
+          g.gain.linearRampToValueAtTime(vol, t0 + off + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + dur);
+          o.connect(g); g.connect(c.destination);
+          o.start(t0 + off); o.stop(t0 + off + dur + 0.03);
+        });
+      } catch (e) {}
+    }
+
+    function showDesktopNotif(title, body, onClick, tag) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      try {
+        const n = new Notification(title, { body, tag: tag || undefined, silent: true });
+        n.onclick = () => { window.focus(); if (onClick) onClick(); n.close(); };
+      } catch (e) {}
+    }
+
+    function requestNotifPerm() {
+      if (!('Notification' in window)) return;
+      if (Notification.permission === 'default') Notification.requestPermission().catch(() => {});
+    }
+
+    function renderRingBanner() {
+      const old = $('#ring-pop');
+      if (old) old.remove();
+      if (!ringState || ringState.mode !== 'in') return;
+      const caller = ringState.caller || { username: 'Friend' };
+      const el = document.createElement('div');
+      el.id = 'ring-pop';
+      el.innerHTML = `<div class="ring-av">${avatarHtml(caller, 46)}</div>
+        <div class="ring-meta"><b>${escapeHtml(caller.username || 'Friend')}</b><small>Incoming Voice Call…</small></div>
+        <div class="ring-acts">
+          <button class="ring-btn acc" title="Accept Call" onclick="answerIncomingCall()">📞</button>
+          <button class="ring-btn dec" title="Decline Call" onclick="declineIncomingCall()">✕</button>
+        </div>`;
+      document.body.append(el);
+    }
+
+    function stopRingtone(roomFilter = null) {
+      if (!ringState) return;
+      if (roomFilter && ringState.room !== roomFilter) return;
+      clearInterval(ringState.timer);
+      clearTimeout(ringState.timeout);
+      if (ringState.watchCh) supabaseClient.removeChannel(ringState.watchCh);
+      const old = $('#ring-pop');
+      if (old) old.remove();
+      ringState = null;
+      updateTabBadge();
+    }
+
+    function startOutgoingRing(room) {
+      if (ringState?.mode === 'in') return;
+      stopRingtone();
+      playRingBurst('out');
+      const timer = setInterval(() => {
+        if (!vc || vc.room !== room || Object.keys(vc.peers).length > 0) return stopRingtone(room);
+        playRingBurst('out');
+      }, 2800);
+      const timeout = setTimeout(() => stopRingtone(room), 32000);
+      ringState = { mode: 'out', room, timer, timeout };
+    }
+
+    function startIncomingCall(caller, room) {
+      if (vc && vc.room === room) return;
+      if (ringState?.mode === 'in' && ringState.room === room) return;
+      stopRingtone();
+      playRingBurst('in');
+      const timer = setInterval(() => playRingBurst('in'), 2200);
+      const timeout = setTimeout(() => {
+        if (ringState && ringState.room === room) {
+          toast(`Missed call from ${caller?.username || 'a friend'}`);
+          unreadAlerts = (unreadAlerts || 0) + 1;
+          stopRingtone(room);
+        }
+      }, 35000);
+      let sawCaller = false;
+      const watchCh = supabaseClient.channel('voice-' + room, { config: { presence: { key: 'ring-' + me.id } } });
+      watchCh.on('presence', { event: 'sync' }, () => {
+        const keys = Object.keys(watchCh.presenceState()).filter(k => k !== me.id && !k.startsWith('ring-'));
+        if (keys.length > 0) sawCaller = true;
+        else if (sawCaller) stopRingtone(room);
+      }).subscribe();
+      ringState = { mode: 'in', room, caller, timer, timeout, watchCh };
+      renderRingBanner();
+      updateTabBadge();
+      if (document.hidden || !document.hasFocus()) {
+        showDesktopNotif(`Incoming call from ${caller?.username || 'Friend'}`, 'Click to answer in Proanchat', () => answerIncomingCall(), 'call-' + room);
+      }
+    }
+
+    async function answerIncomingCall() {
+      if (!ringState || ringState.mode !== 'in') return;
+      const { caller, room } = ringState;
+      stopRingtone();
+      if (caller?.id && (!dmWith || dmWith.id !== caller.id || cur)) {
+        await openDM(caller.id);
+      }
+      await joinVoice(room, 'Call with ' + (caller?.username || 'Friend'));
+    }
+
+    function declineIncomingCall() {
+      stopRingtone();
+    }
+
+    function openLightbox(src, title = '') {
+      closeLightbox();
+      if (!src) return;
+      const el = document.createElement('div');
+      el.id = 'lightbox';
+      el.onclick = e => { if (e.target === el) closeLightbox(); };
+      el.innerHTML = `<button class="lb-x" title="Close (Esc)" onclick="closeLightbox()">✕</button>
+        <img src="${escapeHtml(src)}" alt="${escapeHtml(title)}">
+        <div class="lb-bar">${title ? `<span>${escapeHtml(title)}</span>` : ''}<a href="${escapeHtml(src)}" target="_blank" rel="noopener noreferrer">Open original ↗</a></div>`;
+      document.body.append(el);
+    }
+
+    function closeLightbox() {
+      const el = $('#lightbox');
+      if (el) el.remove();
+    }
+
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { closeM(); closeSet(); closeCtx(); closeVcPop(); closeEtip(); if ($('#emo')) $('#emo').classList.remove('on'); if ($('#eauto')) $('#eauto').classList.remove('on'); }
+      if (e.key === 'Escape') {
+        if ($('#lightbox')) return closeLightbox();
+        if (vcFocus) { vcFocus = null; renderChat(true); }
+        closeM(); closeSet(); closeCtx(); closeVcPop(); closeEtip();
+        if ($('#emo')) $('#emo').classList.remove('on');
+        if ($('#eauto')) $('#eauto').classList.remove('on');
+      }
       if (e.key === 'Enter' && e.target.closest && e.target.closest('#auth')) $('#auth .b').click();
     });
 
@@ -2122,6 +2372,10 @@
     async function loadServers(keep) {
       const { data } = await supabaseClient.from('members').select('servers(*)').eq('user_id', me.id);
       servers = (data || []).map(x => x.servers).filter(Boolean);
+      if (servers.length) {
+        const { data: allCh } = await supabaseClient.from('channels').select('id,server_id').in('server_id', servers.map(s => s.id));
+        (allCh || []).forEach(c => { chanSrvMap[c.id] = c.server_id; });
+      }
       if (!keep && servers.length)
         return selectServer(servers[0].id);
       if (!servers.length) {
@@ -2154,6 +2408,7 @@
       cur = servers.find(s => s.id === id);
       const c = await supabaseClient.from('channels').select('*').eq('server_id', id).order('created_at');
   channels = c.data || [];
+  channels.forEach(ch => { chanSrvMap[ch.id] = id; });
   const k = await supabaseClient.from('categories').select('*').eq('server_id', id).order('created_at');
   cats = k.data || [];
   await loadRoles(id);
@@ -2174,6 +2429,7 @@
     async function selectChannel(id) {
       curCh = channels.find(c => c.id === id);
       curThread = null; dmWith = null; typers = {};
+      if (unreadChans[id]) { delete unreadChans[id]; updateTabBadge(); renderRail(); }
       if (rt) { supabaseClient.removeChannel(rt); rt = null; }
       renderSide();
       if (curCh.kind === 'voice') { msgs = []; return renderChat(); }
@@ -2185,7 +2441,7 @@
           if (msgs.some(m => m.id === p.new.id)) return;
           const { data } = await supabaseClient.from('profiles').select('*').eq('id', p.new.user_id).single();
           addMsg({ ...p.new, profiles: data });
-          if (p.new.user_id !== me.id) beep();
+          if (p.new.user_id !== me.id && !document.hidden && document.hasFocus()) beep();
         })
         .on('postgres_changes', { event: 'UPDATE', ...tbl, filter: 'channel_id=eq.' + id }, p => {
           const m = msgs.find(x => x.id === p.new.id);
@@ -2218,12 +2474,15 @@
     }
 
     function renderRail() {
-      $('#rail').innerHTML = `<div class="brand" title="Home" style="cursor:pointer" onclick="goHome()"><svg width="36" height="36"><use href="#logo"/></svg></div><div class="sep"></div>` + servers.map(s => {
+      const dmTotal = Object.values(unreadDMs).reduce((a, b) => a + (b || 0), 0) + (unreadAlerts || 0);
+      const srvUnread = sid => Object.entries(unreadChans).reduce((sum, [cid, cnt]) => sum + (chanSrvMap[cid] === sid ? (cnt || 0) : 0), 0);
+      const badge = n => n > 0 ? `<span class="ubadge">${n > 99 ? '99+' : n}</span>` : '';
+      $('#rail').innerHTML = `<div class="sv-wrap"><div class="brand" title="Home" style="cursor:pointer" onclick="goHome()"><svg width="36" height="36"><use href="#logo"/></svg></div>${badge(dmTotal)}</div><div class="sep"></div>` + servers.map(s => {
         const m = srvMeta(s);
         const inner = hasIconImg(m.icon_url)
           ? `<img src="${escapeHtml(m.icon_url)}" alt="">`
           : escapeHtml(s.name.split(/\s+/).map(w => w[0]).join('').slice(0, 3).toUpperCase());
-        return `<button class="sv ${cur?.id === s.id ? 'on' : ''}" title="${escapeHtml(s.name)}" onclick="selectServer('${s.id}')" oncontextmenu="svCtx(event,'${s.id}')">${inner}</button>`;
+        return `<div class="sv-wrap"><button class="sv ${cur?.id === s.id ? 'on' : ''}" title="${escapeHtml(s.name)}" onclick="selectServer('${s.id}')" oncontextmenu="svCtx(event,'${s.id}')">${inner}</button>${badge(srvUnread(s.id))}</div>`;
       }).join('') + `<div class="sep"></div><button class="sv add" title="Add a server" onclick="serverModal()">+</button>`;
     }
 
@@ -2404,12 +2663,65 @@
         if (!cur) { renderSide(); if (!dmWith) renderChat(true); }
       }).subscribe(s => { if (s === 'SUBSCRIBED') gp.track({ status: S.status, activeTag: S.activeServerTag || '' }); });
       watchers = [gp,
-        supabaseClient.channel('dm-in-' + me.id).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages', filter: 'recipient=eq.' + me.id }, p => {
+        supabaseClient.channel('dm-in-' + me.id).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages', filter: 'recipient=eq.' + me.id }, async p => {
+          let senderProf = myFriends().find(x => x.id === p.new.sender);
+          if (!senderProf) {
+            const { data } = await supabaseClient.from('profiles').select('*').eq('id', p.new.sender).single();
+            if (data) senderProf = data;
+          }
+          const isViewingThisDM = !cur && dmWith && dmWith.id === p.new.sender;
+          if (p.new.content === '[call]') {
+            startIncomingCall(senderProf || { id: p.new.sender, username: 'Friend' }, dmRoom(p.new.sender));
+            if (isViewingThisDM) addMsg(dmRow(p.new));
+            return;
+          }
           beep();
-          if (dmWith && dmWith.id === p.new.sender) addMsg(dmRow(p.new));
-          else toast(`New message from ${myFriends().find(x => x.id === p.new.sender)?.username || 'a friend'}${p.new.content === '[call]' ? ' (call invite)' : ''}`);
+          if (isViewingThisDM) {
+            addMsg({ ...dmRow(p.new), profiles: senderProf || {} });
+          }
+          if (!isViewingThisDM || document.hidden || !document.hasFocus()) {
+            unreadDMs[p.new.sender] = (unreadDMs[p.new.sender] || 0) + 1;
+            updateTabBadge();
+            renderRail();
+            renderSide();
+            const who = senderProf?.username || 'a friend';
+            if (!isViewingThisDM) toast(`New message from ${who}`);
+            if (document.hidden || !document.hasFocus()) {
+              showDesktopNotif(who, p.new.content || 'Sent an attachment', () => openDM(p.new.sender), 'dm-' + p.new.sender);
+            }
+          }
         }).subscribe(),
-        supabaseClient.channel('friends-' + me.id).on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => loadFriends()).subscribe()
+        supabaseClient.channel('msg-notif-' + me.id).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async p => {
+          if (p.new.user_id === me.id) return;
+          const sid = chanSrvMap[p.new.channel_id] || (channels.some(c => c.id === p.new.channel_id) ? cur?.id : null);
+          if (!sid) return;
+          const viewingHere = !document.hidden && document.hasFocus() && cur && curCh?.id === p.new.channel_id && (p.new.thread_id || null) === (curThread?.id || null);
+          if (viewingHere) return;
+          unreadChans[p.new.channel_id] = (unreadChans[p.new.channel_id] || 0) + 1;
+          beep();
+          updateTabBadge();
+          renderRail();
+          renderSide();
+          if (document.hidden || !document.hasFocus()) {
+            const srv = servers.find(s => s.id === sid);
+            showDesktopNotif(srv ? `${srv.name}` : 'New message', p.new.content || 'Sent an attachment', () => {
+              if (!cur || cur.id !== sid) selectServer(sid).then(() => selectChannel(p.new.channel_id));
+              else selectChannel(p.new.channel_id);
+            }, 'ch-' + p.new.channel_id);
+          }
+        }).subscribe(),
+        supabaseClient.channel('friends-' + me.id).on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, payload => {
+          if (payload.eventType === 'INSERT' && payload.new?.addressee === me.id && payload.new?.status === 'pending') {
+            beep();
+            toast('New friend request!');
+            if (document.hidden || !document.hasFocus() || cur || dmWith || friendTab !== 'pending') {
+              unreadAlerts = (unreadAlerts || 0) + 1;
+              updateTabBadge();
+              renderRail();
+            }
+          }
+          loadFriends();
+        }).subscribe()
       ];
     }
 
@@ -2428,6 +2740,7 @@
       const p = myFriends().find(x => x.id === pid);
       if (!p) return;
       if (cur) goHome();
+      if (unreadDMs[pid]) { delete unreadDMs[pid]; updateTabBadge(); renderRail(); }
       dmWith = p; msgs = [];
       const filter = `and(sender.eq.${me.id},recipient.eq.${pid}),and(sender.eq.${pid},recipient.eq.${me.id})`;
       const { data } = await supabaseClient.from('dm_messages').select('*').or(filter).order('id', { ascending: false }).limit(60);
@@ -2488,9 +2801,14 @@
 
     async function startCall() {
       if (!dmWith) return;
-      if (!(vc && vc.room === dmRoom(dmWith.id)) && !(await joinVoice(dmRoom(dmWith.id), 'Call with ' + dmWith.username))) return;
+      requestNotifPerm();
+      const room = dmRoom(dmWith.id);
+      if (!(vc && vc.room === room) && !(await joinVoice(room, 'Call with ' + dmWith.username))) return;
       const { data } = await postMessage({ content: '[call]' });
       if (data) addMsg(data);
+      if (vc && vc.room === room && Object.keys(vc.peers).length === 0) {
+        startOutgoingRing(room);
+      }
     }
 
     // One place that saves a message, whether it goes to a channel, a forum post or a DM
@@ -2579,6 +2897,7 @@
         if (t === 'channels') {
           const c = await supabaseClient.from('channels').select('*').eq('server_id', id).order('created_at');
           channels = c.data || [];
+          channels.forEach(ch => { chanSrvMap[ch.id] = id; });
           if (curCh && !channels.some(x => x.id === curCh.id)) { curCh = null; if (channels.length) selectChannel(channels[0].id); }
           else if (curCh) curCh = channels.find(x => x.id === curCh.id);
       watchVoice();
@@ -3660,6 +3979,8 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     async function joinVoice(room, label) {
+      stopRingtone(room);
+      vcFocus = null;
       if (vc) await leaveVoice();
       label = label || (channels.find(c => c.id === room)?.name ? '#' + channels.find(c => c.id === room).name : dmWith ? 'Call with ' + dmWith.username : 'Call');
       let rawStream;
@@ -3689,9 +4010,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     function voiceSync() {
       if (!vc) return;
-      const ids = Object.keys(vc.sig.presenceState()).filter(k => k !== me.id);
+      const ids = Object.keys(vc.sig.presenceState()).filter(k => k !== me.id && !k.startsWith('ring-'));
       ids.forEach(id => { if (!vc.peers[id]) makePeer(id); });
       Object.keys(vc.peers).forEach(id => { if (!ids.includes(id)) dropPeer(id); });
+      if (ids.length > 0 && ringState?.mode === 'out' && ringState.room === vc.room) stopRingtone(vc.room);
       renderChat(true);
     }
 
@@ -3752,6 +4074,8 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!vc) return;
       closeVcPop();
       const v = vc;
+      stopRingtone(v.room);
+      vcFocus = null;
       clearInterval(v.timer);
       const l = vlobby[v.room];
       if (l) l.ch.untrack();
@@ -3989,17 +4313,55 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
 
     function personOf(uid, m) { return members.find(u => u.id === uid) || (uid === me.id ? me : dmWith && uid === dmWith.id ? dmWith : { username: m.name || '?' }); }
 
-    function tilesHtml(compact) {
-      const out = [], st = vc.sig.presenceState();
+    function toggleVcFocus(key) {
+      vcFocus = vcFocus === key ? null : key;
+      renderChat(true);
+    }
+
+    function buildVoiceEntries() {
+      const entries = [], st = vc.sig.presenceState();
       Object.entries(st).forEach(([uid, a]) => {
+        if (uid.startsWith('ring-')) return;
         const m = a[0] || {}, p = personOf(uid, m);
         const hasCam = m.cam && (uid === me.id ? vc.cam : vc.peers[uid]?.videos.cam);
         const hasScr = m.screen && (uid === me.id ? vc.screen : vc.peers[uid]?.videos.screen);
-        if (compact && !hasCam && !hasScr) { out.push(`<div class="callav" data-vt="${uid}" title="${escapeHtml(p.username)}">${avatarHtml(p, 84)}</div>`); return; }
-        out.push(`<div class="vtile" data-vt="${uid}">${hasCam ? `<div class="vslot" data-k="${uid}:cam"></div>` : `<div class="vav">${avatarHtml(p, 92)}</div>`}<div class="vname">${escapeHtml(p.username)}${m.deaf ? ' 🙉' : m.muted ? ' 🔇' : ''}</div></div>`);
-        if (hasScr) out.push(`<div class="vtile wide"><div class="vslot" data-k="${uid}:screen"></div><div class="vname">🖥️ ${escapeHtml(p.username)}'s screen</div></div>`);
+        const mainKey = hasCam ? `${uid}:cam` : `${uid}:av`;
+        entries.push({
+          key: mainKey,
+          uid, p, m,
+          isVideo: !!hasCam,
+          isWide: false,
+          label: `${escapeHtml(p.username)}${m.deaf ? ' 🙉' : m.muted ? ' 🔇' : ''}`,
+          html: (enlarged) => `<div class="vtile clickable ${enlarged ? 'enlarged' : ''}" data-vt="${uid}" onclick="toggleVcFocus('${mainKey}')" title="${enlarged ? 'Click to shrink' : 'Click to enlarge'}">${hasCam ? `<div class="vslot" data-k="${uid}:cam"></div>` : `<div class="vav">${avatarHtml(p, enlarged ? 132 : 92)}</div>`}<span class="vzoom-pill">${enlarged ? '⤡ Shrink' : '⤢ Enlarge'}</span><div class="vname">${escapeHtml(p.username)}${m.deaf ? ' 🙉' : m.muted ? ' 🔇' : ''}</div></div>`
+        });
+        if (hasScr) {
+          const scrKey = `${uid}:screen`;
+          entries.push({
+            key: scrKey,
+            uid, p, m,
+            isVideo: true,
+            isWide: true,
+            label: `🖥️ ${escapeHtml(p.username)}'s screen`,
+            html: (enlarged) => `<div class="vtile wide clickable ${enlarged ? 'enlarged' : ''}" data-vt="${uid}" onclick="toggleVcFocus('${scrKey}')" title="${enlarged ? 'Click to shrink' : 'Click to enlarge'}"><div class="vslot" data-k="${uid}:screen"></div><span class="vzoom-pill">${enlarged ? '⤡ Shrink' : '⤢ Enlarge'}</span><div class="vname">🖥️ ${escapeHtml(p.username)}'s screen</div></div>`
+          });
+        }
       });
-      return out.join('');
+      return entries;
+    }
+
+    function tilesHtml(compact) {
+      const entries = buildVoiceEntries();
+      if (compact) {
+        return entries.map(e => `<div class="callav clickable" data-vt="${e.uid}" title="Click to enlarge call (${escapeHtml(e.p.username)})" onclick="toggleVcFocus('${e.key}')">${avatarHtml(e.p, 84)}</div>`).join('');
+      }
+      return entries.map(e => e.html(false)).join('');
+    }
+
+    function focusedStageHtml(entries) {
+      const active = entries.find(e => e.key === vcFocus);
+      if (!active) { vcFocus = null; return null; }
+      const others = entries.filter(e => e.key !== active.key);
+      return `<div class="vfocus-wrap"><div class="vfocus-main">${active.html(true)}</div>${others.length ? `<div class="vstrip">${others.map(e => e.html(false)).join('')}</div>` : ''}</div>`;
     }
 
     function voiceRoomHtml() {
@@ -4009,12 +4371,16 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         return `<div class="vstage"><div class="vgrid">${users.map(u => `<div class="vtile"><div class="vav">${avatarHtml(personOf(u.uid, u), 80)}</div><div class="vname">${escapeHtml(personOf(u.uid, u).username)}</div></div>`).join('')}</div>
           <div class="vjoin"><h2>🔊 ${escapeHtml(curCh.name)}</h2><p>${users.length ? users.length + ' in voice right now' : 'No one is here yet.'}</p><button class="b" onclick="joinVoice('${curCh.id}')">Join Voice</button></div></div>`;
       }
-      return `<div class="vstage"><div class="vgrid">${tilesHtml(false)}</div><div class="vfoot"><button class="b g" onclick="serverMenu()">Invite to Voice</button>${ctlHtml()}</div></div>`;
+      const entries = buildVoiceEntries();
+      const focusHtml = vcFocus ? focusedStageHtml(entries) : null;
+      return `<div class="vstage ${focusHtml ? 'focused' : ''}">${focusHtml || `<div class="vgrid">${entries.map(e => e.html(false)).join('')}</div>`}<div class="vfoot"><button class="b g" onclick="serverMenu()">Invite to Voice</button>${ctlHtml()}</div></div>`;
     }
 
     function callPanelHtml() {
-      const hasVideo = Object.values(vc.sig.presenceState()).some(a => a[0]?.cam || a[0]?.screen);
-      return `<div class="callpanel ${hasVideo ? 'tall' : ''}">${hasVideo ? `<div class="vgrid">${tilesHtml(false)}</div>` : `<div class="callrow">${tilesHtml(true)}</div>`}${ctlHtml()}</div>`;
+      const entries = buildVoiceEntries();
+      const hasVideo = entries.some(e => e.isVideo);
+      const focusHtml = vcFocus ? focusedStageHtml(entries) : null;
+      return `<div class="callpanel ${hasVideo ? 'tall' : ''} ${focusHtml ? 'expanded' : ''}">${focusHtml || (hasVideo ? `<div class="vgrid">${tilesHtml(false)}</div>` : `<div class="callrow">${tilesHtml(true)}</div>`)}${ctlHtml()}</div>`;
     }
 
     function renderMe() {
@@ -4094,12 +4460,16 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     }
 
     function renderSide() {
+      const chBadge = n => n > 0 ? `<span class="ch-ubadge">${n > 99 ? '99+' : n}</span>` : '';
       if (!cur) {
         $('#sh').innerHTML = '<span>Proanchat</span>';
         $('#sh').onclick = null;
         $('#chl').oncontextmenu = null;
         $('#chl').innerHTML = `<input class="find" placeholder="Find or start a conversation" oninput="filterDMs(this.value)"><button class="ch ${dmWith ? '' : 'on'}" onclick="showFriends()">👥 Friends</button><div class="lbl"><span>Direct messages</span></div>`
-          + myFriends().map(p => `<button class="ch dm dmrow ${dmWith?.id === p.id ? 'on' : ''}" data-n="${escapeHtml(p.username.toLowerCase())}" onclick="openDM('${p.id}')" oncontextmenu="memCtx(event,'${p.id}')"><div class="dot">${avatarHtml(p, 32)}<i class="${friendStatus(p) || 'off'}"></i></div><span>${escapeHtml(p.username)}</span></button>`).join('');
+          + myFriends().map(p => {
+            const u = unreadDMs[p.id] || 0;
+            return `<button class="ch dm dmrow ${dmWith?.id === p.id ? 'on' : ''} ${u ? 'unread' : ''}" data-n="${escapeHtml(p.username.toLowerCase())}" onclick="openDM('${p.id}')" oncontextmenu="memCtx(event,'${p.id}')"><div class="dot">${avatarHtml(p, 32)}<i class="${friendStatus(p) || 'off'}"></i></div><span class="ch-txt">${escapeHtml(p.username)}</span>${chBadge(u)}</button>`;
+          }).join('');
         return;
       }
       $('#sh').innerHTML = `<span>${escapeHtml(cur.name)}</span><span class="chev">⌄</span>`;
@@ -4110,7 +4480,10 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
         const row = cats.find(c => c.name === cat);
         const list = channels.filter(c => (c.category || 'Text channels') === cat);
         return `<div class="lbl" oncontextmenu="catCtx(event,${i})"><span style="cursor:pointer" onclick="toggleCat(${i})">${collapsed[cat] ? '▸' : '▾'} ${escapeHtml(cat)}${row?.private ? ' 🔒' : ''}</span></div>`
-          + (collapsed[cat] ? '' : list.map(c => `<div class="chw" oncontextmenu="chanCtx(event,'${c.id}')"><button class="ch ${curCh?.id === c.id ? 'on' : ''}" onclick="selectChannel('${c.id}')">${c.private ? '🔒' : ICON[c.kind] || '#'} ${escapeHtml(c.name)}</button>${vusersHtml(c)}</div>`).join(''));
+          + (collapsed[cat] ? '' : list.map(c => {
+            const u = unreadChans[c.id] || 0;
+            return `<div class="chw" oncontextmenu="chanCtx(event,'${c.id}')"><button class="ch ${curCh?.id === c.id ? 'on' : ''} ${u ? 'unread' : ''}" onclick="selectChannel('${c.id}')">${c.private ? '🔒' : ICON[c.kind] || '#'} <span class="ch-txt">${escapeHtml(c.name)}</span>${chBadge(u)}</button>${vusersHtml(c)}</div>`;
+          }).join(''));
       }).join('');
     }
 
@@ -4118,7 +4491,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     function renderChat(keep) {
       const el = $('#msgs'), ch = $('#ch'), comp = $('#comp');
       if (!el) return;
-      if (!cur && !dmWith) { ch.innerHTML = friendHeaderHtml(); comp.style.display = 'none'; $('#call').innerHTML = ''; el.classList.remove('stage'); el.innerHTML = friendsHtml(); return; }
+      if (!cur && !dmWith) { ch.innerHTML = friendHeaderHtml(); comp.style.display = 'none'; $('#call').classList.remove('expanded'); $('#call').innerHTML = ''; el.style.display = ''; el.classList.remove('stage'); el.innerHTML = friendsHtml(); return; }
       const isDM = !cur, kind = isDM ? 'dm' : curCh?.kind;
       const composer = isDM || ['text', 'announcement', 'rules'].includes(kind) || (kind === 'forum' && curThread);
       const locked = !isDM && ['announcement', 'rules'].includes(kind) && !can('administrator');
@@ -4126,9 +4499,16 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       else if (curThread) ch.innerHTML = `<button class="ib" onclick="closeThread()">‹ Back</button> ${escapeHtml(curThread.title)}`;
       else ch.innerHTML = `<span style="color:var(--mute);font-size:22px">${ICON[kind] || '#'}</span> ${escapeHtml(curCh?.name || '')}${curCh?.topic ? `<span class="topic">${escapeHtml(curCh.topic)}</span>` : ''}`;
       comp.style.display = composer ? '' : 'none';
-  el.classList.toggle('stage', kind === 'voice');
-  $('#call').innerHTML = isDM && vc && vc.room === dmRoom(dmWith.id) ? callPanelHtml() : '';
-  mountVideos();
+      el.classList.toggle('stage', kind === 'voice');
+      const inDmCall = isDM && vc && vc.room === dmRoom(dmWith.id);
+      const callHtml = inDmCall ? callPanelHtml() : '';
+      const callExpanded = inDmCall && !!vcFocus;
+      const callBox = $('#call');
+      callBox.classList.toggle('expanded', callExpanded);
+      callBox.innerHTML = callHtml;
+      el.style.display = callExpanded ? 'none' : '';
+      mountVideos();
+      if (callExpanded) return;
       if (kind === 'voice') { el.innerHTML = voiceRoomHtml(); mountVideos(); return; }
       if (kind === 'forum' && !curThread) { el.innerHTML = forumHtml(); return; }
       $('#inp').disabled = !!locked;
@@ -4822,9 +5202,11 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (!m.attachment_url) return '';
       if ((m.attachment_name || '').startsWith('sticker:')) return `<img class="stk" src="${escapeHtml(m.attachment_url)}" alt="${escapeHtml(m.attachment_name.slice(8))}">`;
       const u = escapeHtml(m.attachment_url), n = escapeHtml(m.attachment_name || 'file');
-      if (/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(n)) return `<div><img class="att" src="${u}" alt="${n}" loading="lazy"></div>`;
-      if (/\.(mp4|webm|mov|m4v)$/i.test(n)) return `<div><video class="att" src="${u}" controls preload="metadata"></video></div>`;
-      if (/\.(mp3|wav|ogg|m4a)$/i.test(n)) return `<div><audio src="${u}" controls></audio></div>`;
+      if (/\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(n) || /\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(m.attachment_url) || /^data:image\//i.test(m.attachment_url)) {
+        return `<div><img class="att zoomable" src="${u}" alt="${n}" loading="lazy" onclick="event.stopPropagation();openLightbox(this.src,this.alt)"></div>`;
+      }
+      if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(n)) return `<div><video class="att" src="${u}" controls preload="metadata"></video></div>`;
+      if (/\.(mp3|wav|ogg|m4a)(\?|$)/i.test(n)) return `<div><audio src="${u}" controls></audio></div>`;
       return `<a class="file" href="${u}" target="_blank" rel="noopener noreferrer">📄 ${n}</a>`;
     }
 
@@ -5035,6 +5417,8 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
     async function logout() {
       closeSet();
       closeM();
+      closeLightbox();
+      stopRingtone();
       await leaveVoice();
       if (rt) { supabaseClient.removeChannel(rt); rt = null; }
       if (pr) { supabaseClient.removeChannel(pr); pr = null; }
@@ -5042,6 +5426,8 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
       if (gp) { supabaseClient.removeChannel(gp); gp = null; }
       watchers.forEach(w => supabaseClient.removeChannel(w));
       watchers = [];
+      unreadDMs = {}; unreadChans = {}; unreadAlerts = 0; chanSrvMap = {}; vcFocus = null;
+      updateTabBadge();
       me = null; cur = null; curCh = null; dmWith = null;
       await supabaseClient.auth.signOut({ scope: 'local' });
       authView('in');
@@ -5348,7 +5734,7 @@ function tdPrev(k, v) { tdraft[k] = v; applyS(); const b = $('#tdbar'); if (b) b
               <option value="server_members" ${S.messaging?.friendReq === 'server_members' ? 'selected' : ''}>Server Members</option>
             </select>
           </div>`],
-        notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages')}<div class="row" style="justify-content:flex-start"><button class="b g" onclick="beep()">Test sound</button></div>`],
+        notifications: ['Notifications', `${chk('sound', 'Play a sound for new messages &amp; call ringtones')}<div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button class="b g" onclick="beep()">Test sound</button><button class="b g" onclick="playRingBurst('in')">Test ringtone</button>${'Notification' in window && Notification.permission !== 'granted' ? `<button class="b" onclick="Notification.requestPermission().then(()=>settings('notifications'))">Enable desktop notifications</button>` : ''}</div>`],
         voice: ['Voice &amp; Video', voiceBodyHtml()],
         appearance: ['Appearance', `${themePageHtml()}
           <h3 style="margin-top:26px">App Icon &amp; Text</h3>
